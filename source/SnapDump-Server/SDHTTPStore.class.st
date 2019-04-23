@@ -8,7 +8,7 @@ Class {
 		'project',
 		'version'
 	],
-	#category : #'SnapDump-Core'
+	#category : #'SnapDump-Server-Store'
 }
 
 { #category : #accessing }

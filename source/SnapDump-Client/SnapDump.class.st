@@ -4,7 +4,7 @@ Class {
 	#classInstVars : [
 		'store'
 	],
-	#category : #'SnapDump-Core'
+	#category : #'SnapDump-Client'
 }
 
 { #category : #'as yet unclassified' }
@@ -17,7 +17,7 @@ SnapDump class >> applyConfig: aConfig [
 SnapDump class >> configuration [
 	<configurationStep>
 	^ {  
-		#group -> #exceptionReporter.
+		#group -> #SnapDump.
 		#action -> [ :config | SnapDump applyConfig: config ] }
 ]
 

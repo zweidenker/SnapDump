@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'nameStrategy'
 	],
-	#category : #'SnapDump-Core'
+	#category : #'SnapDump-Server-Store'
 }
 
 { #category : #lookup }

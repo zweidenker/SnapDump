@@ -1,7 +1,7 @@
 Class {
 	#name : #SDServerDelegate,
 	#superclass : #ZnJSONRestServerDelegate,
-	#category : #'SnapDump-Server'
+	#category : #'SnapDump-Server-REST'
 }
 
 { #category : #'error handling' }
