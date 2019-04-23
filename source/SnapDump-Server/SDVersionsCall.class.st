@@ -1,6 +1,6 @@
 Class {
 	#name : #SDVersionsCall,
-	#superclass : #SDBasicCall,
+	#superclass : #SnapDumpCall,
 	#category : #'SnapDump-Server-REST'
 }
 
