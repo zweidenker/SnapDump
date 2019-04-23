@@ -1,0 +1,1 @@
+Package { #name : #'SnapDump-Core' }
