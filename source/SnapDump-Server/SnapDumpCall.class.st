@@ -1,5 +1,5 @@
 Class {
-	#name : #SDBasicCall,
+	#name : #SnapDumpCall,
 	#superclass : #ZnJSONRestCall,
 	#classVars : [
 		'path'
@@ -8,26 +8,26 @@ Class {
 }
 
 { #category : #testing }
-SDBasicCall class >> isAbstract [
-	^ self = SDBasicCall  
+SnapDumpCall class >> isAbstract [
+	^ self = SnapDumpCall  
 ]
 
 { #category : #accessing }
-SDBasicCall class >> path [
+SnapDumpCall class >> path [
 	^ path
 ]
 
 { #category : #accessing }
-SDBasicCall class >> path: aString [
+SnapDumpCall class >> path: aString [
 	path := aString asFileReference 
 ]
 
 { #category : #accessing }
-SDBasicCall >> configurations [
+SnapDumpCall >> configurations [
 	^ (self storagePath allChildrenMatching: '*.json') collect: [:each | NeoJSONObject fromString: each ]
 ]
 
 { #category : #'as yet unclassified' }
-SDBasicCall >> storagePath [
+SnapDumpCall >> storagePath [
 	^ self class path "ensureCreateDirectory"
 ]

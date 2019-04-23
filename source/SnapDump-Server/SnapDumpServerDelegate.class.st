@@ -1,11 +1,11 @@
 Class {
-	#name : #SDServerDelegate,
+	#name : #SnapDumpServerDelegate,
 	#superclass : #ZnJSONRestServerDelegate,
 	#category : #'SnapDump-Server-REST'
 }
 
 { #category : #'error handling' }
-SDServerDelegate >> serverError: request exception: exception [
+SnapDumpServerDelegate >> serverError: request exception: exception [
 	SnapDump handleException: exception.
 	^ super serverError: request exception: exception
 ]

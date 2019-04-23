@@ -1,6 +1,6 @@
 Class {
 	#name : #SDumpCall,
-	#superclass : #SDBasicCall,
+	#superclass : #SnapDumpCall,
 	#instVars : [
 		'description'
 	],
