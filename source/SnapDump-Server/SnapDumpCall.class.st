@@ -31,3 +31,8 @@ SnapDumpCall >> configurations [
 SnapDumpCall >> storagePath [
 	^ self class path "ensureCreateDirectory"
 ]
+
+{ #category : #accessing }
+SnapDumpCall >> store [
+	^ self delegate store
+]

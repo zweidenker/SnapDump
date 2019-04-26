@@ -32,7 +32,7 @@ SnapDump class >> hackUIManager [
 SnapDump class >> handleException: exception [
 
 	store ifNotNil: [
-		store storeException: exception ]
+		store storeSnapshot: exception asSnapshot ]
 ]
 
 { #category : #'as yet unclassified' }
