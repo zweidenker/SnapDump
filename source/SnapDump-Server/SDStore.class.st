@@ -21,7 +21,7 @@ SDStore >> createDebugContextFrom: exception [
 SDStore >> descriptionFor: exception [
 	| method |
 	method := exception signalerContext sender method.
-	^ SDump new
+	^ SDSnapshot new
 		className: method classBinding key asString;
 		selector: (method selector asString copyWithout: $:);
 		exceptionClass: (exception class name)
@@ -86,12 +86,7 @@ SDStore >> serializeContext: aContext on: stream [
 ]
 
 { #category : #'as yet unclassified' }
-SDStore >> storeException: exception [
-	| description |
-	description := self descriptionFor: exception.
-	(self hasSnapshotNamed: description)
-		ifFalse: [ 
-			self 
-				storeDebugContext: (self createDebugContextFrom: exception)
-				description: description ]
+SDStore >> storeSnapshot: snapshot [
+	(self hasSnapshotNamed: snapshot)
+		ifFalse: [ self store: snapshot ]
 ]

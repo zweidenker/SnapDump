@@ -13,19 +13,30 @@ SDFilesystemStore class >> storeName [
 ]
 
 { #category : #'as yet unclassified' }
-SDFilesystemStore >> filenameFor: dict [
-	^ (self descriptionString: dict) , '.fuel'
+SDFilesystemStore >> filenameFor: snapshot [
+	^ (self descriptionString: snapshot) , '.fuel'
 ]
 
 { #category : #testing }
-SDFilesystemStore >> hasSnapshotNamed: description [
-	^ ( path / (self filenameFor: description) ) exists
+SDFilesystemStore >> hasSnapshotNamed: snapshot [
+	^ ( path / (self filenameFor: snapshot) ) exists
 ]
 
 { #category : #accessing }
 SDFilesystemStore >> path: anObject [
 	path := anObject asFileReference.
 	path ensureCreateDirectory 
+]
+
+{ #category : #'as yet unclassified' }
+SDFilesystemStore >> store: snapshot [
+	| stream file |
+	file := path / (self filenameFor: snapshot).
+	stream := file fileSystem  binaryWriteStreamOn: file path.
+	[ self 
+		serializeContext: snapshot context 
+		on: stream ]
+		ensure: [ stream close ]
 ]
 
 { #category : #'as yet unclassified' }
