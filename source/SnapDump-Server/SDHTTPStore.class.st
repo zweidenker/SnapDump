@@ -53,17 +53,17 @@ SDHTTPStore >> project: aString [
 ]
 
 { #category : #'as yet unclassified' }
-SDHTTPStore >> storeDebugContext: aContext description: dict [
+SDHTTPStore >> store: snapshot [
 	| writeStream |
 	writeStream := ByteArray new writeStream.
 	
 	
 	[ self 
-		serializeContext: aContext 
+		serializeContext: snapshot context 
 		on: writeStream.
 		
 	self client
-		url: (self urlFor: dict);
+		url: (self urlFor: snapshot);
 		entity: (ZnByteArrayEntity bytes: writeStream contents);
 		put ]
 		on: Error 
@@ -76,8 +76,8 @@ SDHTTPStore >> uri: anUri [
 ]
 
 { #category : #accessing }
-SDHTTPStore >> urlFor: dict [
-	^ uri / (dict at: 'project') asString / (dict at: 'version') asString / (self descriptionString: dict) asString
+SDHTTPStore >> urlFor: snapshot [
+	^ uri / project asString / version asString / (self descriptionString: snapshot) asString
 ]
 
 { #category : #accessing }
