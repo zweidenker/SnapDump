@@ -21,21 +21,21 @@ SDStore >> createDebugContextFrom: exception [
 SDStore >> descriptionFor: exception [
 	| method |
 	method := exception signalerContext sender method.
-	^ { 
-		'class' -> method classBinding key asString.
-		'selector' -> (method selector asString copyWithout: $:) .
-		'exceptionClass' -> (exception class name) } asDictionary 
+	^ SDump new
+		className: method classBinding key asString;
+		selector: (method selector asString copyWithout: $:);
+		exceptionClass: (exception class name)
 ]
 
 { #category : #'as yet unclassified' }
-SDStore >> descriptionString: dict [
-	^ (String streamContents: [:stream |
+SDStore >> descriptionString: snap [
+	^ String streamContents: [:stream |
 			stream 
-				nextPutAll: (dict at: 'class');
-				nextPut: $-;
-				nextPutAll: (dict at: 'selector');
-				nextPut: $-;
-				nextPutAll: (dict at: 'exceptionClass') ])
+				<< snap className
+				<< '-'
+				<< snap selector
+				<< '-'
+				<< snap exceptionClass ]
 ]
 
 { #category : #private }
