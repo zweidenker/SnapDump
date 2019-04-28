@@ -5,7 +5,7 @@ Class {
 		'className',
 		'selector',
 		'exceptionClass',
-		'context'
+		'id'
 	],
 	#category : #'SnapDump-Core'
 }
@@ -26,21 +26,6 @@ SDSnapshot >> className: aString [
 ]
 
 { #category : #accessing }
-SDSnapshot >> context [
-	^ context
-]
-
-{ #category : #accessing }
-SDSnapshot >> exception: exception [
-	| method |
-	method := exception signalerContext sender method.
-	className := method classBinding key asString.
-	selector :=  (method selector asString copyWithout: $:) .
-	exceptionClass := (exception class name).
-	context := exception signalerContext 
-]
-
-{ #category : #accessing }
 SDSnapshot >> exceptionClass [
 	^ exceptionClass
 ]
@@ -51,6 +36,32 @@ SDSnapshot >> exceptionClass: aString [
 ]
 
 { #category : #accessing }
+SDSnapshot >> id [ 
+	^ id 
+]
+
+{ #category : #accessing }
+SDSnapshot >> id: anObject [
+	id := anObject
+]
+
+{ #category : #accessing }
+SDSnapshot >> idString [
+	^ String streamContents: [ :stream |
+		stream 
+			<< className << selector << exceptionClass ]
+]
+
+{ #category : #'as yet unclassified' }
+SDSnapshot >> preparePutRequest: request [
+	request headers
+		at: 'SnapDump-className' put: className;
+		at: 'SnapDump-selector' put: selector;
+		at: 'SnapDump-exceptionClass' put: exceptionClass
+
+]
+
+{ #category : #accessing }
 SDSnapshot >> selector [
 	^ selector
 ]
@@ -58,4 +69,14 @@ SDSnapshot >> selector [
 { #category : #accessing }
 SDSnapshot >> selector: aString [ 
 	selector := aString
+]
+
+{ #category : #writing }
+SDSnapshot >> writeMetaOn: stream [
+	(NeoJSONWriter on: stream) 
+		prettyPrint: true;
+		nextPut: ({ 
+			#className -> className .
+			#selector -> selector.
+			#exceptionClass -> exceptionClass } asDictionary)
 ]

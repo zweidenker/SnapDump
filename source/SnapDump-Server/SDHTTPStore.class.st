@@ -31,18 +31,10 @@ SDHTTPStore >> client [
 		setBasicAuthenticationUsername: username password: password 
 ]
 
-{ #category : #accessing }
-SDHTTPStore >> descriptionFor: exception [
-	^ (super descriptionFor: exception)
-		at: 'project' put: project;
-		at: 'version' put: version;
-		yourself
-]
-
 { #category : #testing }
-SDHTTPStore >> hasSnapshotNamed: dict [
+SDHTTPStore >> hasSnapshotNamed: snapshot [
 	^ (self client
-		url: (self urlFor: dict);
+		url: (self urlFor: snapshot);
 		head;
 		response) status = 200
 ]
@@ -54,18 +46,16 @@ SDHTTPStore >> project: aString [
 
 { #category : #'as yet unclassified' }
 SDHTTPStore >> store: snapshot [
-	| writeStream |
+	| writeStream request |
 	writeStream := ByteArray new writeStream.
-	
-	
-	[ self 
-		serializeContext: snapshot context 
-		on: writeStream.
-		
+	[ snapshot writeTo: writeStream .
+	request := ZnRequest put: (self urlFor: snapshot).
+	snapshot preparePutRequest: request.
+	request entity: (ZnByteArrayEntity bytes: writeStream contents).
 	self client
-		url: (self urlFor: snapshot);
-		entity: (ZnByteArrayEntity bytes: writeStream contents);
-		put ]
+		request: request;
+		execute
+	]
 		on: Error 
 		do: [ :err | Transcript show: 'error happened: ', err description ]
 ]
@@ -77,6 +67,11 @@ SDHTTPStore >> uri: anUri [
 
 { #category : #accessing }
 SDHTTPStore >> urlFor: snapshot [
+	^ uri / #snaps / snapshot id
+]
+
+{ #category : #accessing }
+SDHTTPStore >> urlForX: snapshot [
 	^ uri / project asString / version asString / (self descriptionString: snapshot) asString
 ]
 

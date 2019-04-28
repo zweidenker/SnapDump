@@ -1,6 +1,6 @@
 Class {
-	#name : #SDumpCall,
-	#superclass : #SnapDumpCall,
+	#name : #SDSnapshotCall,
+	#superclass : #SDCall,
 	#instVars : [
 		'description'
 	],
@@ -8,17 +8,17 @@ Class {
 }
 
 { #category : #accessing }
-SDumpCall class >> pattern [
-	^ #( 'snaps' '*' '*' '*' )
+SDSnapshotCall class >> pattern [
+	^ #( 'snaps' '*' )
 ]
 
 { #category : #accessing }
-SDumpCall >> basename [
+SDSnapshotCall >> basename [
 	^ self storagePath / ($_ join: { self description project . self description version . self description name })
 ]
 
 { #category : #'as yet unclassified' }
-SDumpCall >> buildDescription [
+SDSnapshotCall >> buildDescription [
 	| desc segments |
 	segments := request uri segments allButFirst .
 	desc := NeoJSONObject new
@@ -32,21 +32,21 @@ SDumpCall >> buildDescription [
 ]
 
 { #category : #public }
-SDumpCall >> delete [
+SDSnapshotCall >> delete [
 	(self basename , #fuel) asFileReference delete.
 	(self basename , #json) asFileReference delete.
 	response := ZnResponse ok: (ZnStringEntity text: 'OK')
 ]
 
 { #category : #accessing }
-SDumpCall >> description [
+SDSnapshotCall >> description [
 	^ description ifNil: [ 
 		description := self buildDescription ].
 
 ]
 
 { #category : #public }
-SDumpCall >> get [
+SDSnapshotCall >> get [
 	| fuelFile |
 	fuelFile := (self basename , #fuel) asFileReference .
 	response := ZnResponse ok: ((ZnStreamingEntity 
@@ -55,8 +55,13 @@ SDumpCall >> get [
 ]
 
 { #category : #accessing }
-SDumpCall >> head [
-	response := (self basename , #json) exists 
+SDSnapshotCall >> head [
+	| snapshot |
+	snapshot := self store hasSnapshotWithId: request uri pathSegments second.
+		"project: request uri pathSegments second
+		version: request uri pathSegments third
+		signature: request uri pathSegments fourth".
+	response := snapshot notNil
 		ifTrue: [ 
 			ZnResponse ok: (ZnStringEntity text: 'OK') ]
 		ifFalse: [ 
@@ -64,11 +69,19 @@ SDumpCall >> head [
 ]
 
 { #category : #public }
-SDumpCall >> put [
-	(self basename , #fuel) asFileReference writeStream binary
+SDSnapshotCall >> put [
+| snapshot |
+	snapshot := SDFileSnapshot new 
+		id: request uri pathSegments second;
+		className: (request headers at: 'SnapDump-className');
+		selector: (request headers at: 'SnapDump-selector');
+		exceptionClass: (request headers at: 'SnapDump-exceptionClass');
+		bytes: request contents.
+	self store store: snapshot.
+	"(self basename , #fuel) asFileReference writeStream binary
 		nextPutAll: request contents;
 		close.
 	(NeoJSONWriter on: (self basename , #json) asFileReference writeStream) 
-		nextPut: self description.
+		nextPut: self description."
 	response := ZnResponse ok: (ZnStringEntity text: 'OK')
 ]

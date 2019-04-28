@@ -1,63 +1,62 @@
 Class {
 	#name : #SnapDump,
 	#superclass : #Object,
-	#classInstVars : [
+	#instVars : [
 		'store'
+	],
+	#classInstVars : [
+		'current'
 	],
 	#category : #'SnapDump-Client'
 }
-
-{ #category : #'as yet unclassified' }
-SnapDump class >> applyConfig: aConfig [
-	store := (SDStore withName: aConfig store) new.
-	store applyConfig: aConfig
-]
 
 { #category : #'as yet unclassified' }
 SnapDump class >> configuration [
 	<configurationStep>
 	^ {  
 		#group -> #SnapDump.
-		#action -> [ :config | SnapDump applyConfig: config ] }
+		#action -> [ :config | SnapDump current applyConfig: config ] }
+]
+
+{ #category : #accessing }
+SnapDump class >> current [ 
+	^ current ifNil: [ 
+		current := self new ]
 ]
 
 { #category : #'as yet unclassified' }
 SnapDump class >> hackUIManager [
 	UIManager compile: 'logError: anError
-		ExceptionReporter handleException: anError.
+		SnapDump current handleException: anError.
 		super logError: anError'
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #public }
 SnapDump class >> handleException: exception [
-
-	store ifNotNil: [
-		store storeSnapshot: exception asSnapshot ]
+	^ self current handleException: exception 
 ]
 
 { #category : #'as yet unclassified' }
-SnapDump class >> handleLogEvent: event [
-	^ self handleException: event exception
+SnapDump >> applyConfig: aConfig [
+	store := (SDStore withName: aConfig store) new.
+	store applyConfig: aConfig
 ]
 
 { #category : #'as yet unclassified' }
-SnapDump class >> handleZnLogEvent: event [
-	^ self handleException: event exception
-]
-
-{ #category : #'as yet unclassified' }
-SnapDump class >> registerOnZnLog [
-	^ ZnLogEvent announcer
-		when: ZnServerErrorEvent do: [ :event |
-			self handleZnLogEvent: event ]
+SnapDump >> handleException: exception [
+	| snapshot |
+	snapshot := exception asSnapshot.
+	self store ifNotNil: [
+		self store storeSnapshot: snapshot ].
+	^ snapshot
 ]
 
 { #category : #accessing }
-SnapDump class >> store [
+SnapDump >> store [
 	^ store
 ]
 
 { #category : #accessing }
-SnapDump class >> store: anObject [
-	store := anObject
+SnapDump >> store: anObject [
+	store := anObject 
 ]

@@ -1,12 +1,12 @@
 Class {
 	#name : #SDSnapProjectListCall,
-	#superclass : #SnapDumpCall,
+	#superclass : #SDCall,
 	#category : #'SnapDump-Server-REST'
 }
 
 { #category : #accessing }
 SDSnapProjectListCall class >> pattern [
-	^ #( 'snaps' '*' )
+	^ #( 'projects' '*' )
 ]
 
 { #category : #public }
