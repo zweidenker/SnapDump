@@ -5,7 +5,7 @@ Class {
 		'port',
 		'server'
 	],
-	#category : #'SnapDump-Tests'
+	#category : #'SnapDump-Server-Tests'
 }
 
 { #category : #accessing }

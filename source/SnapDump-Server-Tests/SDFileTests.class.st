@@ -1,7 +1,7 @@
 Class {
 	#name : #SDFileTests,
 	#superclass : #SDTests,
-	#category : #'SnapDump-Tests'
+	#category : #'SnapDump-Server-Tests'
 }
 
 { #category : #running }

@@ -23,7 +23,7 @@ BaselineOfSnapDump >> baseline: spec [
 					repository: 'github://zweidenker/zinc/repository'].
 		spec 
 			group: 'default' with: #( server client ui tests);
-			group: 'server' with: #( #'SnapDump-Rest' );
+			group: 'server' with: #( #'SnapDump-Server' );
 			group: 'client' with: #( #'SnapDump-Client' );
 			group: 'ui' with: #( #'SnapDump-UI' );
 			group: 'core' with: #(#'SnapDump-Core' );

@@ -5,7 +5,7 @@ Class {
 		'rootPath',
 		'snapDump'
 	],
-	#category : #'SnapDump-Tests'
+	#category : #'SnapDump-Server-Tests'
 }
 
 { #category : #running }
