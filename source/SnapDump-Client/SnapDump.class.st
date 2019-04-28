@@ -2,7 +2,9 @@ Class {
 	#name : #SnapDump,
 	#superclass : #Object,
 	#instVars : [
-		'store'
+		'store',
+		'project',
+		'version'
 	],
 	#classInstVars : [
 		'current'
@@ -43,12 +45,30 @@ SnapDump >> applyConfig: aConfig [
 ]
 
 { #category : #'as yet unclassified' }
+SnapDump >> convertToSnapshot: exception [
+	^ exception asSnapshot 
+		project: project;
+		version: version;
+		yourself
+]
+
+{ #category : #'as yet unclassified' }
 SnapDump >> handleException: exception [
 	| snapshot |
-	snapshot := exception asSnapshot.
+	snapshot := self convertToSnapshot: exception.
 	self store ifNotNil: [
 		self store storeSnapshot: snapshot ].
 	^ snapshot
+]
+
+{ #category : #accessing }
+SnapDump >> project [
+	^ project
+]
+
+{ #category : #accessing }
+SnapDump >> project: anObject [
+	project := anObject
 ]
 
 { #category : #accessing }
@@ -59,4 +79,14 @@ SnapDump >> store [
 { #category : #accessing }
 SnapDump >> store: anObject [
 	store := anObject 
+]
+
+{ #category : #accessing }
+SnapDump >> version [
+	^ version
+]
+
+{ #category : #accessing }
+SnapDump >> version: anObject [
+	version := anObject
 ]

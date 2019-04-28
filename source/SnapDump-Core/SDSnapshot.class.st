@@ -2,6 +2,8 @@ Class {
 	#name : #SDSnapshot,
 	#superclass : #Object,
 	#instVars : [
+		'project',
+		'version',
 		'className',
 		'selector',
 		'exceptionClass',
@@ -57,8 +59,20 @@ SDSnapshot >> preparePutRequest: request [
 	request headers
 		at: 'SnapDump-className' put: className;
 		at: 'SnapDump-selector' put: selector;
-		at: 'SnapDump-exceptionClass' put: exceptionClass
+		at: 'SnapDump-exceptionClass' put: exceptionClass;
+		at: 'SnapDump-project' put: project;
+		at: 'SnapDump-version' put: version
 
+]
+
+{ #category : #accessing }
+SDSnapshot >> project [
+	^ project
+]
+
+{ #category : #accessing }
+SDSnapshot >> project: anObject [
+	project := anObject
 ]
 
 { #category : #accessing }
@@ -71,11 +85,23 @@ SDSnapshot >> selector: aString [
 	selector := aString
 ]
 
+{ #category : #accessing }
+SDSnapshot >> version [
+	^ version
+]
+
+{ #category : #accessing }
+SDSnapshot >> version: anObject [
+	version := anObject
+]
+
 { #category : #writing }
 SDSnapshot >> writeMetaOn: stream [
 	(NeoJSONWriter on: stream) 
 		prettyPrint: true;
 		nextPut: ({ 
+			#project -> project .
+			#version -> version.
 			#className -> className .
 			#selector -> selector.
 			#exceptionClass -> exceptionClass } asDictionary)

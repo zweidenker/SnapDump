@@ -20,7 +20,20 @@ SDHTTPTests >> apiHandler [
 
 { #category : #accessing }
 SDHTTPTests >> apiUri [
-	^ 'http://', self selfIP, ':', self randomPort asString, '/api' 
+	^ ('http://', self selfIP, ':', self randomPort asString, '/api') asZnUrl 
+]
+
+{ #category : #'as yet unclassified' }
+SDHTTPTests >> dummyContext [
+	| context |
+	context := (Context newForMethod: FLPair >> #method1).
+	context
+		initializeWith: 23 
+		stackPtr: 1 
+		method: FLPair >> #method1 
+		receiver:  (FLPair new right: 4; left: 2) 
+		sender: FLPair >> #method1.
+	^ context
 ]
 
 { #category : #accessing }
@@ -44,6 +57,15 @@ SDHTTPTests >> setUp [
 	"SnapDump current stub store willReturn: store."
 ]
 
+{ #category : #tests }
+SDHTTPTests >> snapshotMock [
+	| mock |
+	mock := Mock new. 
+	mock stub asSnapshot willReturn: self dummyContext asSnapshot.
+	^ mock
+
+]
+
 { #category : #running }
 SDHTTPTests >> store [ 
 	^ SDHTTPStore new uri: self apiUri
@@ -53,6 +75,31 @@ SDHTTPTests >> store [
 SDHTTPTests >> tearDown [
 	super tearDown.
 	server stop.
+]
+
+{ #category : #tests }
+SDHTTPTests >> testProjectList [
+	| response list |
+	snapDump handleException: self snapshotMock.
+	response := ZnClient new
+		url: self apiUri / #projects;
+		get;
+		response.
+	self assert: response isSuccess equals: true.
+	list := NeoJSONReader fromString: response contents.
+	self assert: list notEmpty
+]
+
+{ #category : #tests }
+SDHTTPTests >> testProjectListEmpty [
+	| response list |
+	response := ZnClient new
+		url: self apiUri / #projects;
+		get;
+		response.
+	self assert: response isSuccess equals: true.
+	list := NeoJSONReader fromString: response contents.
+	self assert: list isEmpty
 ]
 
 { #category : #tests }

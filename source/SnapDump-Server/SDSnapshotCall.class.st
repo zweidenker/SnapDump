@@ -72,6 +72,8 @@ SDSnapshotCall >> put [
 | snapshot |
 	snapshot := SDFileSnapshot new 
 		id: request uri pathSegments second;
+		project: (request headers at: 'SnapDump-project');
+		version: (request headers at: 'SnapDump-version');
 		className: (request headers at: 'SnapDump-className');
 		selector: (request headers at: 'SnapDump-selector');
 		exceptionClass: (request headers at: 'SnapDump-exceptionClass');

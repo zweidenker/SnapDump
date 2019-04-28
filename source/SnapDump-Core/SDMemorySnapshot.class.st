@@ -42,13 +42,10 @@ SDMemorySnapshot >> encodeDebugInformationOn: aSerializer [
 
 { #category : #accessing }
 SDMemorySnapshot >> exception: exception [
-	| method |
-	method := exception signalerContext sender method.
-	className := method classBinding key asString.
-	selector :=  (method selector asString copyWithout: $:) .
-	exceptionClass := (exception class name).
-	context := exception signalerContext.
-	id := (SHA256 hashMessage: self idString) hex
+	self 
+		setContext: exception signalerContext 
+		exceptionClassName: exception class name
+
 ]
 
 { #category : #'as yet unclassified' }
@@ -63,6 +60,18 @@ SDMemorySnapshot >> serializeContext: aContext on: stream [
 	serializer
 		serialize: aContext
 		on: stream
+]
+
+{ #category : #accessing }
+SDMemorySnapshot >> setContext: aContext exceptionClassName: exceptionClassName [
+	| method |
+	context := aContext.
+	method := context sender method.
+	className := method classBinding key asString.
+	selector :=  (method selector asString copyWithout: $:) .
+	exceptionClass := exceptionClassName.
+	id := (SHA256 hashMessage: self idString) hex
+
 ]
 
 { #category : #writing }

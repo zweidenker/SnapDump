@@ -29,6 +29,11 @@ SDFilesystemStore >> hasSnapshotWithId: aString [
 	^ filePath exists
 ]
 
+{ #category : #'as yet unclassified' }
+SDFilesystemStore >> jsonFiles [
+	^ path childrenMatching: '*.json'
+]
+
 { #category : #accessing }
 SDFilesystemStore >> path: anObject [
 	path := anObject asFileReference.
@@ -50,6 +55,13 @@ SDFilesystemStore >> projectNamed: aString [
 		^ SDProject new 
 			name: aString ].
 	NotFound signal: 'project not found'
+]
+
+{ #category : #'as yet unclassified' }
+SDFilesystemStore >> projects [
+	^ ((self jsonFiles collect: [ :each | (NeoJSONReader on: each readStream) next ]) 
+		collect: [ :each | each at: 'project' ] as: Set)
+		collect: [ :each | SDProject name: each ]
 ]
 
 { #category : #'as yet unclassified' }
