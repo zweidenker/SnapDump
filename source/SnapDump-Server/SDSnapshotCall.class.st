@@ -57,11 +57,10 @@ SDSnapshotCall >> get [
 { #category : #accessing }
 SDSnapshotCall >> head [
 	| snapshot |
-	snapshot := self store hasSnapshotWithId: request uri pathSegments second.
 		"project: request uri pathSegments second
 		version: request uri pathSegments third
 		signature: request uri pathSegments fourth".
-	response := snapshot notNil
+	response := (self store hasSnapshotWithId: request uri pathSegments second)
 		ifTrue: [ 
 			ZnResponse ok: (ZnStringEntity text: 'OK') ]
 		ifFalse: [ 

@@ -1,22 +1,22 @@
 Class {
-	#name : #SDFileTests2,
+	#name : #SDFileTests,
 	#superclass : #SDTests,
 	#category : #'SnapDump-Tests'
 }
 
 { #category : #running }
-SDFileTests2 >> setUp [ 
+SDFileTests >> setUp [ 
 	super setUp.
 	"SnapDump current stub store willReturn: store."
 ]
 
 { #category : #running }
-SDFileTests2 >> store [ 
-	^ SDFilesystemStore new path: rootPath
+SDFileTests >> store [ 
+	^ self filesystemStore
 ]
 
 { #category : #tests }
-SDFileTests2 >> testSimpleWrite [
+SDFileTests >> testSimpleWrite [
 	| snapshot |
 	snapshot := self zeroDivide.
 	self assert: rootPath hasFiles.
@@ -25,7 +25,7 @@ SDFileTests2 >> testSimpleWrite [
 ]
 
 { #category : #running }
-SDFileTests2 >> zeroDivide [
+SDFileTests >> zeroDivide [
 	^ [ 1 / 0 ]
 	on: Exception 
 	do: [ :ex | snapDump handleException: ex ].

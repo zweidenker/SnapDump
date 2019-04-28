@@ -9,6 +9,11 @@ Class {
 }
 
 { #category : #running }
+SDTests >> filesystemStore [ 
+	^ SDFilesystemStore new path: rootPath
+]
+
+{ #category : #running }
 SDTests >> setUp [ 
 	rootPath := FileSystem memory / #snaps.
 	snapDump := SnapDump new store: self store. 

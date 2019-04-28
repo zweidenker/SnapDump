@@ -54,7 +54,7 @@ SDHTTPStore >> store: snapshot [
 	request entity: (ZnByteArrayEntity bytes: writeStream contents).
 	self client
 		request: request;
-		execute
+		put
 	]
 		on: Error 
 		do: [ :err | Transcript show: 'error happened: ', err description ]

@@ -10,16 +10,17 @@ Class {
 
 { #category : #accessing }
 SDHTTPTests >> apiHandler [		
-	^ PrefixMappingDelegate new 
+	^ ZnPrefixMappingDelegate new 
 		map: 'api' 
-		to: (ZnRestServerDelegate new
+		to: (SDServerDelegate new
+			store: self filesystemStore;
 			uriSpace: (ZnCallHierarchyRestUriSpace new
 				rootClass: SDCall))
 ]
 
 { #category : #accessing }
 SDHTTPTests >> apiUri [
-	^ 'http://', self selfIP, ':', self randomPort asString, '/api/' 
+	^ 'http://', self selfIP, ':', self randomPort asString, '/api' 
 ]
 
 { #category : #accessing }
