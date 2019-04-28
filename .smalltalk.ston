@@ -1,0 +1,9 @@
+SmalltalkCISpec {
+  #loading : [
+    SCIMetacelloLoadSpec {
+      #baseline : 'SnapDump',
+      #directory : 'source',
+      #platforms : [ #pharo ]
+    }
+  ]
+}
