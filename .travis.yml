@@ -8,5 +8,3 @@ matrix:
   include:
     - smalltalk: Pharo-7.0
       smalltalk_config: .smalltalk.ston
-    - smalltalk: Pharo-6.1
-      smalltalk_config: .smalltalk.ston
