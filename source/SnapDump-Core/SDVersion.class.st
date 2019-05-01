@@ -24,6 +24,16 @@ SDVersion >> project: anObject [
 	project := anObject
 ]
 
+{ #category : #'as yet unclassified' }
+SDVersion >> signatures [
+	^ self store signaturesOfVersion: self
+]
+
+{ #category : #'as yet unclassified' }
+SDVersion >> store [
+	^ project store
+]
+
 { #category : #accessing }
 SDVersion >> string [
 	^ string

@@ -18,6 +18,12 @@ SDSnapshot class >> exception: anException [
 ]
 
 { #category : #accessing }
+SDSnapshot class >> neoJsonMapping: mapper [
+	mapper for: self do: [ :mapping |
+		mapping mapAllInstVars ]
+]
+
+{ #category : #accessing }
 SDSnapshot >> className [
 	^ className
 ]
@@ -85,6 +91,17 @@ SDSnapshot >> selector: aString [
 	selector := aString
 ]
 
+{ #category : #'as yet unclassified' }
+SDSnapshot >> signature [
+	^ String streamContents: [ :stream |
+		stream 
+			<< className 
+			<< '_'
+			<< selector 
+			<< '_'
+			<< exceptionClass  ]
+]
+
 { #category : #accessing }
 SDSnapshot >> version [
 	^ version
@@ -99,10 +116,5 @@ SDSnapshot >> version: anObject [
 SDSnapshot >> writeMetaOn: stream [
 	(NeoJSONWriter on: stream) 
 		prettyPrint: true;
-		nextPut: ({ 
-			#project -> project .
-			#version -> version.
-			#className -> className .
-			#selector -> selector.
-			#exceptionClass -> exceptionClass } asDictionary)
+		nextPut: self 
 ]

@@ -40,6 +40,11 @@ SDProject >> store: anObject [
 ]
 
 { #category : #'as yet unclassified' }
+SDProject >> versionWithString: aString [ 
+	^ self versions detect: [ :each | each string = aString ]
+]
+
+{ #category : #'as yet unclassified' }
 SDProject >> versions [
 	^ store versionsOfProject: self
 ]

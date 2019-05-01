@@ -8,6 +8,11 @@ Class {
 }
 
 { #category : #accessing }
+SDFileSnapshot class >> file: aFileReference [
+	^ (NeoJSONReader on: aFileReference readStream) nextAs: self 
+]
+
+{ #category : #accessing }
 SDFileSnapshot >> bytes [
 	^ bytes
 ]

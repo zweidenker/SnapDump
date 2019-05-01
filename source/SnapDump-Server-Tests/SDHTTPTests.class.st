@@ -114,6 +114,21 @@ SDHTTPTests >> testSetup [
 ]
 
 { #category : #tests }
+SDHTTPTests >> testSnapshotList [
+	| response list |
+	snapDump handleException: self snapshotMock.
+	response := ZnClient new
+		url: self apiUri / #projects / #TestProject / #versions / '0.1' / #snapshots;
+		get;
+		response.
+	self assert: response isSuccess equals: true.
+	list := (NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot .
+	self assert: list size equals: 1.
+	self assert: (list first signature) equals: 'FLPair_method1_SuddenlyAppearedContext'
+	
+]
+
+{ #category : #tests }
 SDHTTPTests >> testVersionList [
 	| response list |
 	snapDump handleException: self snapshotMock.
