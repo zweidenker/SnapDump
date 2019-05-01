@@ -87,7 +87,9 @@ SDHTTPTests >> testProjectList [
 		response.
 	self assert: response isSuccess equals: true.
 	list := NeoJSONReader fromString: response contents.
-	self assert: list notEmpty
+	self assert: list size equals: 1.
+	self assert: (list first at: 'name') equals: 'TestProject'
+	
 ]
 
 { #category : #tests }
@@ -109,6 +111,21 @@ SDHTTPTests >> testSetup [
 	self assert: rootPath hasFiles.
 	self assert: ((rootPath / snapshot id), #fuel) exists.
 
+]
+
+{ #category : #tests }
+SDHTTPTests >> testVersionList [
+	| response list |
+	snapDump handleException: self snapshotMock.
+	response := ZnClient new
+		url: self apiUri / #projects / #TestProject / #versions ;
+		get;
+		response.
+	self assert: response isSuccess equals: true.
+	list := NeoJSONReader fromString: response contents.
+	self assert: list size equals: 1.
+	self assert: (list first at: 'string') equals: '0.1'
+	
 ]
 
 { #category : #tests }

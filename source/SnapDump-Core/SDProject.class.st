@@ -2,7 +2,8 @@ Class {
 	#name : #SDProject,
 	#superclass : #Object,
 	#instVars : [
-		'name'
+		'name',
+		'store'
 	],
 	#category : #'SnapDump-Core'
 }
@@ -26,4 +27,19 @@ SDProject >> name [
 { #category : #accessing }
 SDProject >> name: anObject [
 	name := anObject
+]
+
+{ #category : #accessing }
+SDProject >> store [
+	^ store
+]
+
+{ #category : #accessing }
+SDProject >> store: anObject [
+	store := anObject
+]
+
+{ #category : #'as yet unclassified' }
+SDProject >> versions [
+	^ store versionsOfProject: self
 ]

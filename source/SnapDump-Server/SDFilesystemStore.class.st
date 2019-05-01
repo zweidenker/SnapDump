@@ -58,10 +58,18 @@ SDFilesystemStore >> projectNamed: aString [
 ]
 
 { #category : #'as yet unclassified' }
+SDFilesystemStore >> projectWithName: aString [ 
+	^ self projects detect: [ :each | each name = aString ]
+]
+
+{ #category : #'as yet unclassified' }
 SDFilesystemStore >> projects [
 	^ ((self jsonFiles collect: [ :each | (NeoJSONReader on: each readStream) next ]) 
 		collect: [ :each | each at: 'project' ] as: Set)
-		collect: [ :each | SDProject name: each ]
+		collect: [ :each | 
+			SDProject new 
+				store: self;
+				name: each ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -93,4 +101,15 @@ SDFilesystemStore >> storeDebugContext: aContext description: dict [
 		serializeContext: aContext 
 		on: stream ]
 		ensure: [ stream close ]
+]
+
+{ #category : #'as yet unclassified' }
+SDFilesystemStore >> versionsOfProject: aProject [ 
+	^ (((self jsonFiles collect: [ :each | (NeoJSONReader on: each readStream) next ]) 
+		select: [ :each | (each at: 'project') = aProject name ])
+		collect: [ :each | each at: 'version' ] as: Set)
+		collect: [ :each | 
+			SDVersion new
+				project: aProject;
+				string: each ]
 ]

@@ -1,24 +1,24 @@
 Class {
-	#name : #SDVersionsCall,
+	#name : #SDVersionCall,
 	#superclass : #SDCall,
 	#category : #'SnapDump-Server-REST'
 }
 
 { #category : #accessing }
-SDVersionsCall class >> pattern [
-	^ #( 'snaps' '*' '*' )
+SDVersionCall class >> pattern [
+	^ #( 'projects' '*' 'versions' '*' )
 ]
 
 { #category : #accessing }
-SDVersionsCall >> filterBlock [
+SDVersionCall >> filterBlock [
 	^ [ :each | 
 		each project = request uri segments second  and: [ 
 			each version = request uri segments third ] ]
 ]
 
 { #category : #accessing }
-SDVersionsCall >> get [
-	
+SDVersionCall >> get [
+	self halt.
 	self jsonResponse: (self configurations select: self filterBlock). 
 	
 ]
