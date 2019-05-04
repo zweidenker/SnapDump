@@ -29,6 +29,11 @@ SDSnapshot class >> neoJsonMapping: mapper [
 
 ]
 
+{ #category : #converting }
+SDSnapshot >> asSnapshot [
+	^ self 
+]
+
 { #category : #accessing }
 SDSnapshot >> className [
 	^ className

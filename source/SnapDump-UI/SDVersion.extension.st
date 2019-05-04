@@ -19,5 +19,6 @@ SDVersion >> gtInspectorSubscriptionsIn: composite [
 				table selection do: [ :eachSelection | 
 					eachSelection remove ].
 				table update ] 
-			entitled: 'Delete' translated
+			entitled: 'Delete' translated;
+		send: [ :s | s anyOne ]
 ]

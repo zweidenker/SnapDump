@@ -7,5 +7,6 @@ SnapDump >> gtInspectorSubscriptionsIn: composite [
 		title: [ 'Projects' ];
 		display: [ self projects ];
 		beMultiple;
-		column: 'Project' evaluated: [ :each | each name asString ]
+		column: 'Project' evaluated: [ :each | each name asString ];
+		send: [ :s | s anyOne]
 ]

@@ -13,10 +13,5 @@ SDProject >> gtInspectorSubscriptionsIn: composite [
 				iconName: #glamorousCancel;
 				title: 'Remove Project' translated;
 				shouldShowTitle: true);
-		selectionAct: [ :table | 
-				table selection do: [ :eachSelection | 
-					self subscriptions remove: eachSelection ].
-				table update ] 
-			iconName: #glamorousCancel
-			entitled: 'Reset subscription(s)' translated
+		send: [ :list | list anyOne ]
 ]
