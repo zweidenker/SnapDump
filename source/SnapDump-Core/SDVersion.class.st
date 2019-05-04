@@ -30,6 +30,11 @@ SDVersion >> signatures [
 ]
 
 { #category : #'as yet unclassified' }
+SDVersion >> snapshots [
+	^ self store signaturesOfVersion: self
+]
+
+{ #category : #'as yet unclassified' }
 SDVersion >> store [
 	^ project store
 ]

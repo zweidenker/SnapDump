@@ -71,6 +71,11 @@ SnapDump >> project: anObject [
 	project := anObject
 ]
 
+{ #category : #'as yet unclassified' }
+SnapDump >> projects [
+	^ store projects
+]
+
 { #category : #accessing }
 SnapDump >> store [
 	^ store

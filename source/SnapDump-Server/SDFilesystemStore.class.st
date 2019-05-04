@@ -74,8 +74,15 @@ SDFilesystemStore >> projects [
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> signaturesOfVersion: aVersion [ 
-	^ (self jsonFiles collect: [ :each | SDFileSnapshot file: each ]) 
+	^ (self jsonFiles collect: [ :each | SDFileSnapshot file: each withoutExtension ]) 
 		select: [ :each | (each project = aVersion project name) and: [ each version = aVersion string ] ]
+]
+
+{ #category : #'as yet unclassified' }
+SDFilesystemStore >> snapshotDumpWithId: aString [ 
+	| filePath |
+	filePath := (path / aString) asFileReference.
+	^ SDFileSnapshot file: filePath 
 ]
 
 { #category : #'as yet unclassified' }

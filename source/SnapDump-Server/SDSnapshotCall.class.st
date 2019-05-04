@@ -48,7 +48,7 @@ SDSnapshotCall >> description [
 { #category : #public }
 SDSnapshotCall >> get [
 	| fuelFile |
-	fuelFile := (self basename , #fuel) asFileReference .
+	fuelFile := self store snapshotWithId: request uri pathSegments second.
 	response := ZnResponse ok: ((ZnStreamingEntity 
 		type: ZnMimeType applicationOctetStream length: fuelFile size)
 			stream: fuelFile readStream binary). 

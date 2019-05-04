@@ -2,14 +2,17 @@ Class {
 	#name : #SDFileSnapshot,
 	#superclass : #SDSnapshot,
 	#instVars : [
-		'bytes'
+		'bytes',
+		'baseFile'
 	],
 	#category : #'SnapDump-Core'
 }
 
 { #category : #accessing }
 SDFileSnapshot class >> file: aFileReference [
-	^ (NeoJSONReader on: aFileReference readStream) nextAs: self 
+	^ ((NeoJSONReader on: (aFileReference, #json) readStream) 
+		nextAs: self)
+			file: aFileReference 
 ]
 
 { #category : #accessing }
@@ -20,6 +23,16 @@ SDFileSnapshot >> bytes [
 { #category : #accessing }
 SDFileSnapshot >> bytes: anObject [
 	bytes := anObject
+]
+
+{ #category : #'as yet unclassified' }
+SDFileSnapshot >> contents [
+	^ (baseFile , #fuel) binaryReadStream contents
+]
+
+{ #category : #accessing }
+SDFileSnapshot >> file: aFileReference [ 
+	baseFile := aFileReference 
 ]
 
 { #category : #'as yet unclassified' }

@@ -45,6 +45,42 @@ SDHTTPStore >> project: aString [
 ]
 
 { #category : #'as yet unclassified' }
+SDHTTPStore >> projects [
+	| response |
+	response := ZnClient new
+		url: 'http://localhost:8888/api' asZnUrl / #projects;
+		get;
+		response.
+	^ ((NeoJSONReader on: response contents readStream) nextListAs: SDProject) do: [ :p |
+			p store: self ]
+]
+
+{ #category : #'as yet unclassified' }
+SDHTTPStore >> signaturesOfVersion: aVersion [ 
+	| response |
+	response := ZnClient new
+		url: uri / #projects / aVersion project name / #versions / aVersion string / #snapshots;
+		get;
+		response.
+	^ ((NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot) do: [ :s |
+			s version: aVersion ]
+]
+
+{ #category : #'as yet unclassified' }
+SDHTTPStore >> snapshotDumpWithId: aString [ 
+	^ ZnClient new
+		url: uri / #snapshots / aString / #fuel;
+		get
+]
+
+{ #category : #'as yet unclassified' }
+SDHTTPStore >> snapshotWithId: aString [ 
+	^ ZnClient new
+		url: uri / #snapshots / aString / #fuel;
+		get
+]
+
+{ #category : #'as yet unclassified' }
 SDHTTPStore >> store: snapshot [
 	| writeStream request |
 	writeStream := ByteArray new writeStream.
@@ -84,4 +120,15 @@ SDHTTPStore >> username: aUsername password: aPassword [
 { #category : #accessing }
 SDHTTPStore >> version: aString [ 
 	version := aString
+]
+
+{ #category : #'as yet unclassified' }
+SDHTTPStore >> versionsOfProject: aProject [ 
+	| response |
+	response := ZnClient new
+		url: uri / #projects / aProject name / #versions;
+		get;
+		response.
+	^ ((NeoJSONReader on: response contents readStream) nextListAs: SDVersion) do: [ :v |
+			v project: aProject ]
 ]

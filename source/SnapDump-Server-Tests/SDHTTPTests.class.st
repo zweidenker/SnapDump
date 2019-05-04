@@ -106,10 +106,11 @@ SDHTTPTests >> testProjectListEmpty [
 
 { #category : #tests }
 SDHTTPTests >> testSetup [
-	| snapshot |
-	snapshot := self zeroDivide.
+	| mock |
+	mock := self snapshotMock.
+	snapDump handleException: mock.
 	self assert: rootPath hasFiles.
-	self assert: ((rootPath / snapshot id), #fuel) exists.
+	self assert: ((rootPath / mock asSnapshot id), #fuel) exists.
 
 ]
 

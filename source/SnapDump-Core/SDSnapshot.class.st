@@ -2,6 +2,7 @@ Class {
 	#name : #SDSnapshot,
 	#superclass : #Object,
 	#instVars : [
+		'dateAndTime',
 		'project',
 		'version',
 		'className',
@@ -20,7 +21,12 @@ SDSnapshot class >> exception: anException [
 { #category : #accessing }
 SDSnapshot class >> neoJsonMapping: mapper [
 	mapper for: self do: [ :mapping |
-		mapping mapAllInstVars ]
+		mapping mapInstVars: #(id project version className selector exceptionClass).
+		(mapping mapInstVar: #dateAndTime) valueSchema: DateAndTime ].
+	mapper for: DateAndTime customDo: [ :mapping |
+		mapping decoder: [ :string | DateAndTime fromString: string ].
+		mapping encoder: [ :dateAndTime | dateAndTime printString ] ].
+
 ]
 
 { #category : #accessing }
@@ -31,6 +37,17 @@ SDSnapshot >> className [
 { #category : #accessing }
 SDSnapshot >> className: aString [ 
 	className := aString
+]
+
+{ #category : #view }
+SDSnapshot >> classSelector [
+	^ String streamContents: [ :stream |
+		stream << className << '>>#' << selector ]
+]
+
+{ #category : #accessing }
+SDSnapshot >> dateAndTime [
+	^ dateAndTime
 ]
 
 { #category : #accessing }
@@ -58,6 +75,18 @@ SDSnapshot >> idString [
 	^ String streamContents: [ :stream |
 		stream 
 			<< className << selector << exceptionClass ]
+]
+
+{ #category : #initialization }
+SDSnapshot >> initialize [
+	super initialize.
+	dateAndTime := DateAndTime now
+]
+
+{ #category : #'as yet unclassified' }
+SDSnapshot >> openDebugger [
+	FLMaterializer materializeFromByteArray: (
+		self store snapshotDumpWithId: id )
 ]
 
 { #category : #'as yet unclassified' }
@@ -100,6 +129,11 @@ SDSnapshot >> signature [
 			<< selector 
 			<< '_'
 			<< exceptionClass  ]
+]
+
+{ #category : #accessing }
+SDSnapshot >> store [
+	^ version store
 ]
 
 { #category : #accessing }
