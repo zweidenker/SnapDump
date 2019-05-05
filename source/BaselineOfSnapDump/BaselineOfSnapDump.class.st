@@ -9,7 +9,6 @@ BaselineOfSnapDump >> baseline: spec [
 	<baseline>
 
 	spec for: #'common' do: [
-		spec blessing: #'baseline'.
 		spec package: #'SnapDump-Core'.
 		spec package: #'SnapDump-Core-Tests' with: [ spec requires: #('SnapDump-Core' ) ].
 		spec package: #'SnapDump-BasicClient' with: [ spec requires: #('SnapDump-Core' ) ].
@@ -17,14 +16,9 @@ BaselineOfSnapDump >> baseline: spec [
 		spec package: #'SnapDump-Server' with: [ spec requires: #('SnapDump-Core' 'ZincHTTPComponents' ) ].
 		spec package: #'SnapDump-Server-Tests' with: [ spec requires: #('SnapDump-Server' 'Mocketry' ) ].
 		spec package: #'SnapDump-UI' with: [ spec requires: #('SnapDump-Client' ) ].
-		spec baseline: 'Mocketry' with: [ 
-			spec repository: 'github://dionisiydk/Mocketry:v4.0.x'. ].
-		spec baseline: 'ZincHTTPComponents' with: [ 
-				spec 
-					loads: #('REST');
-					repository: 'github://zweidenker/zinc/repository'].
+
 		spec 
-			group: 'default' with: #( server basic-client client ui tests);
+			group: 'default' with: #( server 'basic-client' client ui tests);
 			group: 'basic-client' with: #( #'SnapDump-BasicClient' );
 			group: 'server' with: #( #'SnapDump-Server' );
 			group: 'client' with: #( #'SnapDump-Client' );
@@ -32,13 +26,13 @@ BaselineOfSnapDump >> baseline: spec [
 			group: 'core' with: #(#'SnapDump-Core' );
 			group: 'tests' with: #('SnapDump-Core-Tests' 'SnapDump-Server-Tests').
 			
-		self mocektry: spec.
+		self mocketry: spec.
 		self zinc: spec ]
 
 ]
 
 { #category : #baselines }
-BaselineOfSnapDump >> mocektry: spec [
+BaselineOfSnapDump >> mocketry: spec [
 	spec baseline: 'Mocketry' with: [ 
 			spec repository: 'github://dionisiydk/Mocketry:v4.0.x'. ]
 ]
