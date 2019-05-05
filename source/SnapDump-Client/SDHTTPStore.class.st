@@ -74,15 +74,16 @@ SDHTTPStore >> snapshotWithId: aString [
 
 { #category : #'as yet unclassified' }
 SDHTTPStore >> store: snapshot [
-	| writeStream request |
+	| writeStream request response |
 	writeStream := ByteArray new writeStream.
 	[ snapshot writeTo: writeStream .
 	request := ZnRequest put: (self urlFor: snapshot).
 	snapshot preparePutRequest: request.
 	request entity: (ZnByteArrayEntity bytes: writeStream contents).
-	self client
+	response := self client
 		request: request;
-		put
+		put;
+		response.
 	]
 		on: Error 
 		do: [ :err | Transcript show: 'error happened: ', err description ]

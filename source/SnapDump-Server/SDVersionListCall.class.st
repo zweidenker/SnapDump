@@ -1,23 +1,31 @@
 Class {
 	#name : #SDVersionListCall,
-	#superclass : #SDCall,
+	#superclass : #SDOpenAPICall,
+	#instVars : [
+		'projectName'
+	],
 	#category : #'SnapDump-Server-REST'
 }
 
 { #category : #accessing }
-SDVersionListCall class >> pattern [
-	^ #( 'projects' '*' 'versions' )
+SDVersionListCall class >> parameterProjectName [
+	<openApiParameter: #( common )>
+	^ OAParameter new
+		name: 'projectName';
+		in: #path;
+		beString;
+		required: true;
+		description: 'Name of the project'
+
 ]
 
 { #category : #accessing }
-SDVersionListCall >> filterBlock [
-	^ [ :each | 
-		each project = request uri segments second  and: [ 
-			each version = request uri segments third ] ]
+SDVersionListCall class >> path [
+	^ '/projects/{projectName}/versions'
 ]
 
 { #category : #accessing }
 SDVersionListCall >> get [
-	self jsonResponse: (self store projectNamed: request uri pathSegments second) versions 
+	self jsonResponse: (self store projectNamed: projectName) versions 
 	
 ]

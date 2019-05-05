@@ -1,12 +1,12 @@
 Class {
 	#name : #SDProjectListCall,
-	#superclass : #SDCall,
+	#superclass : #SDOpenAPICall,
 	#category : #'SnapDump-Server-REST'
 }
 
 { #category : #accessing }
-SDProjectListCall class >> pattern [
-	^ #( 'projects' )
+SDProjectListCall class >> path [
+	^ '/projects'
 ]
 
 { #category : #public }

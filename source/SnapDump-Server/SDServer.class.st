@@ -32,8 +32,8 @@ SDServer >> apiHandler [
 		map: 'api' 
 		to: (SDServerDelegate new
 			store: (SDFilesystemStore new path: path );
-			uriSpace: (ZnCallHierarchyRestUriSpace new
-				rootClass: SDCall)).
+			uriSpace: (OpenAPIUriSpace new
+				rootClass: SDOpenAPICall)).
 
 ]
 

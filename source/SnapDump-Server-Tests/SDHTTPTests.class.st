@@ -14,8 +14,8 @@ SDHTTPTests >> apiHandler [
 		map: 'api' 
 		to: (SDServerDelegate new
 			store: self filesystemStore;
-			uriSpace: (ZnCallHierarchyRestUriSpace new
-				rootClass: SDCall))
+			uriSpace: (OpenAPIUriSpace new
+				rootClass: SDOpenAPICall))
 ]
 
 { #category : #accessing }
@@ -108,7 +108,9 @@ SDHTTPTests >> testProjectListEmpty [
 SDHTTPTests >> testSetup [
 	| mock |
 	mock := self snapshotMock.
-	snapDump handleException: mock.
+	self 
+		shouldnt: [ snapDump handleException: mock ]
+		raise: Error.
 	self assert: rootPath hasFiles.
 	self assert: ((rootPath / mock asSnapshot id), #fuel) exists.
 

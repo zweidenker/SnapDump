@@ -1,48 +1,27 @@
 Class {
 	#name : #SDSnapshotCall,
-	#superclass : #SDCall,
+	#superclass : #SDOpenAPICall,
 	#instVars : [
-		'description'
+		'snapshotId'
 	],
 	#category : #'SnapDump-Server-REST'
 }
 
 { #category : #accessing }
-SDSnapshotCall class >> pattern [
-	^ #( 'snaps' '*' )
+SDSnapshotCall class >> parameterSnapshotId [
+	<openApiParameter: #( common )>
+	^ OAParameter new
+		name: 'snapshotId';
+		in: #path;
+		beInteger;
+		required: true;
+		description: 'Snapshot with unique id'
+
 ]
 
 { #category : #accessing }
-SDSnapshotCall >> basename [
-	^ self storagePath / ($_ join: { self description project . self description version . self description name })
-]
-
-{ #category : #'as yet unclassified' }
-SDSnapshotCall >> buildDescription [
-	| desc segments |
-	segments := request uri segments allButFirst .
-	desc := NeoJSONObject new
-		id: UUID new printString;
-		project: segments first;
-		version: segments second;
-		name: segments third.
-	desc timestamp ifNil: [ desc timestamp: DateAndTime now printString ].
-	^ desc
-
-]
-
-{ #category : #public }
-SDSnapshotCall >> delete [
-	(self basename , #fuel) asFileReference delete.
-	(self basename , #json) asFileReference delete.
-	response := ZnResponse ok: (ZnStringEntity text: 'OK')
-]
-
-{ #category : #accessing }
-SDSnapshotCall >> description [
-	^ description ifNil: [ 
-		description := self buildDescription ].
-
+SDSnapshotCall class >> path [
+	^ '/snaps/{snapshotId}'
 ]
 
 { #category : #public }
@@ -56,10 +35,6 @@ SDSnapshotCall >> get [
 
 { #category : #accessing }
 SDSnapshotCall >> head [
-	| snapshot |
-		"project: request uri pathSegments second
-		version: request uri pathSegments third
-		signature: request uri pathSegments fourth".
 	response := (self store hasSnapshotWithId: request uri pathSegments second)
 		ifTrue: [ 
 			ZnResponse ok: (ZnStringEntity text: 'OK') ]
