@@ -2,13 +2,11 @@ Class {
 	#name : #SDHTTPStore,
 	#superclass : #SDStore,
 	#instVars : [
-		'uri',
 		'username',
-		'password',
-		'project',
-		'version'
+		'uri',
+		'password'
 	],
-	#category : #'SnapDump-Server-Store'
+	#category : #'SnapDump-Client'
 }
 
 { #category : #accessing }
@@ -21,8 +19,7 @@ SDHTTPStore >> applyConfig: aConfig [
 	uri := aConfig uri.
    username := aConfig username.
    password := aConfig password.
-	project := aConfig project.
-	version := aConfig version
+
 ]
 
 { #category : #accessing }
@@ -37,11 +34,6 @@ SDHTTPStore >> hasSnapshotNamed: snapshot [
 		url: (self urlFor: snapshot);
 		head;
 		response) status = 200
-]
-
-{ #category : #accessing }
-SDHTTPStore >> project: aString [ 
-	project := aString
 ]
 
 { #category : #'as yet unclassified' }
@@ -107,19 +99,9 @@ SDHTTPStore >> urlFor: snapshot [
 ]
 
 { #category : #accessing }
-SDHTTPStore >> urlForX: snapshot [
-	^ uri / project asString / version asString / (self descriptionString: snapshot) asString
-]
-
-{ #category : #accessing }
 SDHTTPStore >> username: aUsername password: aPassword [
 	username := aUsername.
 	password := aPassword
-]
-
-{ #category : #accessing }
-SDHTTPStore >> version: aString [ 
-	version := aString
 ]
 
 { #category : #'as yet unclassified' }

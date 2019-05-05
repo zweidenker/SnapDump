@@ -11,10 +11,12 @@ BaselineOfSnapDump >> baseline: spec [
 	spec for: #'common' do: [
 		spec blessing: #'baseline'.
 		spec package: #'SnapDump-Core'.
-		spec package: #'SnapDump-Server-Tests' with: [ spec requires: #('Mocketry' ) ].
+		spec package: #'SnapDump-Core-Tests' with: [ spec requires: #('SnapDump-Core' ) ].
+		spec package: #'SnapDump-BasicClient' with: [ spec requires: #('SnapDump-Core' ) ].
+		spec package: #'SnapDump-Client' with: [ spec requires: #('SnapDump-BasicClient' ) ].
 		spec package: #'SnapDump-Server' with: [ spec requires: #('SnapDump-Core' 'ZincHTTPComponents' ) ].
-		spec package: #'SnapDump-Client'.
-		spec package: #'SnapDump-UI'.
+		spec package: #'SnapDump-Server-Tests' with: [ spec requires: #('SnapDump-Server' 'Mocketry' ) ].
+		spec package: #'SnapDump-UI' with: [ spec requires: #('SnapDump-Client' ) ].
 		spec baseline: 'Mocketry' with: [ 
 			spec repository: 'github://dionisiydk/Mocketry:v4.0.x'. ].
 		spec baseline: 'ZincHTTPComponents' with: [ 
@@ -22,12 +24,29 @@ BaselineOfSnapDump >> baseline: spec [
 					loads: #('REST');
 					repository: 'github://zweidenker/zinc/repository'].
 		spec 
-			group: 'default' with: #( server client ui tests);
+			group: 'default' with: #( server basic-client client ui tests);
+			group: 'basic-client' with: #( #'SnapDump-BasicClient' );
 			group: 'server' with: #( #'SnapDump-Server' );
 			group: 'client' with: #( #'SnapDump-Client' );
 			group: 'ui' with: #( #'SnapDump-UI' );
 			group: 'core' with: #(#'SnapDump-Core' );
-			group: 'tests' with: #('SnapDump-Server-Tests');
-			group: 'all' with: #( #'SnapDump-Core'  #'SnapDump-Rest' #'SnapDump-Client' )].
+			group: 'tests' with: #('SnapDump-Core-Tests' 'SnapDump-Server-Tests').
+			
+		self mocektry: spec.
+		self zinc: spec ]
 
+]
+
+{ #category : #baselines }
+BaselineOfSnapDump >> mocektry: spec [
+	spec baseline: 'Mocketry' with: [ 
+			spec repository: 'github://dionisiydk/Mocketry:v4.0.x'. ]
+]
+
+{ #category : #baselines }
+BaselineOfSnapDump >> zinc: spec [ 
+	spec baseline: 'ZincHTTPComponents' with: [ 
+		spec 
+			loads: #('REST');
+			repository: 'github://zweidenker/zinc/repository']
 ]

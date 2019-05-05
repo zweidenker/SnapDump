@@ -1,11 +1,13 @@
 Extension { #name : #SDSnapshot }
 
 { #category : #'*SnapDump-UI' }
-SDSnapshot >> gtInspectorSubscriptionsIn: composite [
+SDSnapshot >> gtInspectorSnapshotIn: composite [
 	<gtInspectorPresentationOrder: 1>
-	composite fastList
+	composite table
 		title: [ 'Fields' ];
-		display: [ self class instVarNames collect: [ :each | self perform: each ] ];
+		display: [ self class instVarNames  ];
+		column: 'Field' evaluated: [:s | s capitalized ];
+		column: 'Value' evaluated: [:s | self perform: s ];
 		addAction: (GLMGenericAction new
 			action: [ :table | self openDebugger. table update ]; 
 			iconName: #smallOpenIcon;

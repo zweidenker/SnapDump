@@ -41,24 +41,7 @@ SDFilesystemStore >> path: anObject [
 ]
 
 { #category : #'as yet unclassified' }
-SDFilesystemStore >> project: project version: version signature: signature [ 
-	| file |
-	^ ((path / signature) , '.json') asFileReference exists 
-		ifTrue: [ 
-			SDSnapshot fromDescription: (path / signature) , '.json' ]
-		ifFalse: [ nil ]
-]
-
-{ #category : #'as yet unclassified' }
 SDFilesystemStore >> projectNamed: aString [ 
-	(path / aString) exists ifTrue: [ 
-		^ SDProject new 
-			name: aString ].
-	NotFound signal: 'project not found'
-]
-
-{ #category : #'as yet unclassified' }
-SDFilesystemStore >> projectWithName: aString [ 
 	^ self projects detect: [ :each | each name = aString ]
 ]
 
@@ -104,16 +87,6 @@ SDFilesystemStore >> store: snapshot [
 	((path / snapshot id), #json) writeStream in: [ :s |
 		snapshot writeMetaOn: s. 
 		s close ]
-]
-
-{ #category : #'as yet unclassified' }
-SDFilesystemStore >> storeDebugContext: aContext description: dict [
-	| stream |
-	stream := (path / (self filenameFor: dict) ) binaryWriteStream.
-	[ self 
-		serializeContext: aContext 
-		on: stream ]
-		ensure: [ stream close ]
 ]
 
 { #category : #'as yet unclassified' }

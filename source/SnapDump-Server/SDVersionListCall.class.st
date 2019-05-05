@@ -18,6 +18,6 @@ SDVersionListCall >> filterBlock [
 
 { #category : #accessing }
 SDVersionListCall >> get [
-	self jsonResponse: (self store projectWithName: request uri pathSegments second) versions 
+	self jsonResponse: (self store projectNamed: request uri pathSegments second) versions 
 	
 ]

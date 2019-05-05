@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'dict'
 	],
-	#category : #'SnapDump-Server-Store'
+	#category : #'SnapDump-Server-Tests'
 }
 
 { #category : #accessing }

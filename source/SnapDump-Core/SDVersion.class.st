@@ -14,6 +14,11 @@ SDVersion class >> neoJsonMapping: mapper [
 		mapping mapInstVars: #(string) ]
 ]
 
+{ #category : #printing }
+SDVersion >> printOn: aStream [
+	aStream << string
+]
+
 { #category : #accessing }
 SDVersion >> project [
 	^ project

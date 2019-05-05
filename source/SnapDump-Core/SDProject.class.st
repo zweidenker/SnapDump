@@ -29,6 +29,11 @@ SDProject >> name: anObject [
 	name := anObject
 ]
 
+{ #category : #printing }
+SDProject >> printOn: aStream [
+	aStream << name
+]
+
 { #category : #accessing }
 SDProject >> store [
 	^ store

@@ -1,7 +1,7 @@
 Extension { #name : #SDProject }
 
 { #category : #'*SnapDump-UI' }
-SDProject >> gtInspectorSubscriptionsIn: composite [
+SDProject >> gtInspectorVersionsIn: composite [
 	<gtInspectorPresentationOrder: 1>
 	composite table
 		title: [ 'Version' ];

@@ -11,6 +11,6 @@ SDSnapshotListCall class >> pattern [
 
 { #category : #accessing }
 SDSnapshotListCall >> get [
-	self jsonResponse: ((self store projectWithName: request uri pathSegments second) versionWithString: request uri pathSegments fourth) signatures
+	self jsonResponse: ((self store projectNamed: request uri pathSegments second) versionWithString: request uri pathSegments fourth) signatures
 	
 ]
