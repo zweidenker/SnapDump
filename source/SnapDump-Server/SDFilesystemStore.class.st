@@ -84,9 +84,9 @@ SDFilesystemStore >> store: snapshot [
 	stream := file fileSystem  binaryWriteStreamOn: file path.
 	[ snapshot writeTo: stream ]
 		ensure: [ stream close ].
-	((path / snapshot id), #json) writeStream in: [ :s |
+	"((path / snapshot id), #json) writeStream in: [ :s |
 		snapshot writeMetaOn: s. 
-		s close ]
+		s close ]"
 ]
 
 { #category : #'as yet unclassified' }

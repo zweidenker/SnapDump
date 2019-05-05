@@ -13,31 +13,9 @@ SDMemorySnapshot >> context [
 ]
 
 { #category : #private }
-SDMemorySnapshot >> encodeDebugInformationOn: aSerializer [
-	| str |
-	
-	str := String new writeStream. 
-	str print: Date today; space; print: Time now.
-	aSerializer at: #Timestamp putAdditionalObject: str contents. 
-	
-	str := String new writeStream. 
-	str nextPutAll: 'VM: ';
-		nextPutAll: Smalltalk os name asString;
-		nextPutAll: ' - ';	
-		nextPutAll: Smalltalk os subtype asString;
-		nextPutAll: ' - ';
-		nextPutAll: Smalltalk os version asString;
-		nextPutAll: ' - ';
-		nextPutAll: Smalltalk vm version asString.
-	aSerializer at: #VM putAdditionalObject: str contents. 
-		
-	str := String new writeStream. 
-	str nextPutAll: 'Image: ';
-		nextPutAll:  SystemVersion current version asString;
-		nextPutAll: ' [';
-		nextPutAll: Smalltalk lastUpdateString asString;
-		nextPutAll: ']'.
-	aSerializer at: #Image putAdditionalObject: str contents.
+SDMemorySnapshot >> encodeMetaOn: aSerializer [
+	self metaFields do: [ :field |
+		aSerializer at: field putAdditionalObject: (self instVarNamed: field asSymbol) ]
 ]
 
 { #category : #accessing }
@@ -48,12 +26,23 @@ SDMemorySnapshot >> exception: exception [
 
 ]
 
+{ #category : #initialization }
+SDMemorySnapshot >> initialize [ 
+	super initialize.	
+	operatingSystem := Smalltalk os name asString.
+	systemArchitecture := Smalltalk os subtype asString.
+	operatingSystemVersion :=  Smalltalk os version asString.
+	vmVersion := Smalltalk vm version asString.
+	imageVersion := SystemVersion current version asString.
+	imageBuild := Smalltalk lastUpdateString asString
+]
+
 { #category : #'as yet unclassified' }
 SDMemorySnapshot >> serializeContext: aContext on: stream [
 	| serializer |
 	
 	serializer := FLSerializer newDefault.
-	self encodeDebugInformationOn: serializer.
+	self encodeMetaOn: serializer.
 	serializer addPostMaterializationAction: [ :materialization | | session |
 		session := Processor activeProcess newDebugSessionNamed: 'External stack' startedAt: materialization root.
 		Smalltalk tools debugger openOn: session withFullView: true].

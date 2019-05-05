@@ -1,17 +1,31 @@
 Class {
 	#name : #SDProjectCall,
-	#superclass : #SDCall,
+	#superclass : #SDOpenAPICall,
+	#instVars : [
+		'projectName'
+	],
 	#category : #'SnapDump-Server-REST'
 }
 
 { #category : #accessing }
-SDProjectCall class >> pattern [
-	^ #( 'projects' '*' )
+SDProjectCall class >> parameterProjectName [
+	<openApiParameter: #( common )>
+	^ OAParameter new
+		name: 'projectName';
+		in: #path;
+		beString;
+		required: true;
+		description: 'Name of the project'
+
+]
+
+{ #category : #accessing }
+SDProjectCall class >> path [
+	^ '/projects/{projectName}'
 ]
 
 { #category : #public }
 SDProjectCall >> get [
-	self halt.
-	self jsonResponse: self store projects. 
+	self jsonResponse: (self store projectNamed: projectName). 
 	
 ]

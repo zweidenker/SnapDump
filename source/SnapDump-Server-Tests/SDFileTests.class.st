@@ -16,6 +16,17 @@ SDFileTests >> store [
 ]
 
 { #category : #tests }
+SDFileTests >> testSimpleRead [
+	| snapshot op |
+	snapshot := self createSimpleSnapshot.
+	self assert: rootPath hasFiles.
+	snapshot := SDFileSnapshot fuel: ((rootPath / snapshot id), #fuel).
+	self assert: snapshot project equals: 'TestProject'.
+	self assert: snapshot version equals: '0.1'
+
+]
+
+{ #category : #tests }
 SDFileTests >> testSimpleWrite [
 	| snapshot |
 	snapshot := self createSimpleSnapshot.

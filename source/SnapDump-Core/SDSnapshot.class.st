@@ -2,13 +2,19 @@ Class {
 	#name : #SDSnapshot,
 	#superclass : #Object,
 	#instVars : [
-		'dateAndTime',
+		'id',
+		'timestamp',
 		'project',
 		'version',
 		'className',
 		'selector',
 		'exceptionClass',
-		'id'
+		'operatingSystem',
+		'systemArchitecture',
+		'operatingSystemVersion',
+		'vmVersion',
+		'imageVersion',
+		'imageBuild'
 	],
 	#category : #'SnapDump-Core'
 }
@@ -51,11 +57,6 @@ SDSnapshot >> classSelector [
 ]
 
 { #category : #accessing }
-SDSnapshot >> dateAndTime [
-	^ dateAndTime
-]
-
-{ #category : #accessing }
 SDSnapshot >> exceptionClass [
 	^ exceptionClass
 ]
@@ -85,7 +86,12 @@ SDSnapshot >> idString [
 { #category : #initialization }
 SDSnapshot >> initialize [
 	super initialize.
-	dateAndTime := DateAndTime now
+	timestamp := DateAndTime now
+]
+
+{ #category : #'as yet unclassified' }
+SDSnapshot >> metaFields [
+	^ #(id timestamp project version className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild)
 ]
 
 { #category : #'as yet unclassified' }
@@ -139,6 +145,11 @@ SDSnapshot >> signature [
 { #category : #accessing }
 SDSnapshot >> store [
 	^ version store
+]
+
+{ #category : #accessing }
+SDSnapshot >> timestamp [
+	^ timestamp
 ]
 
 { #category : #accessing }

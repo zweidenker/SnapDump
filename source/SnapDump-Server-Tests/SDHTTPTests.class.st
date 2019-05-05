@@ -56,6 +56,20 @@ SDHTTPTests >> tearDown [
 ]
 
 { #category : #tests }
+SDHTTPTests >> testProject [
+	| response project |
+	self createSimpleSnapshot.
+	response := ZnClient new
+		url: self apiUri / #projects / #TestProject;
+		get;
+		response.
+	self assert: response isSuccess equals: true.
+	project := NeoJSONReader fromString: response contents.
+	self assert: (project at: 'name') equals: 'TestProject'
+	
+]
+
+{ #category : #tests }
 SDHTTPTests >> testProjectList [
 	| response list |
 	self createSimpleSnapshot.
@@ -106,6 +120,20 @@ SDHTTPTests >> testSnapshotList [
 	list := (NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot .
 	self assert: list size equals: 1.
 	self assert: (list first signature) equals: 'FLPair_method1_SuddenlyAppearedContext'
+	
+]
+
+{ #category : #tests }
+SDHTTPTests >> testVersion [
+	| response version |
+	self createSimpleSnapshot.
+	response := ZnClient new
+		url: self apiUri / #projects / #TestProject / #versions / #'0.1';
+		get;
+		response.
+	self assert: response isSuccess equals: true.
+	version := NeoJSONReader fromString: response contents.
+	self assert: (version at: 'string') equals: '0.1'
 	
 ]
 
