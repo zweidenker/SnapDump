@@ -18,7 +18,7 @@ SDFileTests >> store [
 { #category : #tests }
 SDFileTests >> testSimpleWrite [
 	| snapshot |
-	snapshot := self zeroDivide.
+	snapshot := self createSimpleSnapshot.
 	self assert: rootPath hasFiles.
 	self assert: ((rootPath / snapshot id), #fuel) exists.
 

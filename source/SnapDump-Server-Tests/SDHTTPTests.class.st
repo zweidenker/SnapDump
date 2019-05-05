@@ -23,19 +23,6 @@ SDHTTPTests >> apiUri [
 	^ ('http://', self selfIP, ':', self randomPort asString, '/api') asZnUrl 
 ]
 
-{ #category : #'as yet unclassified' }
-SDHTTPTests >> dummyContext [
-	| context |
-	context := (Context newForMethod: FLPair >> #method1).
-	context
-		initializeWith: 23 
-		stackPtr: 1 
-		method: FLPair >> #method1 
-		receiver:  (FLPair new right: 4; left: 2) 
-		sender: FLPair >> #method1.
-	^ context
-]
-
 { #category : #accessing }
 SDHTTPTests >> randomPort [
 	^ port ifNil: [
@@ -57,15 +44,6 @@ SDHTTPTests >> setUp [
 	"SnapDump current stub store willReturn: store."
 ]
 
-{ #category : #tests }
-SDHTTPTests >> snapshotMock [
-	| mock |
-	mock := Mock new. 
-	mock stub asSnapshot willReturn: self dummyContext asSnapshot.
-	^ mock
-
-]
-
 { #category : #running }
 SDHTTPTests >> store [ 
 	^ SDHTTPStore new uri: self apiUri
@@ -80,7 +58,7 @@ SDHTTPTests >> tearDown [
 { #category : #tests }
 SDHTTPTests >> testProjectList [
 	| response list |
-	snapDump handleException: self snapshotMock.
+	self createSimpleSnapshot.
 	response := ZnClient new
 		url: self apiUri / #projects;
 		get;
@@ -119,7 +97,7 @@ SDHTTPTests >> testSetup [
 { #category : #tests }
 SDHTTPTests >> testSnapshotList [
 	| response list |
-	snapDump handleException: self snapshotMock.
+	self createSimpleSnapshot.
 	response := ZnClient new
 		url: self apiUri / #projects / #TestProject / #versions / '0.1' / #snapshots;
 		get;
@@ -134,7 +112,7 @@ SDHTTPTests >> testSnapshotList [
 { #category : #tests }
 SDHTTPTests >> testVersionList [
 	| response list |
-	snapDump handleException: self snapshotMock.
+	self createSimpleSnapshot.
 	response := ZnClient new
 		url: self apiUri / #projects / #TestProject / #versions ;
 		get;
