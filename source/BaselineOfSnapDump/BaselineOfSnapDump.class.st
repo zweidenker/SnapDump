@@ -28,7 +28,8 @@ BaselineOfSnapDump >> baseline: spec [
 			
 		self mocketry: spec.
 		self zinc: spec.
-		self cinic: spec ]
+		self cinic: spec.
+		self openApi: spec ]
 
 ]
 
