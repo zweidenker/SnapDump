@@ -26,6 +26,15 @@ SDServer class >> port: aNumber path: aFileReference [
 		yourself
 ]
 
+{ #category : #'as yet unclassified' }
+SDServer class >> startOnPort: aNumber path: aFileReference [
+	^ self instance 
+		port: aNumber;
+		path: aFileReference asFileReference;
+		start;
+		yourself
+]
+
 { #category : #accessing }
 SDServer >> apiHandler [
 	^ ZnPrefixMappingDelegate new 

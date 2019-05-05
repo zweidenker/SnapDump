@@ -40,7 +40,7 @@ SDHTTPStore >> hasSnapshotNamed: snapshot [
 SDHTTPStore >> projects [
 	| response |
 	response := ZnClient new
-		url: 'http://localhost:8888/api' asZnUrl / #projects;
+		url: uri / #projects;
 		get;
 		response.
 	^ ((NeoJSONReader on: response contents readStream) nextListAs: SDProject) do: [ :p |

@@ -17,21 +17,14 @@ SDFilesystemStore >> filenameFor: snapshot [
 	^ snapshot id , '.fuel'
 ]
 
+{ #category : #'as yet unclassified' }
+SDFilesystemStore >> fuelFiles [
+	^ path childrenMatching: '*.fuel'
+]
+
 { #category : #testing }
 SDFilesystemStore >> hasSnapshotNamed: snapshot [
 	^ ( path / (self filenameFor: snapshot) ) exists
-]
-
-{ #category : #'as yet unclassified' }
-SDFilesystemStore >> hasSnapshotWithId: aString [ 
-	| filePath |
-	filePath := (path / aString), #json.
-	^ filePath exists
-]
-
-{ #category : #'as yet unclassified' }
-SDFilesystemStore >> jsonFiles [
-	^ path childrenMatching: '*.json'
 ]
 
 { #category : #accessing }
@@ -47,8 +40,8 @@ SDFilesystemStore >> projectNamed: aString [
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> projects [
-	^ ((self jsonFiles collect: [ :each | (NeoJSONReader on: each readStream) next ]) 
-		collect: [ :each | each at: 'project' ] as: Set)
+	^ ((self fuelFiles collect: [ :each | SDFileSnapshot fuel: each ]) 
+		collect: #project as: Set)
 		collect: [ :each | 
 			SDProject new 
 				store: self;
@@ -57,7 +50,7 @@ SDFilesystemStore >> projects [
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> signaturesOfVersion: aVersion [ 
-	^ (self jsonFiles collect: [ :each | SDFileSnapshot file: each withoutExtension ]) 
+	^ (self fuelFiles collect: [ :each | SDFileSnapshot fuel: each ]) 
 		select: [ :each | (each project = aVersion project name) and: [ each version = aVersion string ] ]
 ]
 
@@ -91,9 +84,9 @@ SDFilesystemStore >> store: snapshot [
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> versionsOfProject: aProject [ 
-	^ (((self jsonFiles collect: [ :each | (NeoJSONReader on: each readStream) next ]) 
-		select: [ :each | (each at: 'project') = aProject name ])
-		collect: [ :each | each at: 'version' ] as: Set)
+	^ (((self fuelFiles collect: [ :each | SDFileSnapshot fuel: each ]) 
+		select: [ :each | each project = aProject name ])
+		collect: #version as: Set)
 		collect: [ :each | 
 			SDVersion new
 				project: aProject;

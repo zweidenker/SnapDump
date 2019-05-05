@@ -2,7 +2,8 @@ Class {
 	#name : #SDFileSnapshot,
 	#superclass : #SDSnapshot,
 	#instVars : [
-		'bytes'
+		'bytes',
+		'baseFile'
 	],
 	#category : #'SnapDump-Core'
 }
@@ -32,12 +33,7 @@ SDFileSnapshot >> bytes: anObject [
 
 { #category : #'as yet unclassified' }
 SDFileSnapshot >> contents [
-	^ (baseFile , #fuel) binaryReadStream contents
-]
-
-{ #category : #accessing }
-SDFileSnapshot >> file: aFileReference [ 
-	baseFile := aFileReference 
+	^ (baseFile , #fuel) binaryReadStream contents 
 ]
 
 { #category : #'as yet unclassified' }

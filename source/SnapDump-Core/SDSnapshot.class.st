@@ -27,8 +27,8 @@ SDSnapshot class >> exception: anException [
 { #category : #accessing }
 SDSnapshot class >> neoJsonMapping: mapper [
 	mapper for: self do: [ :mapping |
-		mapping mapInstVars: #(id project version className selector exceptionClass).
-		(mapping mapInstVar: #dateAndTime) valueSchema: DateAndTime ].
+		mapping mapInstVars: #(id project version className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild).
+		(mapping mapInstVar: #timestamp) valueSchema: DateAndTime ].
 	mapper for: DateAndTime customDo: [ :mapping |
 		mapping decoder: [ :string | DateAndTime fromString: string ].
 		mapping encoder: [ :dateAndTime | dateAndTime printString ] ].

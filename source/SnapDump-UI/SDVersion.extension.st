@@ -7,7 +7,7 @@ SDVersion >> gtInspectorSignaturesIn: composite [
 		title: [ 'Version' ];
 		display: [ self signatures ];
 		beMultiple;
-		column: 'DateAndTime' evaluated: [ :each | each dateAndTime rounded asString ];
+		column: 'DateAndTime' evaluated: [ :each | each timestamp rounded asString ];
 		column: 'Selector' evaluated: [ :each | each classSelector asString ];
 		column: 'Exception' evaluated: [ :each | each exceptionClass asString ];
 		addAction: (GLMGenericAction new
