@@ -33,16 +33,16 @@ SnapDump class >> hackUIManager [
 		super logError: anError'
 ]
 
-{ #category : #public }
-SnapDump class >> handleException: exception [
-	^ self current handleException: exception 
-]
-
 { #category : #'as yet unclassified' }
 SnapDump class >> http: aUri [
 	^ self current 
 		store: (SDHTTPStore new uri: aUri asZnUrl);
 		yourself 
+]
+
+{ #category : #public }
+SnapDump class >> storeException: exception [
+	^ self current storeException: exception 
 ]
 
 { #category : #'as yet unclassified' }
@@ -59,15 +59,6 @@ SnapDump >> convertToSnapshot: exception [
 		yourself
 ]
 
-{ #category : #'as yet unclassified' }
-SnapDump >> handleException: exception [
-	| snapshot |
-	snapshot := self convertToSnapshot: exception.
-	self store ifNotNil: [
-		self store storeSnapshot: snapshot ].
-	^ snapshot
-]
-
 { #category : #accessing }
 SnapDump >> project [
 	^ project
@@ -76,6 +67,11 @@ SnapDump >> project [
 { #category : #accessing }
 SnapDump >> project: anObject [
 	project := anObject
+]
+
+{ #category : #accessing }
+SnapDump >> projectNamed: aString [ 
+	^ self store projectNamed: aString
 ]
 
 { #category : #'as yet unclassified' }
@@ -91,6 +87,20 @@ SnapDump >> store [
 { #category : #accessing }
 SnapDump >> store: anObject [
 	store := anObject 
+]
+
+{ #category : #'as yet unclassified' }
+SnapDump >> storeException: exception [
+
+	^ self storeSnapshot: (self convertToSnapshot: exception)
+
+]
+
+{ #category : #'as yet unclassified' }
+SnapDump >> storeSnapshot: snapshot [
+	self store ifNotNil: [
+		self store storeSnapshot: snapshot ].
+	^ snapshot
 ]
 
 { #category : #accessing }

@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'path'
 	],
-	#category : #'SnapDump-Server-Store'
+	#category : #'SnapDump-Core'
 }
 
 { #category : #accessing }

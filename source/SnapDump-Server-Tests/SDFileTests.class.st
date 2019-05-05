@@ -1,6 +1,6 @@
 Class {
 	#name : #SDFileTests,
-	#superclass : #SDTests,
+	#superclass : #SDServerTests,
 	#category : #'SnapDump-Server-Tests'
 }
 
@@ -39,5 +39,5 @@ SDFileTests >> testSimpleWrite [
 SDFileTests >> zeroDivide [
 	^ [ 1 / 0 ]
 	on: Exception 
-	do: [ :ex | snapDump handleException: ex ].
+	do: [ :ex | snapDump storeException: ex ].
 ]

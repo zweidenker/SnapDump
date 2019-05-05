@@ -5,12 +5,12 @@ Class {
 		'rootPath',
 		'snapDump'
 	],
-	#category : #'SnapDump-Server-Tests'
+	#category : #'SnapDump-Core-Tests'
 }
 
 { #category : #'as yet unclassified' }
 SDTests >> createSimpleSnapshot [
-	^ snapDump handleException: self snapshotMock.
+	^ snapDump storeException: self snapshotMock.
 
 ]
 

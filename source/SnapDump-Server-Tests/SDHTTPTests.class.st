@@ -1,6 +1,6 @@
 Class {
 	#name : #SDHTTPTests,
-	#superclass : #SDTests,
+	#superclass : #SDServerTests,
 	#instVars : [
 		'port',
 		'server'
@@ -101,7 +101,7 @@ SDHTTPTests >> testSetup [
 	| mock |
 	mock := self snapshotMock.
 	self 
-		shouldnt: [ snapDump handleException: mock ]
+		shouldnt: [ snapDump storeException: mock ]
 		raise: Error.
 	self assert: rootPath hasFiles.
 	self assert: ((rootPath / mock asSnapshot id), #fuel) exists.
@@ -156,5 +156,5 @@ SDHTTPTests >> testVersionList [
 SDHTTPTests >> zeroDivide [
 	^ [ 1 / 0 ]
 	on: Exception 
-	do: [ :ex | snapDump handleException: ex ].
+	do: [ :ex | snapDump storeException: ex ].
 ]
