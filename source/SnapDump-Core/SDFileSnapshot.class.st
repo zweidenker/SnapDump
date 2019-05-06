@@ -3,7 +3,8 @@ Class {
 	#superclass : #SDSnapshot,
 	#instVars : [
 		'bytes',
-		'baseFile'
+		'baseFile',
+		'file'
 	],
 	#category : #'SnapDump-Core'
 }
@@ -17,7 +18,8 @@ SDFileSnapshot class >> file: aFileReference [
 
 { #category : #accessing }
 SDFileSnapshot class >> fuel: aFileReference [
-	^ self new 
+	^ self new
+		file: aFileReference; 
 		setFuelHeader: (FLMaterializer new materializeHeaderFrom: aFileReference binaryReadStream)
 ]
 
@@ -32,8 +34,23 @@ SDFileSnapshot >> bytes: anObject [
 ]
 
 { #category : #'as yet unclassified' }
+SDFileSnapshot >> contentStream [
+	^ file binaryReadStream
+]
+
+{ #category : #'as yet unclassified' }
 SDFileSnapshot >> contents [
-	^ (baseFile , #fuel) binaryReadStream contents 
+	^ self contentStream contents 
+]
+
+{ #category : #accessing }
+SDFileSnapshot >> file: aFileReference [ 
+	file := aFileReference 
+]
+
+{ #category : #'as yet unclassified' }
+SDFileSnapshot >> fileSize [
+	^ file size
 ]
 
 { #category : #'as yet unclassified' }

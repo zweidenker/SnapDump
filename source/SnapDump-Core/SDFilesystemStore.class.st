@@ -13,8 +13,8 @@ SDFilesystemStore class >> storeName [
 ]
 
 { #category : #'as yet unclassified' }
-SDFilesystemStore >> filenameFor: snapshot [
-	^ snapshot id , '.fuel'
+SDFilesystemStore >> filenameFor: aString [
+	^ aString, '.fuel'
 ]
 
 { #category : #'as yet unclassified' }
@@ -23,8 +23,8 @@ SDFilesystemStore >> fuelFiles [
 ]
 
 { #category : #testing }
-SDFilesystemStore >> hasSnapshotNamed: snapshot [
-	^ ( path / (self filenameFor: snapshot) ) exists
+SDFilesystemStore >> hasSnapshotNamed: aString [
+	^ ( path / (self filenameFor: aString) ) exists
 ]
 
 { #category : #accessing }
@@ -64,9 +64,9 @@ SDFilesystemStore >> snapshotDumpWithId: aString [
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> snapshotWithId: aString [ 
 	| filePath |
-	filePath := (path / aString), #json.
+	filePath := (path / aString), #fuel.
 	^ filePath exists 
-		ifTrue: [ SDFileSnapshot readFrom: filePath asFileReference readStream ] 
+		ifTrue: [ SDFileSnapshot fuel: filePath asFileReference ] 
 		ifFalse: [ nil ]
 ]
 

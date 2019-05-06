@@ -17,7 +17,7 @@ SDFileTests >> store [
 
 { #category : #tests }
 SDFileTests >> testSimpleRead [
-	| snapshot op |
+	| snapshot |
 	snapshot := self createSimpleSnapshot.
 	self assert: rootPath hasFiles.
 	snapshot := SDFileSnapshot fuel: ((rootPath / snapshot id), #fuel).

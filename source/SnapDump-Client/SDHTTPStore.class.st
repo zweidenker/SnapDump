@@ -61,7 +61,8 @@ SDHTTPStore >> signaturesOfVersion: aVersion [
 { #category : #'as yet unclassified' }
 SDHTTPStore >> snapshotDumpWithId: aString [ 
 	^ ZnClient new
-		url: uri / #snapshots / aString / #fuel;
+		headerAt: 'Accept' put: 'application/X-SnapDump-Fuel';
+		url: uri / #snapshots / aString;
 		get
 ]
 

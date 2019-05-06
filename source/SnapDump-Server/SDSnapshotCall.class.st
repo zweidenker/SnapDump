@@ -13,7 +13,7 @@ SDSnapshotCall class >> parameterSnapshotId [
 	^ OAParameter new
 		name: 'snapshotId';
 		in: #path;
-		beInteger;
+		beString;
 		required: true;
 		description: 'Snapshot with unique id'
 
@@ -21,25 +21,34 @@ SDSnapshotCall class >> parameterSnapshotId [
 
 { #category : #accessing }
 SDSnapshotCall class >> path [
-	^ '/snaps/{snapshotId}'
+	^ '/snapshots/{snapshotId}'
 ]
 
 { #category : #public }
 SDSnapshotCall >> get [
-	| fuelFile |
-	fuelFile := self store snapshotWithId: request uri pathSegments second.
-	response := ZnResponse ok: ((ZnStreamingEntity 
-		type: ZnMimeType applicationOctetStream length: fuelFile size)
-			stream: fuelFile readStream binary). 
+	| fuelFile json |
+	json := true.
+	fuelFile := self store snapshotWithId: snapshotId.
+	request headers 
+		at: 'Accept'
+		ifPresent: [ :header | 
+			(header = 'application/X-SnapDump-Fuel')
+				ifTrue: [ json := false ] ].
+	json 
+		ifTrue: [ 
+			self jsonResponse: fuelFile ]
+		ifFalse: [ | fuel |
+			
+			response := ZnResponse ok: ((ZnStreamingEntity 
+				type: ZnMimeType applicationOctetStream length: fuelFile fileSize)
+				stream: fuelFile contentStream ) ] 
 ]
 
 { #category : #accessing }
 SDSnapshotCall >> head [
-	response := (self store hasSnapshotNamed: request uri pathSegments second)
-		ifTrue: [ 
-			ZnResponse ok: (ZnStringEntity text: 'OK') ]
-		ifFalse: [ 
-			ZnResponse notFound: request uri ]
+	response := (self store hasSnapshotNamed: snapshotId)
+		ifTrue: [ ZnResponse ok: (ZnStringEntity text: 'OK') ]
+		ifFalse: [ ZnResponse notFound: request uri ]
 ]
 
 { #category : #public }
