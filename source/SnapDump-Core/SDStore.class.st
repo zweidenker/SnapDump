@@ -19,6 +19,6 @@ SDStore >> hasSnapshotNamed: aString [
 
 { #category : #'as yet unclassified' }
 SDStore >> storeSnapshot: snapshot [
-	(self hasSnapshotNamed: snapshot)
+	(self hasSnapshotNamed: snapshot id)
 		ifFalse: [ self store: snapshot ]
 ]

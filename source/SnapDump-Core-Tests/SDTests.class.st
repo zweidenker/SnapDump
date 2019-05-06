@@ -17,13 +17,23 @@ SDTests >> createSimpleSnapshot [
 { #category : #'as yet unclassified' }
 SDTests >> dummyContext [
 	| context |
-	context := (Context newForMethod: FLPair >> #method1).
+	context := (Context newForMethod: Object >> #printStringLimitedTo:).
 	context
 		initializeWith: 23 
 		stackPtr: 1 
-		method: FLPair >> #method1 
-		receiver:  (FLPair new right: 4; left: 2) 
-		sender: FLPair >> #method1.
+		method: Object >> #printStringLimitedTo: 
+		receiver:  'TestString' 
+		sender: ((Context newForMethod: Object >> #printString)
+				initializeWith: 23 
+				stackPtr: 1 
+				method: Object >> #printString 
+				receiver:  'TestString' 
+				sender: ((Context newForMethod: Object >> #asString)
+					initializeWith: 23 
+					stackPtr: 1 
+					method: Object >> #asString 
+					receiver:  'TestString' 
+					sender: nil)).
 	^ context
 ]
 

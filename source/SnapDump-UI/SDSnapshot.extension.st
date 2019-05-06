@@ -5,7 +5,7 @@ SDSnapshot >> gtInspectorSnapshotIn: composite [
 	<gtInspectorPresentationOrder: 1>
 	composite table
 		title: [ 'Fields' ];
-		display: [ self class instVarNames  ];
+		display: [ self metaFields  ];
 		column: 'Field' evaluated: [:s | s capitalized ];
 		column: 'Value' evaluated: [:s | self instVarNamed: s ];
 		addAction: (GLMGenericAction new

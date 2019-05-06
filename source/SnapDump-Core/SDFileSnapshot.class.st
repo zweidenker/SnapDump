@@ -17,10 +17,21 @@ SDFileSnapshot class >> file: aFileReference [
 ]
 
 { #category : #accessing }
+SDFileSnapshot class >> fromBytes: aByteArray [
+	^ self new setBytes: aByteArray
+		
+]
+
+{ #category : #accessing }
 SDFileSnapshot class >> fuel: aFileReference [
+	^ (self readFrom: aFileReference binaryReadStream)
+		file: aFileReference
+]
+
+{ #category : #accessing }
+SDFileSnapshot class >> readFrom: aStream [
 	^ self new
-		file: aFileReference; 
-		setFuelHeader: (FLMaterializer new materializeHeaderFrom: aFileReference binaryReadStream)
+		setFuelHeader: (FLMaterializer new materializeHeaderFrom: aStream)
 ]
 
 { #category : #accessing }
@@ -51,6 +62,12 @@ SDFileSnapshot >> file: aFileReference [
 { #category : #'as yet unclassified' }
 SDFileSnapshot >> fileSize [
 	^ file size
+]
+
+{ #category : #initialization }
+SDFileSnapshot >> setBytes: aByteArray [
+	bytes := aByteArray.
+	self setFuelHeader: (FLMaterializer new materializeHeaderFrom: aByteArray readStream)
 ]
 
 { #category : #'as yet unclassified' }

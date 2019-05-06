@@ -54,19 +54,7 @@ SDSnapshotCall >> head [
 { #category : #public }
 SDSnapshotCall >> put [
 | snapshot |
-	snapshot := SDFileSnapshot new 
-		id: request uri pathSegments second;
-		project: (request headers at: 'SnapDump-project');
-		version: (request headers at: 'SnapDump-version');
-		className: (request headers at: 'SnapDump-className');
-		selector: (request headers at: 'SnapDump-selector');
-		exceptionClass: (request headers at: 'SnapDump-exceptionClass');
-		bytes: request contents.
+	snapshot := SDFileSnapshot fromBytes: request contents.
 	self store store: snapshot.
-	"(self basename , #fuel) asFileReference writeStream binary
-		nextPutAll: request contents;
-		close.
-	(NeoJSONWriter on: (self basename , #json) asFileReference writeStream) 
-		nextPut: self description."
 	response := ZnResponse ok: (ZnStringEntity text: 'OK')
 ]

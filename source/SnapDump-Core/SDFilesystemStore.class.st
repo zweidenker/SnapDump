@@ -23,8 +23,8 @@ SDFilesystemStore >> fuelFiles [
 ]
 
 { #category : #testing }
-SDFilesystemStore >> hasSnapshotNamed: aString [
-	^ ( path / (self filenameFor: aString) ) exists
+SDFilesystemStore >> hasSnapshotNamed: snapshotId [
+	^ ( path / (self filenameFor: snapshotId) ) exists
 ]
 
 { #category : #accessing }

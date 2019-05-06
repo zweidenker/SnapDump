@@ -46,6 +46,11 @@ SnapDump class >> storeException: exception [
 ]
 
 { #category : #'as yet unclassified' }
+SnapDump class >> storeSnapshot: aSnapshot [ 
+	^ self current storeSnapshot: aSnapshot 
+]
+
+{ #category : #'as yet unclassified' }
 SnapDump >> applyConfig: aConfig [
 	store := (SDStore withName: aConfig store) new.
 	store applyConfig: aConfig

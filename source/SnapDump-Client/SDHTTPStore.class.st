@@ -29,9 +29,9 @@ SDHTTPStore >> client [
 ]
 
 { #category : #testing }
-SDHTTPStore >> hasSnapshotNamed: snapshot [
+SDHTTPStore >> hasSnapshotNamed: snapshotId [
 	^ (self client
-		url: (self urlFor: snapshot);
+		url: (self urlFor: snapshotId);
 		head;
 		response) status = 200
 ]
@@ -78,8 +78,8 @@ SDHTTPStore >> store: snapshot [
 	| writeStream request response |
 	writeStream := ByteArray new writeStream.
 	[ snapshot writeTo: writeStream .
-	request := ZnRequest put: (self urlFor: snapshot).
-	snapshot preparePutRequest: request.
+	request := ZnRequest put: (self urlFor: snapshot id).
+	"snapshot preparePutRequest: request."
 	request entity: (ZnByteArrayEntity bytes: writeStream contents).
 	response := self client
 		request: request;
@@ -87,7 +87,7 @@ SDHTTPStore >> store: snapshot [
 		response.
 	]
 		on: Error 
-		do: [ :err | Transcript show: 'error happened: ', err description ]
+		do: [ :err | err pass. Transcript show: 'error happened: ', err description ]
 ]
 
 { #category : #accessing }
@@ -96,8 +96,8 @@ SDHTTPStore >> uri: anUri [
 ]
 
 { #category : #accessing }
-SDHTTPStore >> urlFor: snapshot [
-	^ uri / #snaps / snapshot id
+SDHTTPStore >> urlFor: snapshotId [
+	^ uri / #snapshots / snapshotId
 ]
 
 { #category : #accessing }

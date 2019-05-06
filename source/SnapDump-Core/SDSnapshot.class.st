@@ -86,7 +86,9 @@ SDSnapshot >> idString [
 { #category : #initialization }
 SDSnapshot >> initialize [
 	super initialize.
-	timestamp := DateAndTime now
+	timestamp := DateAndTime now.
+	project := #default.
+	version := #noversion
 ]
 
 { #category : #'as yet unclassified' }
