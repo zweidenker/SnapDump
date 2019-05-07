@@ -2,7 +2,7 @@ Class {
 	#name : #SDStore,
 	#superclass : #Object,
 	#instVars : [
-		'nameStrategy'
+		'snapshots'
 	],
 	#category : #'SnapDump-Core'
 }
@@ -17,8 +17,22 @@ SDStore >> hasSnapshotNamed: aString [
 	self subclassResponsibility 
 ]
 
+{ #category : #initialization }
+SDStore >> reset [
+	snapshots := nil
+]
+
+{ #category : #accessing }
+SDStore >> snapshots [
+	^ snapshots ifNil: [
+		snapshots := self buildSnapshots ]
+		
+]
+
 { #category : #'as yet unclassified' }
 SDStore >> storeSnapshot: snapshot [
 	(self hasSnapshotNamed: snapshot id)
-		ifFalse: [ self store: snapshot ]
+		ifFalse: [ 
+			self store: snapshot.
+			self reset ]
 ]

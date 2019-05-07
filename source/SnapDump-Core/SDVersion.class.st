@@ -14,6 +14,21 @@ SDVersion class >> neoJsonMapping: mapper [
 		mapping mapInstVars: #(string) ]
 ]
 
+{ #category : #accessing }
+SDVersion class >> string: aString [
+	^ self new string: aString
+]
+
+{ #category : #comparing }
+SDVersion >> = aVersion [
+	^ string = aVersion string
+]
+
+{ #category : #comparing }
+SDVersion >> hash [
+	^ string hash
+]
+
 { #category : #printing }
 SDVersion >> printOn: aStream [
 	aStream << string
@@ -29,14 +44,19 @@ SDVersion >> project: anObject [
 	project := anObject
 ]
 
+{ #category : #removing }
+SDVersion >> remove [
+	self snapshots do: #remove
+]
+
 { #category : #'as yet unclassified' }
 SDVersion >> signatures [
-	^ self store signaturesOfVersion: self
+	^ self store snapshotsWithVersion: self
 ]
 
 { #category : #'as yet unclassified' }
 SDVersion >> snapshots [
-	^ self store signaturesOfVersion: self
+	^ self store snapshotsWithVersion: self
 ]
 
 { #category : #'as yet unclassified' }

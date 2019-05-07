@@ -2,7 +2,8 @@ Class {
 	#name : #SDFilesystemStore,
 	#superclass : #SDStore,
 	#instVars : [
-		'path'
+		'path',
+		'projects'
 	],
 	#category : #'SnapDump-Core'
 }
@@ -13,8 +14,22 @@ SDFilesystemStore class >> storeName [
 ]
 
 { #category : #'as yet unclassified' }
-SDFilesystemStore >> filenameFor: aString [
-	^ aString, '.fuel'
+SDFilesystemStore >> buildSnapshots [
+	projects := Dictionary new.
+	^ self fuelFiles collect: [ :file | | header projectName project versionString |
+		header := FLMaterializer new materializeHeaderFrom: file binaryReadStream.
+		projectName := header additionalObjectAt: #projectName.
+		project := projects 
+			at: projectName
+			ifAbsentPut: [ (SDProject name: projectName) store: self ].
+		versionString := header additionalObjectAt: #versionString.
+		project 
+			versionAt: versionString 
+			ifAbsentPut: [ SDVersion string: versionString ].
+		
+		SDFileSnapshot new 
+			file: file;
+			setFuelHeader: header ] 
 ]
 
 { #category : #'as yet unclassified' }
@@ -24,7 +39,13 @@ SDFilesystemStore >> fuelFiles [
 
 { #category : #testing }
 SDFilesystemStore >> hasSnapshotNamed: snapshotId [
-	^ ( path / (self filenameFor: snapshotId) ) exists
+	^ ( self snapshotPathFor: snapshotId ) exists
+]
+
+{ #category : #initialization }
+SDFilesystemStore >> initialize [
+	super initialize.
+	projects := Dictionary new
 ]
 
 { #category : #accessing }
@@ -35,30 +56,47 @@ SDFilesystemStore >> path: anObject [
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> projectNamed: aString [ 
-	^ self projects detect: [ :each | each name = aString ]
+	^ projects 
+		at: aString
+		ifAbsentPut: [ (SDProject name: aString) store: self ] 
+]
+
+{ #category : #'as yet unclassified' }
+SDFilesystemStore >> projectNamed: aString ifAbsent: aBlock [
+	^ projects 
+		at: aString
+		ifAbsent: aBlock
 ]
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> projects [
-	^ ((self fuelFiles collect: [ :each | SDFileSnapshot fuel: each ]) 
-		collect: #project as: Set)
-		collect: [ :each | 
-			SDProject new 
-				store: self;
-				name: each ]
+	^ projects ifNil: [ 
+		self snapshots.
+		projects  ]
 ]
 
 { #category : #'as yet unclassified' }
-SDFilesystemStore >> signaturesOfVersion: aVersion [ 
-	^ (self fuelFiles collect: [ :each | SDFileSnapshot fuel: each ]) 
-		select: [ :each | (each project = aVersion project name) and: [ each version = aVersion string ] ]
+SDFilesystemStore >> removeSnapshot: aSnapshot [ 
+	
+	self removeSnapshotWithId: aSnapshot id
 ]
 
 { #category : #'as yet unclassified' }
-SDFilesystemStore >> snapshotDumpWithId: aString [ 
-	| filePath |
-	filePath := (path / aString) asFileReference.
-	^ SDFileSnapshot file: filePath 
+SDFilesystemStore >> removeSnapshotWithId: aString [ 
+	
+	(self snapshotPathFor: aString) delete.
+	
+]
+
+{ #category : #'as yet unclassified' }
+SDFilesystemStore >> snapshotFromFile: aFileReference [
+	^ SDFileSnapshot fromFile: aFileReference store: self 
+
+]
+
+{ #category : #'as yet unclassified' }
+SDFilesystemStore >> snapshotPathFor: aString [ 
+	^ (path / aString) , #fuel
 ]
 
 { #category : #'as yet unclassified' }
@@ -66,8 +104,14 @@ SDFilesystemStore >> snapshotWithId: aString [
 	| filePath |
 	filePath := (path / aString), #fuel.
 	^ filePath exists 
-		ifTrue: [ SDFileSnapshot fuel: filePath asFileReference ] 
+		ifTrue: [ self snapshotFromFile: filePath  ] 
 		ifFalse: [ nil ]
+]
+
+{ #category : #'as yet unclassified' }
+SDFilesystemStore >> snapshotsWithVersion: aVersion [ 
+	^ self snapshots
+		select: [ :each | (each project name = aVersion project name) and: [ each version string = aVersion string ] ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -76,19 +120,12 @@ SDFilesystemStore >> store: snapshot [
 	file := (path / snapshot id) , #fuel.
 	stream := file fileSystem  binaryWriteStreamOn: file path.
 	[ snapshot writeTo: stream ]
-		ensure: [ stream close ].
-	"((path / snapshot id), #json) writeStream in: [ :s |
-		snapshot writeMetaOn: s. 
-		s close ]"
+		ensure: [ stream close ]
 ]
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> versionsOfProject: aProject [ 
-	^ (((self fuelFiles collect: [ :each | SDFileSnapshot fuel: each ]) 
-		select: [ :each | each project = aProject name ])
-		collect: #version as: Set)
-		collect: [ :each | 
-			SDVersion new
-				project: aProject;
-				string: each ]
+	^ (self snapshots
+		select: [ :each | each project name = aProject name ])
+		collect: #version as: Set
 ]

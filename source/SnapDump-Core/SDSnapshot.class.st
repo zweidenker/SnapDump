@@ -4,6 +4,7 @@ Class {
 	#instVars : [
 		'id',
 		'timestamp',
+		'store',
 		'project',
 		'version',
 		'className',
@@ -40,6 +41,11 @@ SDSnapshot >> asSnapshot [
 	^ self 
 ]
 
+{ #category : #'as yet unclassified' }
+SDSnapshot >> basicMetaFields [
+	^ #(id timestamp className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild)
+]
+
 { #category : #accessing }
 SDSnapshot >> className [
 	^ className
@@ -56,6 +62,17 @@ SDSnapshot >> classSelector [
 		stream << className << '>>#' << selector ]
 ]
 
+{ #category : #'as yet unclassified' }
+SDSnapshot >> errorSignature [
+	^ String streamContents: [ :stream |
+		stream 
+			<< className 
+			<< '_'
+			<< selector 
+			<< '_'
+			<< exceptionClass  ]
+]
+
 { #category : #accessing }
 SDSnapshot >> exceptionClass [
 	^ exceptionClass
@@ -64,6 +81,21 @@ SDSnapshot >> exceptionClass [
 { #category : #accessing }
 SDSnapshot >> exceptionClass: aString [ 
 	exceptionClass := aString
+]
+
+{ #category : #'as yet unclassified' }
+SDSnapshot >> fullSignature [
+	^ String streamContents: [ :stream |
+		stream 
+			<< self projectName asString 
+			<< '_'
+			<< self versionString asString 
+			<< '_'
+			<< className 
+			<< '_'
+			<< selector 
+			<< '_'
+			<< exceptionClass  ]
 ]
 
 { #category : #accessing }
@@ -83,17 +115,38 @@ SDSnapshot >> idString [
 			<< className << selector << exceptionClass ]
 ]
 
+{ #category : #accessing }
+SDSnapshot >> imageBuild [
+	^ imageBuild
+]
+
+{ #category : #accessing }
+SDSnapshot >> imageBuild: aString [ 
+	imageBuild := aString
+]
+
+{ #category : #accessing }
+SDSnapshot >> imageVersion [
+	^ imageVersion
+]
+
+{ #category : #accessing }
+SDSnapshot >> imageVersion: aString [ 
+	imageVersion := aString
+]
+
 { #category : #initialization }
 SDSnapshot >> initialize [
 	super initialize.
-	timestamp := DateAndTime now.
-	project := #default.
-	version := #noversion
+	timestamp := DateAndTime now
 ]
 
 { #category : #'as yet unclassified' }
 SDSnapshot >> metaFields [
-	^ #(id timestamp project version className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild)
+	^ self basicMetaFields asOrderedCollection
+		add: #projectName;
+		add: #versionString;
+		yourself
 ]
 
 { #category : #'as yet unclassified' }
@@ -102,25 +155,52 @@ SDSnapshot >> openDebugger [
 		self store snapshotDumpWithId: id )
 ]
 
-{ #category : #'as yet unclassified' }
-SDSnapshot >> preparePutRequest: request [
-	request headers
-		at: 'SnapDump-className' put: className;
-		at: 'SnapDump-selector' put: selector;
-		at: 'SnapDump-exceptionClass' put: exceptionClass;
-		at: 'SnapDump-project' put: project;
-		at: 'SnapDump-version' put: version
+{ #category : #accessing }
+SDSnapshot >> operatingSystem [
+	^ operatingSystem
+]
 
+{ #category : #accessing }
+SDSnapshot >> operatingSystem: aString [ 
+	operatingSystem := aString
+]
+
+{ #category : #accessing }
+SDSnapshot >> operatingSystemVersion [
+	^ operatingSystemVersion
+]
+
+{ #category : #accessing }
+SDSnapshot >> operatingSystemVersion: aString [ 
+	operatingSystemVersion := aString
 ]
 
 { #category : #accessing }
 SDSnapshot >> project [
-	^ project
+	^ project value
 ]
 
 { #category : #accessing }
-SDSnapshot >> project: anObject [
-	project := anObject
+SDSnapshot >> project: aProject [
+	project := aProject
+]
+
+{ #category : #accessing }
+SDSnapshot >> projectName [
+	^ project name
+]
+
+{ #category : #accessing }
+SDSnapshot >> projectName: aProjectName versionString: aVersionString [
+	project := [
+		project := store projectNamed: aProjectName.
+		version := project versionWithString: aVersionString.
+		project ] 
+]
+
+{ #category : #'as yet unclassified' }
+SDSnapshot >> remove [
+	^ self store removeSnapshot: self 
 ]
 
 { #category : #accessing }
@@ -133,20 +213,24 @@ SDSnapshot >> selector: aString [
 	selector := aString
 ]
 
-{ #category : #'as yet unclassified' }
-SDSnapshot >> signature [
-	^ String streamContents: [ :stream |
-		stream 
-			<< className 
-			<< '_'
-			<< selector 
-			<< '_'
-			<< exceptionClass  ]
+{ #category : #accessing }
+SDSnapshot >> store [
+	^ store
 ]
 
 { #category : #accessing }
-SDSnapshot >> store [
-	^ version store
+SDSnapshot >> store: aStore [ 
+	store := aStore
+]
+
+{ #category : #accessing }
+SDSnapshot >> systemArchitecture [
+	^ systemArchitecture
+]
+
+{ #category : #accessing }
+SDSnapshot >> systemArchitecture: aString [ 
+	systemArchitecture := aString
 ]
 
 { #category : #accessing }
@@ -155,13 +239,37 @@ SDSnapshot >> timestamp [
 ]
 
 { #category : #accessing }
+SDSnapshot >> timestamp: aDateAndTime [ 
+	timestamp := aDateAndTime
+]
+
+{ #category : #accessing }
+SDSnapshot >> validate [
+]
+
+{ #category : #accessing }
 SDSnapshot >> version [
 	^ version
 ]
 
 { #category : #accessing }
-SDSnapshot >> version: anObject [
-	version := anObject
+SDSnapshot >> version: aVersion [
+	version := aVersion
+]
+
+{ #category : #accessing }
+SDSnapshot >> versionString [
+	^ version string
+]
+
+{ #category : #accessing }
+SDSnapshot >> vmVersion [
+	^ vmVersion
+]
+
+{ #category : #accessing }
+SDSnapshot >> vmVersion: aString [ 
+	vmVersion := aString
 ]
 
 { #category : #writing }

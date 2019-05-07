@@ -19,6 +19,16 @@ SDProject class >> neoJsonMapping: mapper [
 		mapping mapInstVars: #(name) ]
 ]
 
+{ #category : #comparing }
+SDProject >> = aProject [
+	^ name = aProject name
+]
+
+{ #category : #comparing }
+SDProject >> hash [
+	^ name hash
+]
+
 { #category : #accessing }
 SDProject >> name [
 	^ name
@@ -34,6 +44,11 @@ SDProject >> printOn: aStream [
 	aStream << name
 ]
 
+{ #category : #'as yet unclassified' }
+SDProject >> removeVersion: aVersion [ 
+	self shouldBeImplemented.
+]
+
 { #category : #accessing }
 SDProject >> store [
 	^ store
@@ -46,7 +61,9 @@ SDProject >> store: anObject [
 
 { #category : #'as yet unclassified' }
 SDProject >> versionWithString: aString [ 
-	^ self versions detect: [ :each | each string = aString ]
+	^ self versions 
+		detect: [ :each | each string = aString ]
+		ifNone: [ (SDVersion string: aString) project: self  ]
 ]
 
 { #category : #'as yet unclassified' }

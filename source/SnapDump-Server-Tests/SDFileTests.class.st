@@ -20,9 +20,9 @@ SDFileTests >> testSimpleRead [
 	| snapshot |
 	snapshot := self createSimpleSnapshot.
 	self assert: rootPath hasFiles.
-	snapshot := SDFileSnapshot fuel: ((rootPath / snapshot id), #fuel).
-	self assert: snapshot project equals: 'TestProject'.
-	self assert: snapshot version equals: '0.1'
+	snapshot := SDFileSnapshot fromFile: ((rootPath / snapshot id), #fuel) store: snapDump store.
+	self assert: snapshot project name equals: 'TestProject'.
+	self assert: snapshot version string equals: '0.1'
 
 ]
 

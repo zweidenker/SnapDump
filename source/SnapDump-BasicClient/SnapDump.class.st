@@ -58,9 +58,11 @@ SnapDump >> applyConfig: aConfig [
 
 { #category : #'as yet unclassified' }
 SnapDump >> convertToSnapshot: exception [
+	| p |
+	p := store projectNamed: project.
 	^ exception asSnapshot 
-		project: project;
-		version: version;
+		project: p;
+		version: (p versionWithString: version);
 		yourself
 ]
 
@@ -82,6 +84,11 @@ SnapDump >> projectNamed: aString [
 { #category : #'as yet unclassified' }
 SnapDump >> projects [
 	^ store projects
+]
+
+{ #category : #searching }
+SnapDump >> snapshotWithId: aString [ 
+	^ self store snapshotWithId: aString 
 ]
 
 { #category : #accessing }

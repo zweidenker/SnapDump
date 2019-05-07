@@ -10,6 +10,28 @@ SDCoreTests >> store [
 ]
 
 { #category : #tests }
+SDCoreTests >> testDeleteSnapshot [
+
+	|  snapshot |
+	self createSimpleSnapshot.
+	snapshot := snapDump snapshotWithId: 'ea5c0a44b4a05b991a0e6e8aa7e4c362553d79a62067dd8a622d88ca5dceb30b'.
+	self assert: snapshot className equals: 'Object'.
+	snapshot remove.
+	self assert: snapDump projects isEmpty 
+]
+
+{ #category : #tests }
+SDCoreTests >> testDeleteVersion [
+
+	|  snapshot |
+	self createSimpleSnapshot.
+	snapshot := snapDump snapshotWithId: 'ea5c0a44b4a05b991a0e6e8aa7e4c362553d79a62067dd8a622d88ca5dceb30b'.
+	self assert: snapshot className equals: 'Object'.
+	snapshot version remove.
+	self assert: snapDump projects isEmpty 
+]
+
+{ #category : #tests }
 SDCoreTests >> testNothing [
 	self assert: true
 ]
@@ -18,6 +40,7 @@ SDCoreTests >> testNothing [
 SDCoreTests >> testProject [
 
 	self createSimpleSnapshot.
+	self halt.
 	self 
 		shouldnt: [ snapDump projectNamed: 'TestProject' ]
 		raise: NotFound
@@ -88,4 +111,13 @@ SDCoreTests >> testSetup [
 	self assert: rootPath hasFiles.
 	self assert: ((rootPath / mock asSnapshot id), #fuel) exists.
 
+]
+
+{ #category : #tests }
+SDCoreTests >> testSnapshot [
+
+	|  snapshot |
+	self createSimpleSnapshot.
+	snapshot := snapDump snapshotWithId: 'ea5c0a44b4a05b991a0e6e8aa7e4c362553d79a62067dd8a622d88ca5dceb30b'.
+	self assert: snapshot className equals: 'Object'
 ]

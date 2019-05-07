@@ -41,7 +41,6 @@ SDBasicHTTPStore >> store: snapshot [
 	writeStream := ByteArray new writeStream.
 	[ snapshot writeTo: writeStream .
 	request := ZnRequest put: (self urlFor: snapshot id).
-	snapshot preparePutRequest: request.
 	request entity: (ZnByteArrayEntity bytes: writeStream contents).
 	self client
 		request: request;

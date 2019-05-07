@@ -24,6 +24,12 @@ SDSnapshotCall class >> path [
 	^ '/snapshots/{snapshotId}'
 ]
 
+{ #category : #'submorphs-add/remove' }
+SDSnapshotCall >> delete [
+	self store removeSnapshotWithId: snapshotId.
+	response := ZnResponse ok: (ZnStringEntity text: 'OK') 
+]
+
 { #category : #public }
 SDSnapshotCall >> get [
 	| fuelFile json |
@@ -54,7 +60,8 @@ SDSnapshotCall >> head [
 { #category : #public }
 SDSnapshotCall >> put [
 | snapshot |
-	snapshot := SDFileSnapshot fromBytes: request contents.
-	self store store: snapshot.
+	snapshot := SDFileSnapshot readFrom: request contents readStream store: self store.
+	snapshot validate.
+	snapshot storeRaw: request contents.
 	response := ZnResponse ok: (ZnStringEntity text: 'OK')
 ]

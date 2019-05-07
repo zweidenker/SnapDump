@@ -15,7 +15,7 @@ SDMemorySnapshot >> context [
 { #category : #private }
 SDMemorySnapshot >> encodeMetaOn: aSerializer [
 	self metaFields do: [ :field |
-		aSerializer at: field putAdditionalObject: (self instVarNamed: field asSymbol) ]
+		aSerializer at: field putAdditionalObject: (self perform: field asSymbol) ]
 ]
 
 { #category : #accessing }

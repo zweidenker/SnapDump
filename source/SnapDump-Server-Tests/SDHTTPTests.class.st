@@ -119,7 +119,7 @@ SDHTTPTests >> testSnapshotList [
 	self assert: response isSuccess equals: true.
 	list := (NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot .
 	self assert: list size equals: 1.
-	self assert: (list first signature) equals: 'FLPair_method1_SuddenlyAppearedContext'
+	self assert: (list first errorSignature) equals: 'Object_printString_SuddenlyAppearedContext'
 	
 ]
 

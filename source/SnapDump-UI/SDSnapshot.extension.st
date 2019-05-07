@@ -7,7 +7,7 @@ SDSnapshot >> gtInspectorSnapshotIn: composite [
 		title: [ 'Fields' ];
 		display: [ self metaFields  ];
 		column: 'Field' evaluated: [:s | s capitalized ];
-		column: 'Value' evaluated: [:s | self instVarNamed: s ];
+		column: 'Value' evaluated: [:s | self perform: s ];
 		addAction: (GLMGenericAction new
 			action: [ :table | self openDebugger. table update ]; 
 			iconName: #smallOpenIcon;
