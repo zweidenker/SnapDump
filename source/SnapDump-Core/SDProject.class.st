@@ -60,6 +60,13 @@ SDProject >> store: anObject [
 ]
 
 { #category : #'as yet unclassified' }
+SDProject >> versionAt: aString ifAbsentPut: aBlock [
+	^ self versions
+		at: aString 
+		ifAbsentPut: aBlock
+]
+
+{ #category : #'as yet unclassified' }
 SDProject >> versionWithString: aString [ 
 	^ self versions 
 		detect: [ :each | each string = aString ]

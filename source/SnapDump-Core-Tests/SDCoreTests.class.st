@@ -40,9 +40,8 @@ SDCoreTests >> testNothing [
 SDCoreTests >> testProject [
 
 	self createSimpleSnapshot.
-	self halt.
 	self 
-		shouldnt: [ snapDump projectNamed: 'TestProject' ]
+		shouldnt: [ snapDump projectNamed: 'TestProject' ifAbsent: [ nil ] ]
 		raise: NotFound
 ]
 

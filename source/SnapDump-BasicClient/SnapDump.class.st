@@ -59,7 +59,7 @@ SnapDump >> applyConfig: aConfig [
 { #category : #'as yet unclassified' }
 SnapDump >> convertToSnapshot: exception [
 	| p |
-	p := store projectNamed: project.
+	p := store projectNamed: project ifAbsentPut: [ (SDProject name: project) store: store ].
 	^ exception asSnapshot 
 		project: p;
 		version: (p versionWithString: version);
@@ -79,6 +79,11 @@ SnapDump >> project: anObject [
 { #category : #accessing }
 SnapDump >> projectNamed: aString [ 
 	^ self store projectNamed: aString
+]
+
+{ #category : #accessing }
+SnapDump >> projectNamed: aString ifAbsent: aBlock [
+	^ self store projectNamed: aString ifAbsent: aBlock
 ]
 
 { #category : #'as yet unclassified' }

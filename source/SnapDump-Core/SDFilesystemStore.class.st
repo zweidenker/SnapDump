@@ -3,7 +3,8 @@ Class {
 	#superclass : #SDStore,
 	#instVars : [
 		'path',
-		'projects'
+		'projects',
+		'versions'
 	],
 	#category : #'SnapDump-Core'
 }
@@ -42,12 +43,6 @@ SDFilesystemStore >> hasSnapshotNamed: snapshotId [
 	^ ( self snapshotPathFor: snapshotId ) exists
 ]
 
-{ #category : #initialization }
-SDFilesystemStore >> initialize [
-	super initialize.
-	projects := Dictionary new
-]
-
 { #category : #accessing }
 SDFilesystemStore >> path: anObject [
 	path := anObject asFileReference.
@@ -56,16 +51,21 @@ SDFilesystemStore >> path: anObject [
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> projectNamed: aString [ 
-	^ projects 
-		at: aString
-		ifAbsentPut: [ (SDProject name: aString) store: self ] 
+	^ self projects at: aString 
 ]
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> projectNamed: aString ifAbsent: aBlock [
-	^ projects 
+	^ self projects 
 		at: aString
 		ifAbsent: aBlock
+]
+
+{ #category : #'as yet unclassified' }
+SDFilesystemStore >> projectNamed: aString ifAbsentPut: aBlock [
+	^ self projects 
+		at: aString 
+		ifAbsentPut: aBlock
 ]
 
 { #category : #'as yet unclassified' }
@@ -125,7 +125,5 @@ SDFilesystemStore >> store: snapshot [
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> versionsOfProject: aProject [ 
-	^ (self snapshots
-		select: [ :each | each project name = aProject name ])
-		collect: #version as: Set
+	^ versions at: aProject 
 ]
