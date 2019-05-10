@@ -15,22 +15,35 @@ SDFilesystemStore class >> storeName [
 ]
 
 { #category : #'as yet unclassified' }
+SDFilesystemStore >> buildSnapshotFrom: stream [
+	| header projectName project versionString version |
+	
+	header := FLMaterializer new materializeHeaderFrom: stream.
+	projectName := header additionalObjectAt: #projectName.
+	project := self projects 
+		at: projectName
+		ifAbsentPut: [ (SDProject name: projectName) store: self ].
+	versionString := header additionalObjectAt: #versionString.
+	version := (SDVersion string: versionString) project: project.
+	(versions
+		at: project
+		ifAbsentPut: [ OrderedCollection new ]) add: version.
+		
+	^ SDFileSnapshot new 
+		project: project;
+		version: version;
+		setFuelHeader: header;
+		yourself
+]
+
+{ #category : #'as yet unclassified' }
 SDFilesystemStore >> buildSnapshots [
 	projects := Dictionary new.
-	^ self fuelFiles collect: [ :file | | header projectName project versionString |
-		header := FLMaterializer new materializeHeaderFrom: file binaryReadStream.
-		projectName := header additionalObjectAt: #projectName.
-		project := projects 
-			at: projectName
-			ifAbsentPut: [ (SDProject name: projectName) store: self ].
-		versionString := header additionalObjectAt: #versionString.
-		project 
-			versionAt: versionString 
-			ifAbsentPut: [ SDVersion string: versionString ].
-		
-		SDFileSnapshot new 
+	versions := Dictionary new.
+	^ self fuelFiles collect: [ :file |
+		(self buildSnapshotFrom: file binaryReadStream)
 			file: file;
-			setFuelHeader: header ] 
+			yourself ] 
 ]
 
 { #category : #'as yet unclassified' }
@@ -72,26 +85,29 @@ SDFilesystemStore >> projectNamed: aString ifAbsentPut: aBlock [
 SDFilesystemStore >> projects [
 	^ projects ifNil: [ 
 		self snapshots.
-		projects  ]
+		projects ]
 ]
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> removeSnapshot: aSnapshot [ 
 	
-	self removeSnapshotWithId: aSnapshot id
+	self removeSnapshotWithId: aSnapshot id.
+
 ]
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> removeSnapshotWithId: aString [ 
 	
 	(self snapshotPathFor: aString) delete.
+	self reset
 	
 ]
 
 { #category : #'as yet unclassified' }
-SDFilesystemStore >> snapshotFromFile: aFileReference [
-	^ SDFileSnapshot fromFile: aFileReference store: self 
-
+SDFilesystemStore >> reset [
+	super reset.
+	projects := nil.
+	versions := nil
 ]
 
 { #category : #'as yet unclassified' }
@@ -101,11 +117,12 @@ SDFilesystemStore >> snapshotPathFor: aString [
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> snapshotWithId: aString [ 
-	| filePath |
+	^ self snapshots detect: [ :each | each id = aString ]
+	"| filePath |
 	filePath := (path / aString), #fuel.
 	^ filePath exists 
 		ifTrue: [ self snapshotFromFile: filePath  ] 
-		ifFalse: [ nil ]
+		ifFalse: [ nil ]"
 ]
 
 { #category : #'as yet unclassified' }
@@ -124,6 +141,18 @@ SDFilesystemStore >> store: snapshot [
 ]
 
 { #category : #'as yet unclassified' }
+SDFilesystemStore >> storeRaw: aCollection [ 
+	self shouldBeImplemented.
+]
+
+{ #category : #'as yet unclassified' }
+SDFilesystemStore >> storeRaw: snapshot contents: aByteArray [
+	snapshot file: (self snapshotPathFor: snapshot id).
+	snapshot storeRaw: aByteArray.
+	self reset
+]
+
+{ #category : #'as yet unclassified' }
 SDFilesystemStore >> versionsOfProject: aProject [ 
-	^ versions at: aProject 
+	^ versions at: aProject ifAbsent: [ #() ]
 ]

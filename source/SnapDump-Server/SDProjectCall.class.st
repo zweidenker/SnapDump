@@ -26,6 +26,6 @@ SDProjectCall class >> path [
 
 { #category : #public }
 SDProjectCall >> get [
-	self jsonResponse: (self store projectNamed: projectName). 
+	self jsonResponse: (self store projectNamed: projectName ifAbsent: [ SDProject name: projectName ]). 
 	
 ]

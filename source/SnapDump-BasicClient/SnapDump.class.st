@@ -59,10 +59,10 @@ SnapDump >> applyConfig: aConfig [
 { #category : #'as yet unclassified' }
 SnapDump >> convertToSnapshot: exception [
 	| p |
-	p := store projectNamed: project ifAbsentPut: [ (SDProject name: project) store: store ].
+	p := (SDProject name: project) store: store.
 	^ exception asSnapshot 
 		project: p;
-		version: (p versionWithString: version);
+		version: ((SDVersion string: version) project: p);
 		yourself
 ]
 

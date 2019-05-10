@@ -60,8 +60,8 @@ SDSnapshotCall >> head [
 { #category : #public }
 SDSnapshotCall >> put [
 | snapshot |
-	snapshot := SDFileSnapshot readFrom: request contents readStream store: self store.
+	snapshot := self store buildSnapshotFrom: request contents readStream.
 	snapshot validate.
-	snapshot storeRaw: request contents.
+	self store storeRaw: snapshot contents: request contents.
 	response := ZnResponse ok: (ZnStringEntity text: 'OK')
 ]

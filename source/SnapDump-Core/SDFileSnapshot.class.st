@@ -55,10 +55,17 @@ SDFileSnapshot >> readFrom: aStream [
 
 { #category : #'as yet unclassified' }
 SDFileSnapshot >> setFuelHeader: aFLHeader [ 
-	self 
+"	self 
 		projectName:  (aFLHeader additionalObjectAt: #projectName)
-		versionString: (aFLHeader additionalObjectAt: #versionString).
+		versionString: (aFLHeader additionalObjectAt: #versionString)."
 	self basicMetaFields do: [ :field |
 		self instVarNamed: field put: (aFLHeader additionalObjectAt: field) ].
 
+]
+
+{ #category : #'as yet unclassified' }
+SDFileSnapshot >> storeRaw: aByteArray [
+	file binaryWriteStream 
+		nextPutAll: aByteArray;
+		close
 ]

@@ -19,7 +19,8 @@ SDStore >> hasSnapshotNamed: aString [
 
 { #category : #initialization }
 SDStore >> reset [
-	snapshots := nil
+	snapshots := nil.
+
 ]
 
 { #category : #accessing }

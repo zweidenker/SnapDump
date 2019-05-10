@@ -38,13 +38,35 @@ SDHTTPStore >> hasSnapshotNamed: snapshotId [
 
 { #category : #'as yet unclassified' }
 SDHTTPStore >> projectNamed: aString [
+	^ self projectNamed: aString ifAbsent: [ NotFound signal: 'no project found' ]
+]
+
+{ #category : #'as yet unclassified' }
+SDHTTPStore >> projectNamed: aString ifAbsent: aBlock [
 	| response |
 	response := ZnClient new
 		url: uri / #projects / aString;
 		get;
 		response.
-	^ ((NeoJSONReader on: response contents readStream) nextAs: SDProject)
-			store: self
+	^ response isSuccess 
+		ifTrue: [
+			((NeoJSONReader on: response contents readStream) nextAs: SDProject)
+				store: self ]
+		ifFalse: aBlock
+]
+
+{ #category : #'as yet unclassified' }
+SDHTTPStore >> projectNamed: aString ifAbsentPut: aBlock [
+	| response |
+	response := ZnClient new
+		url: uri / #projects / aString;
+		get;
+		response.
+	^ response isSuccess 
+		ifTrue: [
+			((NeoJSONReader on: response contents readStream) nextAs: SDProject)
+				store: self ]
+		ifFalse: aBlock
 ]
 
 { #category : #'as yet unclassified' }

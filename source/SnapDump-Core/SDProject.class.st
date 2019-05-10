@@ -70,7 +70,14 @@ SDProject >> versionAt: aString ifAbsentPut: aBlock [
 SDProject >> versionWithString: aString [ 
 	^ self versions 
 		detect: [ :each | each string = aString ]
-		ifNone: [ (SDVersion string: aString) project: self  ]
+		
+]
+
+{ #category : #'as yet unclassified' }
+SDProject >> versionWithString: aString ifAbsentPut: aBlock [
+	^ self versions 
+		detect: [ :each | each string = aString ]
+		ifNone: aBlock
 ]
 
 { #category : #'as yet unclassified' }

@@ -177,7 +177,7 @@ SDSnapshot >> operatingSystemVersion: aString [
 
 { #category : #accessing }
 SDSnapshot >> project [
-	^ project value
+	^ project
 ]
 
 { #category : #accessing }
@@ -188,14 +188,6 @@ SDSnapshot >> project: aProject [
 { #category : #accessing }
 SDSnapshot >> projectName [
 	^ project name
-]
-
-{ #category : #accessing }
-SDSnapshot >> projectName: aProjectName versionString: aVersionString [
-	project := [
-		project := store projectNamed: aProjectName.
-		version := project versionWithString: aVersionString.
-		project ] 
 ]
 
 { #category : #'as yet unclassified' }
@@ -215,12 +207,7 @@ SDSnapshot >> selector: aString [
 
 { #category : #accessing }
 SDSnapshot >> store [
-	^ store
-]
-
-{ #category : #accessing }
-SDSnapshot >> store: aStore [ 
-	store := aStore
+	^ project store
 ]
 
 { #category : #accessing }

@@ -11,6 +11,6 @@ SDProjectListCall class >> path [
 
 { #category : #public }
 SDProjectListCall >> get [
-	self jsonResponse: self store projects. 
+	self jsonResponse: self store projects values. 
 	
 ]
