@@ -1,8 +1,8 @@
 version: '3'
 
 services:
-    api:
+    snapdump:
         build: .
-        image: registry/snap-dump-server:${PROJECT_VERSION}
+        image: registry/snap-dump:${PROJECT_VERSION}
         ports:
           - "5555:5555"
