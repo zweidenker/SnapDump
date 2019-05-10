@@ -70,6 +70,7 @@ SDProject >> versionAt: aString ifAbsentPut: aBlock [
 SDProject >> versionWithString: aString [ 
 	^ self versions 
 		detect: [ :each | each string = aString ]
+		ifNone: [ NotFound signal ]
 		
 ]
 

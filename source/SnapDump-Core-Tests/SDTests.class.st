@@ -47,8 +47,8 @@ SDTests >> setUp [
 	rootPath := FileSystem memory / #snaps.
 	snapDump := SnapDump new store: self store. 
 	snapDump 
-		project: 'TestProject';
-		version: '0.1'
+		projectName: 'TestProject'
+		versionString: '0.1'
 ]
 
 { #category : #tests }

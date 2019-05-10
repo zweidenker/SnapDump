@@ -69,3 +69,8 @@ SDFileSnapshot >> storeRaw: aByteArray [
 		nextPutAll: aByteArray;
 		close
 ]
+
+{ #category : #'as yet unclassified' }
+SDFileSnapshot >> storeRaw: aSDFileSnapshot contents: aCollection [ 
+	self shouldBeImplemented.
+]

@@ -2,7 +2,7 @@ Extension { #name : #SDSnapshot }
 
 { #category : #'*SnapDump-UI' }
 SDSnapshot >> gtInspectorSnapshotIn: composite [
-	<gtInspectorPresentationOrder: 1>
+	<gtInspectorPresentationOrder: 100>
 	composite table
 		title: [ 'Fields' ];
 		display: [ self metaFields  ];

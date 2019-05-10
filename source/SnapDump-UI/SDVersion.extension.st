@@ -2,10 +2,10 @@ Extension { #name : #SDVersion }
 
 { #category : #'*SnapDump-UI' }
 SDVersion >> gtInspectorSignaturesIn: composite [
-	<gtInspectorPresentationOrder: 1>
+	<gtInspectorPresentationOrder: 100>
 	composite table
 		title: [ 'Version' ];
-		display: [ self signatures ];
+		display: [ self snapshots ];
 		beMultiple;
 		column: 'DateAndTime' evaluated: [ :each | each timestamp rounded asString ];
 		column: 'Selector' evaluated: [ :each | each classSelector asString ];

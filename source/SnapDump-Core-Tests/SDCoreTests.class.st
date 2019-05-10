@@ -14,7 +14,7 @@ SDCoreTests >> testDeleteSnapshot [
 
 	|  snapshot |
 	self createSimpleSnapshot.
-	snapshot := snapDump snapshotWithId: 'ea5c0a44b4a05b991a0e6e8aa7e4c362553d79a62067dd8a622d88ca5dceb30b'.
+	snapshot := snapDump snapshotWithId: 'e93edf3a19e0214bbbee5ab1d0dae1336188a5ae928ee27611951a0e122e1340'.
 	self assert: snapshot className equals: 'Object'.
 	snapshot remove.
 	self assert: snapDump projects isEmpty 
@@ -25,15 +25,10 @@ SDCoreTests >> testDeleteVersion [
 
 	|  snapshot |
 	self createSimpleSnapshot.
-	snapshot := snapDump snapshotWithId: 'ea5c0a44b4a05b991a0e6e8aa7e4c362553d79a62067dd8a622d88ca5dceb30b'.
+	snapshot := snapDump snapshotWithId: 'e93edf3a19e0214bbbee5ab1d0dae1336188a5ae928ee27611951a0e122e1340'.
 	self assert: snapshot className equals: 'Object'.
 	snapshot version remove.
 	self assert: snapDump projects isEmpty 
-]
-
-{ #category : #tests }
-SDCoreTests >> testNothing [
-	self assert: true
 ]
 
 { #category : #tests }
@@ -117,6 +112,6 @@ SDCoreTests >> testSnapshot [
 
 	|  snapshot |
 	self createSimpleSnapshot.
-	snapshot := snapDump snapshotWithId: 'ea5c0a44b4a05b991a0e6e8aa7e4c362553d79a62067dd8a622d88ca5dceb30b'.
+	snapshot := snapDump snapshotWithId: 'e93edf3a19e0214bbbee5ab1d0dae1336188a5ae928ee27611951a0e122e1340'.
 	self assert: snapshot className equals: 'Object'
 ]

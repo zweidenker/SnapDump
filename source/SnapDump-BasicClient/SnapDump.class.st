@@ -56,24 +56,15 @@ SnapDump >> applyConfig: aConfig [
 	store applyConfig: aConfig
 ]
 
-{ #category : #'as yet unclassified' }
-SnapDump >> convertToSnapshot: exception [
-	| p |
-	p := (SDProject name: project) store: store.
-	^ exception asSnapshot 
-		project: p;
-		version: ((SDVersion string: version) project: p);
-		yourself
-]
-
 { #category : #accessing }
 SnapDump >> project [
 	^ project
 ]
 
-{ #category : #accessing }
-SnapDump >> project: anObject [
-	project := anObject
+{ #category : #'as yet unclassified' }
+SnapDump >> projectName: projectName versionString: versionString [
+	project := (SDProject name: projectName).
+	version := (SDVersion string: versionString) project: project
 ]
 
 { #category : #accessing }
@@ -109,23 +100,20 @@ SnapDump >> store: anObject [
 { #category : #'as yet unclassified' }
 SnapDump >> storeException: exception [
 
-	^ self storeSnapshot: (self convertToSnapshot: exception)
+	^ self storeSnapshot: exception asSnapshot
 
 ]
 
 { #category : #'as yet unclassified' }
 SnapDump >> storeSnapshot: snapshot [
 	self store ifNotNil: [
-		self store storeSnapshot: snapshot ].
-	^ snapshot
+		self store storeSnapshot: (snapshot 
+			project: project;
+			version: version ) ].
+	^ snapshot 
 ]
 
 { #category : #accessing }
 SnapDump >> version [
 	^ version
-]
-
-{ #category : #accessing }
-SnapDump >> version: anObject [
-	version := anObject
 ]

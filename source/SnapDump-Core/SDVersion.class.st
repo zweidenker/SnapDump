@@ -50,11 +50,6 @@ SDVersion >> remove [
 ]
 
 { #category : #'as yet unclassified' }
-SDVersion >> signatures [
-	^ self store snapshotsWithVersion: self
-]
-
-{ #category : #'as yet unclassified' }
 SDVersion >> snapshots [
 	^ self store snapshotsWithVersion: self
 ]

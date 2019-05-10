@@ -28,8 +28,9 @@ SDSnapshot class >> exception: anException [
 { #category : #accessing }
 SDSnapshot class >> neoJsonMapping: mapper [
 	mapper for: self do: [ :mapping |
-		mapping mapInstVars: #(id project version className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild).
-		(mapping mapInstVar: #timestamp) valueSchema: DateAndTime ].
+		mapping mapAccessors: #( projectName versionString ).
+		(mapping mapInstVar: #timestamp) valueSchema: DateAndTime.
+		mapping mapInstVars: #(id className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild) ].
 	mapper for: DateAndTime customDo: [ :mapping |
 		mapping decoder: [ :string | DateAndTime fromString: string ].
 		mapping encoder: [ :dateAndTime | dateAndTime printString ] ].
@@ -100,7 +101,8 @@ SDSnapshot >> fullSignature [
 
 { #category : #accessing }
 SDSnapshot >> id [ 
-	^ id 
+	^ id ifNil: [ 
+		id := self buildId ]
 ]
 
 { #category : #accessing }
@@ -191,6 +193,11 @@ SDSnapshot >> projectName [
 ]
 
 { #category : #'as yet unclassified' }
+SDSnapshot >> projectName: aString [ 
+	"project := SDProject name: aString"
+]
+
+{ #category : #'as yet unclassified' }
 SDSnapshot >> remove [
 	^ self store removeSnapshot: self 
 ]
@@ -241,12 +248,19 @@ SDSnapshot >> version [
 
 { #category : #accessing }
 SDSnapshot >> version: aVersion [
-	version := aVersion
+	version := aVersion.
+	project := aVersion project
 ]
 
 { #category : #accessing }
 SDSnapshot >> versionString [
 	^ version string
+]
+
+{ #category : #'as yet unclassified' }
+SDSnapshot >> versionString: aString [ 
+"	version := (SDVersion string: aString)
+		project: project"
 ]
 
 { #category : #accessing }
@@ -257,11 +271,4 @@ SDSnapshot >> vmVersion [
 { #category : #accessing }
 SDSnapshot >> vmVersion: aString [ 
 	vmVersion := aString
-]
-
-{ #category : #writing }
-SDSnapshot >> writeMetaOn: stream [
-	(NeoJSONWriter on: stream) 
-		prettyPrint: true;
-		nextPut: self 
 ]

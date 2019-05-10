@@ -42,6 +42,6 @@ SDVersionSnapshotListCall >> get [
 	self jsonResponse: (
 	(self store 
 		projectNamed: projectName) 
-			versionWithString: versionString) signatures
+			versionWithString: versionString) snapshots
 	
 ]

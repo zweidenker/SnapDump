@@ -117,12 +117,9 @@ SDFilesystemStore >> snapshotPathFor: aString [
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> snapshotWithId: aString [ 
-	^ self snapshots detect: [ :each | each id = aString ]
-	"| filePath |
-	filePath := (path / aString), #fuel.
-	^ filePath exists 
-		ifTrue: [ self snapshotFromFile: filePath  ] 
-		ifFalse: [ nil ]"
+	^ self snapshots 
+		detect: [ :each | each id = aString ]
+		ifNone: [ NotFound signal ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -138,11 +135,6 @@ SDFilesystemStore >> store: snapshot [
 	stream := file fileSystem  binaryWriteStreamOn: file path.
 	[ snapshot writeTo: stream ]
 		ensure: [ stream close ]
-]
-
-{ #category : #'as yet unclassified' }
-SDFilesystemStore >> storeRaw: aCollection [ 
-	self shouldBeImplemented.
 ]
 
 { #category : #'as yet unclassified' }

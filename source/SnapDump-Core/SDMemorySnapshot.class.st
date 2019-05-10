@@ -8,6 +8,12 @@ Class {
 }
 
 { #category : #accessing }
+SDMemorySnapshot >> buildId [
+	^ (SHA256 hashMessage: self fullSignature) hex
+
+]
+
+{ #category : #accessing }
 SDMemorySnapshot >> context [
 	^ context
 ]
@@ -58,8 +64,7 @@ SDMemorySnapshot >> setContext: aContext exceptionClassName: exceptionClassName 
 	method := context sender method.
 	className := method classBinding key asString.
 	selector :=  (method selector asString copyWithout: $:) .
-	exceptionClass := exceptionClassName.
-	id := (SHA256 hashMessage: self idString) hex
+	exceptionClass := exceptionClassName
 
 ]
 
