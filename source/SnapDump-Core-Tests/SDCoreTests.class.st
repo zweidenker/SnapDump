@@ -4,6 +4,11 @@ Class {
 	#category : #'SnapDump-Core-Tests'
 }
 
+{ #category : #tests }
+SDCoreTests >> dummySnapshotId [
+	^ 'e93edf3a19e0214bbbee5ab1d0dae1336188a5ae928ee27611951a0e122e1340'
+]
+
 { #category : #accessing }
 SDCoreTests >> store [ 
 	^ self filesystemStore
@@ -14,7 +19,7 @@ SDCoreTests >> testDeleteSnapshot [
 
 	|  snapshot |
 	self createSimpleSnapshot.
-	snapshot := snapDump snapshotWithId: 'e93edf3a19e0214bbbee5ab1d0dae1336188a5ae928ee27611951a0e122e1340'.
+	snapshot := snapDump snapshotWithId: self dummySnapshotId.
 	self assert: snapshot className equals: 'Object'.
 	snapshot remove.
 	self assert: snapDump projects isEmpty 
@@ -25,7 +30,7 @@ SDCoreTests >> testDeleteVersion [
 
 	|  snapshot |
 	self createSimpleSnapshot.
-	snapshot := snapDump snapshotWithId: 'e93edf3a19e0214bbbee5ab1d0dae1336188a5ae928ee27611951a0e122e1340'.
+	snapshot := snapDump snapshotWithId: self dummySnapshotId.
 	self assert: snapshot className equals: 'Object'.
 	snapshot version remove.
 	self assert: snapDump projects isEmpty 
@@ -72,7 +77,7 @@ SDCoreTests >> testProjectVersion [
 
 	| version |
 	self createSimpleSnapshot.
-	version := (snapDump projectNamed: 'TestProject') versionWithString: '0.1'.
+	version := (snapDump projectNamed: 'TestProject') versionAt: '0.1'.
 	self assert: version string equals: '0.1'
 ]
 
@@ -81,7 +86,7 @@ SDCoreTests >> testProjectVersionNotFound [
 
 	self createSimpleSnapshot.
 	self 
-		should: [ (snapDump projectNamed: 'TestProject') versionWithString: 'N/A' ]
+		should: [ (snapDump projectNamed: 'TestProject') versionAt: 'N/A' ]
 		raise: NotFound.
 
 ]
@@ -112,6 +117,6 @@ SDCoreTests >> testSnapshot [
 
 	|  snapshot |
 	self createSimpleSnapshot.
-	snapshot := snapDump snapshotWithId: 'e93edf3a19e0214bbbee5ab1d0dae1336188a5ae928ee27611951a0e122e1340'.
+	snapshot := snapDump snapshotWithId: self dummySnapshotId.
 	self assert: snapshot className equals: 'Object'
 ]
