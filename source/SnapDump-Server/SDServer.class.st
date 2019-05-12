@@ -7,7 +7,8 @@ Class {
 		'path'
 	],
 	#classInstVars : [
-		'instance'
+		'instance',
+		'version'
 	],
 	#category : #'SnapDump-Server'
 }
@@ -33,6 +34,21 @@ SDServer class >> startOnPort: aNumber path: aFileReference [
 		path: aFileReference asFileReference;
 		start;
 		yourself
+]
+
+{ #category : #accessing }
+SDServer class >> stop [
+	self instance stop
+]
+
+{ #category : #accessing }
+SDServer class >> version [
+	^ version
+]
+
+{ #category : #accessing }
+SDServer class >> version: aString [
+	version := aString
 ]
 
 { #category : #accessing }
@@ -67,4 +83,9 @@ SDServer >> start [
 	server := (ZnServer on: port)
 		delegate: self serverDelegate;
 		start.
+]
+
+{ #category : #accessing }
+SDServer >> stop [ 
+	server stop
 ]
