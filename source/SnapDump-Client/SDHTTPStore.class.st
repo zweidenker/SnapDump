@@ -36,6 +36,11 @@ SDHTTPStore >> hasSnapshotNamed: snapshotId [
 		response) status = 200
 ]
 
+{ #category : #printing }
+SDHTTPStore >> printOn: aStream [
+	aStream << uri asString
+]
+
 { #category : #'as yet unclassified' }
 SDHTTPStore >> projectNamed: aString [
 	^ self projectNamed: aString ifAbsent: [ NotFound signal: 'no project found' ]
@@ -87,8 +92,8 @@ SDHTTPStore >> removeSnapshot: aSnapshot [
 		url: uri / #snapshots / aSnapshot id;
 		delete;
 		response.
-	response isSuccess ifFalse: [  
-		self error: 'deleting of snapshot failed' ]
+	response isSuccess 
+		ifFalse: [ NotFound signal ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -113,8 +118,11 @@ SDHTTPStore >> snapshotsWithVersion: aVersion [
 		url: uri / #projects / aVersion project name / #versions / aVersion string / #snapshots;
 		get;
 		response.
+	response isSuccess 
+		ifTrue: [  
 	^ ((NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot) do: [ :s |
-			s version: aVersion ]
+			s version: aVersion ] ]
+		ifFalse: [ NotFound signal ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -151,17 +159,15 @@ SDHTTPStore >> username: aUsername password: aPassword [
 ]
 
 { #category : #'as yet unclassified' }
-SDHTTPStore >> versionWithString: aString [ 
-	self shouldBeImplemented.
-]
-
-{ #category : #'as yet unclassified' }
 SDHTTPStore >> versionsOfProject: aProject [ 
 	| response |
 	response := ZnClient new
 		url: uri / #projects / aProject name / #versions;
 		get;
 		response.
-	^ ((NeoJSONReader on: response contents readStream) nextListAs: SDVersion) do: [ :v |
-			v project: aProject ]
+	response isSuccess 
+		ifTrue: [  
+			^ ((NeoJSONReader on: response contents readStream) nextListAs: SDVersion) do: [ :v |
+				v project: aProject ] ]
+		ifFalse: [ NotFound signal ]
 ]

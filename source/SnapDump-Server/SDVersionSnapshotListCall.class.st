@@ -41,7 +41,10 @@ SDVersionSnapshotListCall class >> path [
 SDVersionSnapshotListCall >> get [
 	self jsonResponse: (
 	(self store 
-		projectNamed: projectName) 
-			versionWithString: versionString) snapshots
+		projectNamed: projectName
+		ifAbsent: [ ^ response := ZnResponse notFound: request uri ]
+		) 
+			versionAt: versionString
+			ifAbsent: [ ^ response := ZnResponse notFound: request uri ]) snapshots 
 	
 ]

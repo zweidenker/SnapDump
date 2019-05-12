@@ -27,7 +27,7 @@ SDFilesystemStore >> buildSnapshotFrom: stream [
 	version := (SDVersion string: versionString) project: project.
 	(versions
 		at: project
-		ifAbsentPut: [ OrderedCollection new ]) add: version.
+		ifAbsentPut: [ Set new ]) add: version.
 		
 	^ SDFileSnapshot new 
 		project: project;
@@ -40,7 +40,7 @@ SDFilesystemStore >> buildSnapshotFrom: stream [
 SDFilesystemStore >> buildSnapshots [
 	projects := Dictionary new.
 	versions := Dictionary new.
-	^ self fuelFiles collect: [ :file |
+	snapshots := self fuelFiles collect: [ :file |
 		(self buildSnapshotFrom: file binaryReadStream)
 			file: file;
 			yourself ] 
@@ -59,7 +59,8 @@ SDFilesystemStore >> hasSnapshotNamed: snapshotId [
 { #category : #accessing }
 SDFilesystemStore >> path: anObject [
 	path := anObject asFileReference.
-	path ensureCreateDirectory 
+	path ensureCreateDirectory.
+	self reset
 ]
 
 { #category : #'as yet unclassified' }
@@ -107,7 +108,8 @@ SDFilesystemStore >> removeSnapshotWithId: aString [
 SDFilesystemStore >> reset [
 	super reset.
 	projects := nil.
-	versions := nil
+	versions := nil.
+	self buildSnapshots 
 ]
 
 { #category : #'as yet unclassified' }

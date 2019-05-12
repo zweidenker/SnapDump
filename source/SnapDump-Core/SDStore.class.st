@@ -25,8 +25,7 @@ SDStore >> reset [
 
 { #category : #accessing }
 SDStore >> snapshots [
-	^ snapshots ifNil: [
-		snapshots := self buildSnapshots ]
+	^ snapshots 
 		
 ]
 

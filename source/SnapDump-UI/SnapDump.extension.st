@@ -10,3 +10,10 @@ SnapDump >> gtInspectorSubscriptionsIn: composite [
 		column: 'Project' evaluated: [ :each | each name asString ];
 		send: [ :s | s anyOne]
 ]
+
+{ #category : #'*SnapDump-UI' }
+SnapDump class >> ui [ 
+	^ SnapDumpUI new 
+		snapDump: self current;
+		openWithSpec
+]

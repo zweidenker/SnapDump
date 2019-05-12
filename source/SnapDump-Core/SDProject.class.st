@@ -60,25 +60,24 @@ SDProject >> store: anObject [
 ]
 
 { #category : #'as yet unclassified' }
-SDProject >> versionAt: aString ifAbsentPut: aBlock [
-	^ self versions
-		at: aString 
-		ifAbsentPut: aBlock
-]
-
-{ #category : #'as yet unclassified' }
-SDProject >> versionWithString: aString [ 
-	^ self versions 
-		detect: [ :each | each string = aString ]
-		ifNone: [ NotFound signal ]
+SDProject >> versionAt: aString [ 
+	^ self versionAt: aString ifAbsent: [ NotFound signal ]
 		
 ]
 
 { #category : #'as yet unclassified' }
-SDProject >> versionWithString: aString ifAbsentPut: aBlock [
+SDProject >> versionAt: aString ifAbsent: aBlock [
 	^ self versions 
 		detect: [ :each | each string = aString ]
 		ifNone: aBlock
+		
+]
+
+{ #category : #'as yet unclassified' }
+SDProject >> versionAt: aString ifAbsentPut: aBlock [
+	^ self versions
+		at: aString 
+		ifAbsentPut: aBlock
 ]
 
 { #category : #'as yet unclassified' }

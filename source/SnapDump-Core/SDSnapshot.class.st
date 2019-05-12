@@ -152,6 +152,15 @@ SDSnapshot >> metaFields [
 ]
 
 { #category : #'as yet unclassified' }
+SDSnapshot >> methodSignature [
+	^ String streamContents: [ :stream |
+		stream 
+			<< className 
+			<< '>>#'
+			<< selector ]
+]
+
+{ #category : #'as yet unclassified' }
 SDSnapshot >> openDebugger [
 	FLMaterializer materializeFromByteArray: (
 		self store snapshotDumpWithId: id )

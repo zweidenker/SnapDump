@@ -39,6 +39,6 @@ SDVersionCall class >> path [
 
 { #category : #accessing }
 SDVersionCall >> get [
-	self jsonResponse: ((self store projectNamed: projectName) versionWithString: versionString) 
+	self jsonResponse: ((self store projectNamed: projectName) versionAt: versionString) 
 	
 ]

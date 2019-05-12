@@ -26,7 +26,9 @@ SDSnapshotCall class >> path [
 
 { #category : #'submorphs-add/remove' }
 SDSnapshotCall >> delete [
-	self store removeSnapshotWithId: snapshotId.
+	[self store removeSnapshotWithId: snapshotId]
+		on: FileDoesNotExistException 
+		do: [ :err | ^ response := ZnResponse notFound: request uri ] .
 	response := ZnResponse ok: (ZnStringEntity text: 'OK') 
 ]
 
