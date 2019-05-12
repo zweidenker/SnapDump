@@ -8,7 +8,7 @@ SDVersion >> gtInspectorSignaturesIn: composite [
 		display: [ self snapshots ];
 		beMultiple;
 		column: 'DateAndTime' evaluated: [ :each | each timestamp rounded asString ];
-		column: 'Selector' evaluated: [ :each | each classSelector asString ];
+		column: 'Selector' evaluated: [ :each | each methodSignature asString ];
 		column: 'Exception' evaluated: [ :each | each exceptionClass asString ];
 		addAction: (GLMGenericAction new
 				action: [ :table | self remove. table update ]; 
