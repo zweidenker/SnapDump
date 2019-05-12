@@ -45,8 +45,7 @@ SDSnapshotCall >> get [
 	json 
 		ifTrue: [ 
 			self jsonResponse: fuelFile ]
-		ifFalse: [ | fuel |
-			
+		ifFalse: [ 
 			response := ZnResponse ok: ((ZnStreamingEntity 
 				type: ZnMimeType applicationOctetStream length: fuelFile fileSize)
 				stream: fuelFile contentStream ) ] 

@@ -33,10 +33,3 @@ SDFileTests >> testSimpleWrite [
 	self assert: ((rootPath / snapshot id), #fuel) exists.
 
 ]
-
-{ #category : #running }
-SDFileTests >> zeroDivide [
-	^ [ 1 / 0 ]
-	on: Exception 
-	do: [ :ex | snapDump storeException: ex ].
-]

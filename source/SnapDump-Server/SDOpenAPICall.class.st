@@ -15,6 +15,21 @@ SDOpenAPICall >> jsonResponse: data [
 ]
 
 { #category : #accessing }
+SDOpenAPICall >> projectNamed: aString [
+	^ self store 
+		projectNamed: aString 
+		ifAbsent: [ ZnRespond  signalWith: (ZnResponse notFound: request uri) ]
+]
+
+{ #category : #accessing }
+SDOpenAPICall >> projectNamed: projectName versionAt: versionString [
+	^ (self projectNamed: projectName) 
+		versionAt: versionString
+		ifAbsent: [ ZnRespond signalWith: (ZnResponse notFound: request uri) ]
+	
+]
+
+{ #category : #accessing }
 SDOpenAPICall >> store [
 	^ self delegate store
 ]

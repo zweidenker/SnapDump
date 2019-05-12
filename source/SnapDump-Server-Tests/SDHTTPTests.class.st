@@ -97,6 +97,28 @@ SDHTTPTests >> testProjectListEmpty [
 ]
 
 { #category : #tests }
+SDHTTPTests >> testProjectNotFound [
+	| response list |
+	response := ZnClient new
+		url: self apiUri / #projects / 'NoneExisting';
+		get;
+		response.
+	self assert: response status = 404.
+
+]
+
+{ #category : #tests }
+SDHTTPTests >> testProjectRemove [
+	| response |
+	response := ZnClient new
+		url: self apiUri / #projects / 'NoneExisting';
+		delete;
+		response.
+	self assert: response status = 405.
+
+]
+
+{ #category : #tests }
 SDHTTPTests >> testSetup [
 	| mock |
 	mock := self snapshotMock.
@@ -106,6 +128,20 @@ SDHTTPTests >> testSetup [
 	self assert: rootPath hasFiles.
 	self assert: ((rootPath / mock asSnapshot id), #fuel) exists.
 
+]
+
+{ #category : #tests }
+SDHTTPTests >> testSnapshot [
+	| response snapshot |
+	self createSimpleSnapshot.
+	response := ZnClient new
+		url: self apiUri / #snapshots / self dummySnapshotId;
+		get;
+		response.
+	self assert: response isSuccess.
+	snapshot := (NeoJSONReader on: response contents readStream) nextAs: SDSnapshot .
+	self assert: snapshot id equals: self dummySnapshotId .
+	
 ]
 
 { #category : #tests }
@@ -119,7 +155,7 @@ SDHTTPTests >> testSnapshotList [
 	self assert: response isSuccess equals: true.
 	list := (NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot .
 	self assert: list size equals: 1.
-	self assert: (list first errorSignature) equals: 'Object_printString_SuddenlyAppearedContext'
+	self assert: (list first errorSignature) equals: 'Object_printString_ContextWithoutException'
 	
 ]
 

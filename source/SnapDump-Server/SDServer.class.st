@@ -36,14 +36,11 @@ SDServer class >> startOnPort: aNumber path: aFileReference [
 ]
 
 { #category : #accessing }
-SDServer >> apiHandler [
-	^ ZnPrefixMappingDelegate new 
-		map: 'api' 
-		to: (SDServerDelegate new
-			store: (SDFilesystemStore new path: path );
-			uriSpace: (OpenAPIUriSpace new
-				rootClass: SDOpenAPICall)).
-
+SDServer >> apiHandler [ 
+	^ SDServerDelegate new
+		store: (SDFilesystemStore new path: path );
+		uriSpace: (OpenAPIUriSpace new
+			rootClass: SDOpenAPICall)
 ]
 
 { #category : #accessing }
@@ -57,10 +54,17 @@ SDServer >> port: aNumber [
 ]
 
 { #category : #accessing }
+SDServer >> serverDelegate [
+	^ ZnPrefixMappingDelegate new 
+		map: 'api' to: self apiHandler;
+		map: 'health' to: ZnTestRunnerDelegate new.
+
+]
+
+{ #category : #accessing }
 SDServer >> start [ 
 				
 	server := (ZnServer on: port)
-		delegate: self apiHandler;
-		debugMode: true;
+		delegate: self serverDelegate;
 		start.
 ]

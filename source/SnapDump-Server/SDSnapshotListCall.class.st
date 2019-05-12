@@ -11,7 +11,6 @@ SDSnapshotListCall class >> path [
 
 { #category : #accessing }
 SDSnapshotListCall >> get [
-	self halt.
-	self jsonResponse: (self configurations collect: #project) asSet. 
+	self jsonResponse: self store snapshots. 
 	
 ]

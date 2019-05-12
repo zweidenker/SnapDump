@@ -4,11 +4,6 @@ Class {
 	#category : #'SnapDump-Core-Tests'
 }
 
-{ #category : #tests }
-SDCoreTests >> dummySnapshotId [
-	^ '292310505b9f7c1493d42c91693b6222e09f5ec6cd1e16d18d1b7ec1570d8a03'
-]
-
 { #category : #accessing }
 SDCoreTests >> store [ 
 	^ self filesystemStore

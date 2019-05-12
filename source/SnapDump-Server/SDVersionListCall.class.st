@@ -26,10 +26,7 @@ SDVersionListCall class >> path [
 
 { #category : #accessing }
 SDVersionListCall >> get [
-	| project |
-	project := self store 
-		projectNamed: projectName
-		ifAbsent: [ ^ response := ZnResponse notFound: request uri ].
-	self jsonResponse: project versions 
+
+	self jsonResponse: (self projectNamed: projectName) versions 
 	
 ]
