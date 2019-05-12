@@ -8,20 +8,8 @@ Class {
 }
 
 { #category : #accessing }
-SDMemorySnapshot >> buildId [
-	^ (SHA256 hashMessage: self fullSignature) hex
-
-]
-
-{ #category : #accessing }
 SDMemorySnapshot >> context [
 	^ context
-]
-
-{ #category : #private }
-SDMemorySnapshot >> encodeMetaOn: aSerializer [
-	self metaFields do: [ :field |
-		aSerializer at: field putAdditionalObject: (self perform: field asSymbol) ]
 ]
 
 { #category : #accessing }

@@ -125,23 +125,6 @@ SDHTTPStore >> snapshotsWithVersion: aVersion [
 		ifFalse: [ NotFound signal ]
 ]
 
-{ #category : #'as yet unclassified' }
-SDHTTPStore >> store: snapshot [
-	| writeStream request response |
-	writeStream := ByteArray new writeStream.
-	[ snapshot writeTo: writeStream .
-	request := ZnRequest put: (self urlFor: snapshot id).
-	"snapshot preparePutRequest: request."
-	request entity: (ZnByteArrayEntity bytes: writeStream contents).
-	response := self client
-		request: request;
-		put;
-		response.
-	]
-		on: Error 
-		do: [ :err | err pass. Transcript show: 'error happened: ', err description ]
-]
-
 { #category : #accessing }
 SDHTTPStore >> uri: anUri [
 	uri := anUri asZnUrl 
@@ -170,4 +153,21 @@ SDHTTPStore >> versionsOfProject: aProject [
 			^ ((NeoJSONReader on: response contents readStream) nextListAs: SDVersion) do: [ :v |
 				v project: aProject ] ]
 		ifFalse: [ NotFound signal ]
+]
+
+{ #category : #'as yet unclassified' }
+SDHTTPStore >> writeSnapshot: snapshot [
+	| writeStream request response |
+	writeStream := ByteArray new writeStream.
+	[ snapshot writeTo: writeStream .
+	request := ZnRequest put: (self urlFor: snapshot id).
+	"snapshot preparePutRequest: request."
+	request entity: (ZnByteArrayEntity bytes: writeStream contents).
+	response := self client
+		request: request;
+		put;
+		response.
+	]
+		on: Error 
+		do: [ :err | err pass. Transcript show: 'error happened: ', err description ]
 ]

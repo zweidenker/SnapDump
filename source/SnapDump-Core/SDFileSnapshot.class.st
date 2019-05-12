@@ -55,11 +55,11 @@ SDFileSnapshot >> readFrom: aStream [
 
 { #category : #'as yet unclassified' }
 SDFileSnapshot >> setFuelHeader: aFLHeader [ 
-"	self 
-		projectName:  (aFLHeader additionalObjectAt: #projectName)
-		versionString: (aFLHeader additionalObjectAt: #versionString)."
+
 	self basicMetaFields do: [ :field |
-		self instVarNamed: field put: (aFLHeader additionalObjectAt: field) ].
+		self 
+			instVarNamed: field 
+			put: (aFLHeader additionalObjectAt: field) ].
 
 ]
 
@@ -68,9 +68,4 @@ SDFileSnapshot >> storeRaw: aByteArray [
 	file binaryWriteStream 
 		nextPutAll: aByteArray;
 		close
-]
-
-{ #category : #'as yet unclassified' }
-SDFileSnapshot >> storeRaw: aSDFileSnapshot contents: aCollection [ 
-	self shouldBeImplemented.
 ]

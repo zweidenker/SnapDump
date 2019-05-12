@@ -3,6 +3,7 @@ Class {
 	#superclass : #SDStore,
 	#instVars : [
 		'path',
+		'snapshots',
 		'projects',
 		'versions'
 	],
@@ -84,16 +85,13 @@ SDFilesystemStore >> projectNamed: aString ifAbsentPut: aBlock [
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> projects [
-	^ projects ifNil: [ 
-		self snapshots.
-		projects ]
+	^ projects 
 ]
 
 { #category : #'as yet unclassified' }
-SDFilesystemStore >> removeSnapshot: aSnapshot [ 
-	
-	self removeSnapshotWithId: aSnapshot id.
-
+SDFilesystemStore >> removeProject: aProject [ 
+	"projects are derived from snapshots. Nothing to do"
+	^ aProject 
 ]
 
 { #category : #'as yet unclassified' }
@@ -105,8 +103,14 @@ SDFilesystemStore >> removeSnapshotWithId: aString [
 ]
 
 { #category : #'as yet unclassified' }
+SDFilesystemStore >> removeVersion: aVersion [ 
+	"version are created from snapshots. So nothing to do"
+]
+
+{ #category : #'as yet unclassified' }
 SDFilesystemStore >> reset [
 	super reset.
+	snapshots := nil.
 	projects := nil.
 	versions := nil.
 	self buildSnapshots 
@@ -124,19 +128,16 @@ SDFilesystemStore >> snapshotWithId: aString [
 		ifNone: [ NotFound signal ]
 ]
 
+{ #category : #accessing }
+SDFilesystemStore >> snapshots [
+	^ snapshots 
+		
+]
+
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> snapshotsWithVersion: aVersion [ 
 	^ self snapshots
 		select: [ :each | (each project name = aVersion project name) and: [ each version string = aVersion string ] ]
-]
-
-{ #category : #'as yet unclassified' }
-SDFilesystemStore >> store: snapshot [
-	| stream file |
-	file := (path / snapshot id) , #fuel.
-	stream := file fileSystem  binaryWriteStreamOn: file path.
-	[ snapshot writeTo: stream ]
-		ensure: [ stream close ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -149,4 +150,13 @@ SDFilesystemStore >> storeRaw: snapshot contents: aByteArray [
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> versionsOfProject: aProject [ 
 	^ versions at: aProject ifAbsent: [ #() ]
+]
+
+{ #category : #'as yet unclassified' }
+SDFilesystemStore >> writeSnapshot: snapshot [
+	| stream file |
+	file := (path / snapshot id) , #fuel.
+	stream := file fileSystem  binaryWriteStreamOn: file path.
+	[ snapshot writeTo: stream ]
+		ensure: [ stream close ]
 ]

@@ -46,7 +46,9 @@ SDVersion >> project: anObject [
 
 { #category : #removing }
 SDVersion >> remove [
-	self snapshots do: #remove
+	self snapshots 
+		do: [ :snapshot | self store removeSnapshot: snapshot ].
+	self store removeVersion: self
 ]
 
 { #category : #'as yet unclassified' }

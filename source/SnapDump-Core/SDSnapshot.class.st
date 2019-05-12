@@ -42,9 +42,15 @@ SDSnapshot >> asSnapshot [
 	^ self 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #private }
 SDSnapshot >> basicMetaFields [
 	^ #(id timestamp className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild)
+]
+
+{ #category : #accessing }
+SDSnapshot >> buildId [
+	^ (SHA256 hashMessage: self fullSignature) hex
+
 ]
 
 { #category : #accessing }
@@ -57,13 +63,13 @@ SDSnapshot >> className: aString [
 	className := aString
 ]
 
-{ #category : #view }
-SDSnapshot >> classSelector [
-	^ String streamContents: [ :stream |
-		stream << className << '>>#' << selector ]
+{ #category : #private }
+SDSnapshot >> encodeMetaOn: aSerializer [
+	self metaFields do: [ :field |
+		aSerializer at: field putAdditionalObject: (self perform: field asSymbol) ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #signatures }
 SDSnapshot >> errorSignature [
 	^ String streamContents: [ :stream |
 		stream 
@@ -84,7 +90,7 @@ SDSnapshot >> exceptionClass: aString [
 	exceptionClass := aString
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #signatures }
 SDSnapshot >> fullSignature [
 	^ String streamContents: [ :stream |
 		stream 
@@ -108,13 +114,6 @@ SDSnapshot >> id [
 { #category : #accessing }
 SDSnapshot >> id: anObject [
 	id := anObject
-]
-
-{ #category : #accessing }
-SDSnapshot >> idString [
-	^ String streamContents: [ :stream |
-		stream 
-			<< className << selector << exceptionClass ]
 ]
 
 { #category : #accessing }
@@ -143,7 +142,7 @@ SDSnapshot >> initialize [
 	timestamp := DateAndTime now
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #private }
 SDSnapshot >> metaFields [
 	^ self basicMetaFields asOrderedCollection
 		add: #projectName;
@@ -151,7 +150,7 @@ SDSnapshot >> metaFields [
 		yourself
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #signatures }
 SDSnapshot >> methodSignature [
 	^ String streamContents: [ :stream |
 		stream 
@@ -160,7 +159,7 @@ SDSnapshot >> methodSignature [
 			<< selector ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #actions }
 SDSnapshot >> openDebugger [
 	FLMaterializer materializeFromByteArray: (
 		self store snapshotDumpWithId: id )
@@ -201,12 +200,12 @@ SDSnapshot >> projectName [
 	^ project name
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SDSnapshot >> projectName: aString [ 
-	"project := SDProject name: aString"
+	"we only use project objects"
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #actions }
 SDSnapshot >> remove [
 	^ self store removeSnapshot: self 
 ]
@@ -223,7 +222,7 @@ SDSnapshot >> selector: aString [
 
 { #category : #accessing }
 SDSnapshot >> store [
-	^ project store
+	^ version store
 ]
 
 { #category : #accessing }
@@ -266,10 +265,9 @@ SDSnapshot >> versionString [
 	^ version string
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SDSnapshot >> versionString: aString [ 
-"	version := (SDVersion string: aString)
-		project: project"
+	"we only use version object"
 ]
 
 { #category : #accessing }

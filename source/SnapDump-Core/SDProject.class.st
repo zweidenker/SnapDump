@@ -44,9 +44,9 @@ SDProject >> printOn: aStream [
 	aStream << name
 ]
 
-{ #category : #'as yet unclassified' }
-SDProject >> removeVersion: aVersion [ 
-	self shouldBeImplemented.
+{ #category : #actions }
+SDProject >> remove [
+	^ self store removeProject: self
 ]
 
 { #category : #accessing }
@@ -61,7 +61,9 @@ SDProject >> store: anObject [
 
 { #category : #'as yet unclassified' }
 SDProject >> versionAt: aString [ 
-	^ self versionAt: aString ifAbsent: [ NotFound signal ]
+	^ self 
+		versionAt: aString 
+		ifAbsent: [ NotFound signal: 'no version ', aString asString, ' found' ]
 		
 ]
 

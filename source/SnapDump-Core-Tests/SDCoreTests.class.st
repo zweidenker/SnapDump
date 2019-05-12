@@ -6,34 +6,12 @@ Class {
 
 { #category : #tests }
 SDCoreTests >> dummySnapshotId [
-	^ 'e93edf3a19e0214bbbee5ab1d0dae1336188a5ae928ee27611951a0e122e1340'
+	^ '292310505b9f7c1493d42c91693b6222e09f5ec6cd1e16d18d1b7ec1570d8a03'
 ]
 
 { #category : #accessing }
 SDCoreTests >> store [ 
 	^ self filesystemStore
-]
-
-{ #category : #tests }
-SDCoreTests >> testDeleteSnapshot [
-
-	|  snapshot |
-	self createSimpleSnapshot.
-	snapshot := snapDump snapshotWithId: self dummySnapshotId.
-	self assert: snapshot className equals: 'Object'.
-	snapshot remove.
-	self assert: snapDump projects isEmpty 
-]
-
-{ #category : #tests }
-SDCoreTests >> testDeleteVersion [
-
-	|  snapshot |
-	self createSimpleSnapshot.
-	snapshot := snapDump snapshotWithId: self dummySnapshotId.
-	self assert: snapshot className equals: 'Object'.
-	snapshot version remove.
-	self assert: snapDump projects isEmpty 
 ]
 
 { #category : #tests }
@@ -73,6 +51,17 @@ SDCoreTests >> testProjectNotFound [
 ]
 
 { #category : #tests }
+SDCoreTests >> testProjectRemove [
+
+	| project |
+	self createSimpleSnapshot.
+	project := snapDump projectNamed: 'TestProject'.
+	self 
+		shouldnt: [ project remove ]
+		raise: Error
+]
+
+{ #category : #tests }
 SDCoreTests >> testProjectVersion [
 
 	| version |
@@ -98,6 +87,44 @@ SDCoreTests >> testProjectVersions [
 	self createSimpleSnapshot.
 	versions := (snapDump projectNamed: 'TestProject') versions.
 	self assert: versions size equals: 1
+]
+
+{ #category : #tests }
+SDCoreTests >> testRemoveProjectVersion [
+
+	| version project |
+	self createSimpleSnapshot.
+	project := snapDump projectNamed: 'TestProject'.
+	version := project versionAt: '0.1'.
+	self 
+		shouldnt: [ version remove ]
+		raise: Error.
+	self assert: project versions isEmpty 
+	
+]
+
+{ #category : #tests }
+SDCoreTests >> testRemoveSnapshot [
+
+	|  snapshot |
+	self createSimpleSnapshot.
+	snapshot := snapDump snapshotWithId: self dummySnapshotId.
+	self assert: snapshot className equals: 'Object'.
+	self 
+		shouldnt: [ snapshot remove ]
+		raise: Error.
+	self assert: snapDump projects isEmpty 
+]
+
+{ #category : #tests }
+SDCoreTests >> testRemoveVersion [
+
+	|  snapshot |
+	self createSimpleSnapshot.
+	snapshot := snapDump snapshotWithId: self dummySnapshotId.
+	self assert: snapshot className equals: 'Object'.
+	snapshot version remove.
+	self assert: snapDump projects isEmpty 
 ]
 
 { #category : #tests }

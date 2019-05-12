@@ -35,21 +35,6 @@ SDBasicHTTPStore >> hasSnapshotNamed: snapshotId [
 		response) status = 200
 ]
 
-{ #category : #'as yet unclassified' }
-SDBasicHTTPStore >> store: snapshot [
-	| writeStream request |
-	writeStream := ByteArray new writeStream.
-	[ snapshot writeTo: writeStream .
-	request := ZnRequest put: (self urlFor: snapshot id).
-	request entity: (ZnByteArrayEntity bytes: writeStream contents).
-	self client
-		request: request;
-		put
-	]
-		on: Error 
-		do: [ :err | err pass. Transcript show: 'error happened: ', err description ]
-]
-
 { #category : #accessing }
 SDBasicHTTPStore >> uri: anUri [
 	uri := anUri asZnUrl 
@@ -64,4 +49,19 @@ SDBasicHTTPStore >> urlFor: snapshotId [
 SDBasicHTTPStore >> username: aUsername password: aPassword [
 	username := aUsername.
 	password := aPassword
+]
+
+{ #category : #'as yet unclassified' }
+SDBasicHTTPStore >> writeSnapshot: snapshot [
+	| writeStream request |
+	writeStream := ByteArray new writeStream.
+	[ snapshot writeTo: writeStream .
+	request := ZnRequest put: (self urlFor: snapshot id).
+	request entity: (ZnByteArrayEntity bytes: writeStream contents).
+	self client
+		request: request;
+		put
+	]
+		on: Error 
+		do: [ :err | err pass. Transcript show: 'error happened: ', err description ]
 ]
