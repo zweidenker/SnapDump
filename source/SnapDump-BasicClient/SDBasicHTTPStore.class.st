@@ -53,13 +53,12 @@ SDBasicHTTPStore >> username: aUsername password: aPassword [
 
 { #category : #'as yet unclassified' }
 SDBasicHTTPStore >> writeSnapshot: snapshot [
-	| writeStream request |
+	| writeStream |
 	writeStream := ByteArray new writeStream.
 	[ snapshot writeTo: writeStream .
-	request := ZnRequest put: (self urlFor: snapshot id).
-	request entity: (ZnByteArrayEntity bytes: writeStream contents).
 	self client
-		request: request;
+		url: (self urlFor: snapshot id);
+		entity: (ZnByteArrayEntity bytes: writeStream contents);
 		put
 	]
 		on: Error 
