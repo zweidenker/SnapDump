@@ -12,7 +12,7 @@ BaselineOfSnapDump >> baseline: spec [
 		spec package: #'SnapDump-Core'.
 		spec package: #'SnapDump-Core-Tests' with: [ spec requires: #('SnapDump-Core' 'Mocketry') ].
 		spec package: #'SnapDump-Handler' with: [ spec requires: #('SnapDump-Core' ) ].
-		spec package: #'SnapDump-Client' with: [ spec requires: #('SnapDump-Handler' ) ].
+		spec package: #'SnapDump-Client' with: [ spec requires: #('SnapDump-Handler' 'NeoJSON') ].
 		spec package: #'SnapDump-Server' with: [ spec requires: #('SnapDump-Core' 'ZincHTTPComponents' 'OpenAPI') ].
 		spec package: #'SnapDump-Server-Tests' with: [ spec requires: #('SnapDump-Server' 'Mocketry' ) ].
 		spec package: #'SnapDump-UI' with: [ spec requires: #('SnapDump-Client' ) ].
@@ -29,7 +29,8 @@ BaselineOfSnapDump >> baseline: spec [
 		self mocketry: spec.
 		self zinc: spec.
 		self cinic: spec.
-		self openApi: spec ]
+		self openApi: spec.
+		self neoJson: spec ]
 
 ]
 
@@ -43,6 +44,13 @@ BaselineOfSnapDump >> cinic: spec [
 BaselineOfSnapDump >> mocketry: spec [
 	spec baseline: 'Mocketry' with: [ 
 			spec repository: 'github://dionisiydk/Mocketry:v4.0.x'. ]
+]
+
+{ #category : #'as yet unclassified' }
+BaselineOfSnapDump >> neoJson: spec [
+	spec
+		baseline: 'NeoJSON' 
+		with: [ spec repository: 'github://svenvc/NeoJSON:master/repository' ]
 ]
 
 { #category : #baselines }

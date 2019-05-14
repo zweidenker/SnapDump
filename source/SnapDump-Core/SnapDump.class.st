@@ -59,6 +59,13 @@ SnapDump class >> http: aUri [
 		yourself 
 ]
 
+{ #category : #'as yet unclassified' }
+SnapDump class >> uri: aUri [
+	^ self current 
+		store: (SDHTTPStore new uri: aUri asZnUrl);
+		yourself 
+]
+
 { #category : #'accessing structure variables' }
 SnapDump class >> withType: aSymbol [
 	^ self allSubclasses detect: [ :each | each type = aSymbol ]
