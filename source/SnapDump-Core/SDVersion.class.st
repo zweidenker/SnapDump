@@ -20,6 +20,18 @@ SDVersion class >> string: aString [
 ]
 
 { #category : #comparing }
+SDVersion >> <  aVersion [
+	| own other |
+	own := $. split: string.
+	other := $. split: aVersion string.
+	self assert: own size = other size.
+	own withIndexDo: [ :part :index | 
+		 part = (other at: index) ifFalse: [ 
+			^ part asNumber < (other at: index) asNumber ] ].
+	^ false
+]
+
+{ #category : #comparing }
 SDVersion >> = aVersion [
 	^ string = aVersion string
 ]

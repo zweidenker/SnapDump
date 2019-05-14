@@ -63,6 +63,17 @@ SDSnapshot >> className: aString [
 	className := aString
 ]
 
+{ #category : #'as yet unclassified' }
+SDSnapshot >> dateAndTimeString [ 
+	^ String streamContents: [ :stream |
+		stream << self dateString << ' ' << self timeString  ]
+]
+
+{ #category : #'as yet unclassified' }
+SDSnapshot >> dateString [ 
+	^ timestamp asDate printFormat: #(1 2 3 $. 1 1)
+]
+
 { #category : #private }
 SDSnapshot >> encodeMetaOn: aSerializer [
 	self metaFields do: [ :field |
@@ -233,6 +244,11 @@ SDSnapshot >> systemArchitecture [
 { #category : #accessing }
 SDSnapshot >> systemArchitecture: aString [ 
 	systemArchitecture := aString
+]
+
+{ #category : #'as yet unclassified' }
+SDSnapshot >> timeString [ 
+	^ timestamp asTime print24
 ]
 
 { #category : #accessing }

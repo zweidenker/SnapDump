@@ -41,11 +41,13 @@ SnapDumpUI >> extent [
 SnapDumpUI >> initializeWidgets [
 	snapshot := SDSnapshotPresenter new.
 	snapshotList := self newMultiColumnList
-		displayBlock: [ :m | { (m timestamp asDate printFormat: #(1 2 3 $. 1 1)), ' ', (m timestamp asTime print24 ). m methodSignature . m exceptionClass }  ];
+		displayBlock: [ :s | { s dateAndTimeString . s methodSignature . s exceptionClass }  ];
+		sortingBlock: [ :a :b | a timestamp < b timestamp ];
 		whenSelectedItemChanged: [ :s | 
 			snapshot item: s ].
 	versionList := self newList
 		displayBlock: [ :m | m string ];
+		sortingBlock: [ :a :b | a < b ];
 		whenSelectedItemChanged: [ :version | 
 			self selectedVersion: version ].
 	projectList := self newList .
@@ -62,6 +64,7 @@ SnapDumpUI >> initializeWidgets [
 		allowToSelect: false;
 		items: self client projects;
 		displayBlock: [ :m | m name ];
+		sortingBlock: [ :a :b | a name < b name ];
 		whenSelectedItemChanged: [ :selection | 
 			(selection isKindOf: SDProject) 
 			ifTrue: [ 
