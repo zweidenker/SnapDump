@@ -48,7 +48,9 @@ BaselineOfSnapDump >> mocketry: spec [
 { #category : #baselines }
 BaselineOfSnapDump >> openApi: spec [
 	spec baseline: 'OpenAPI' with: [ 
-			spec repository: 'github://zweidenker/OpenAPI'. ]
+			spec 
+				repository: 'github://zweidenker/OpenAPI';
+				loads: #('REST') ]
 ]
 
 { #category : #baselines }
