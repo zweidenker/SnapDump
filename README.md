@@ -19,7 +19,14 @@ Download a pharo image and install the SnapDump client
     $ curl get.pharo.org/64/70+vm | bash
     $ ./pharo-ui Pharo.image
 
-Open a playground and type
+To install SnapDump open a playground and execute
+
+    Metacello new
+	    repository: 'github://zweidenker/SnapDump';
+	    baseline: #SnapDump;
+	    load
+
+To configure and open the UI client execute
 
     "configure the SnapDump client to access the docker container"
     SnapDump uri: 'http://localhost:8888/api'.
@@ -31,3 +38,5 @@ Open a playground and type
  You should see this
 
  ![SnapDump UI](https://raw.githubusercontent.com/zweidenker/SnapDump/master/images/ui.png)
+
+Selecting a snapshot gives detailled information about the snapshot. Pressing the "Open Snapshot" button will open a debugger with that snapshot.
