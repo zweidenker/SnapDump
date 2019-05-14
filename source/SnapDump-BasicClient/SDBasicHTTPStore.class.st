@@ -15,10 +15,11 @@ SDBasicHTTPStore class >> storeName [
 ]
 
 { #category : #'as yet unclassified' }
-SDBasicHTTPStore >> applyConfig: aConfig [
+SDBasicHTTPStore >> applyConfiguration: aConfig [
 	uri := aConfig uri.
    username := aConfig username.
-   password := aConfig password
+   password := aConfig password.
+
 ]
 
 { #category : #accessing }
@@ -30,9 +31,14 @@ SDBasicHTTPStore >> client [
 { #category : #testing }
 SDBasicHTTPStore >> hasSnapshotNamed: snapshotId [
 	^ (self client
-		url: (self urlFor: snapshotId);
+		url: (self urlForSnapshot: snapshotId);
 		head;
 		response) status = 200
+]
+
+{ #category : #printing }
+SDBasicHTTPStore >> printOn: aStream [
+	aStream << uri asString
 ]
 
 { #category : #accessing }
@@ -41,7 +47,7 @@ SDBasicHTTPStore >> uri: anUri [
 ]
 
 { #category : #accessing }
-SDBasicHTTPStore >> urlFor: snapshotId [
+SDBasicHTTPStore >> urlForSnapshot: snapshotId [
 	^ uri / #snapshots / snapshotId
 ]
 
@@ -57,7 +63,7 @@ SDBasicHTTPStore >> writeSnapshot: snapshot [
 	writeStream := ByteArray new writeStream.
 	[ snapshot writeTo: writeStream .
 	self client
-		url: (self urlFor: snapshot id);
+		url: (self urlForSnapshot: snapshot id);
 		entity: (ZnByteArrayEntity bytes: writeStream contents);
 		put
 	]

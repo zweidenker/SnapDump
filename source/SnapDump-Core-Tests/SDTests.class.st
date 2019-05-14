@@ -10,7 +10,7 @@ Class {
 
 { #category : #'as yet unclassified' }
 SDTests >> createSimpleSnapshot [
-	^ snapDump storeException: self snapshotMock.
+	^ snapDump handleException: self snapshotMock.
 
 ]
 

@@ -9,7 +9,7 @@ Class {
 
 { #category : #'error handling' }
 SDServerDelegate >> serverError: request exception: exception [
-	SnapDump storeException: exception.
+	SnapDump handleException: exception.
 	^ super serverError: request exception: exception
 ]
 

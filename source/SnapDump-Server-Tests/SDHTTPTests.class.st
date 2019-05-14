@@ -123,7 +123,7 @@ SDHTTPTests >> testSetup [
 	| mock |
 	mock := self snapshotMock.
 	self 
-		shouldnt: [ snapDump storeException: mock ]
+		shouldnt: [ snapDump handleException: mock ]
 		raise: Error.
 	self assert: rootPath hasFiles.
 	self assert: ((rootPath / mock asSnapshot id), #fuel) exists.
@@ -192,5 +192,5 @@ SDHTTPTests >> testVersionList [
 SDHTTPTests >> zeroDivide [
 	^ [ 1 / 0 ]
 	on: Exception 
-	do: [ :ex | snapDump storeException: ex ].
+	do: [ :ex | snapDump handleException: ex ].
 ]

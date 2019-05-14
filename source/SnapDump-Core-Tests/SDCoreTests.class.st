@@ -127,7 +127,7 @@ SDCoreTests >> testSetup [
 	| mock |
 	mock := self snapshotMock.
 	self 
-		shouldnt: [ snapDump storeException: mock ]
+		shouldnt: [ snapDump handleException: mock ]
 		raise: Error.
 	self assert: rootPath hasFiles.
 	self assert: ((rootPath / mock asSnapshot id), #fuel) exists.

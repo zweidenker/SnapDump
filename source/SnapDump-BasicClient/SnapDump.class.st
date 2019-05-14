@@ -17,7 +17,7 @@ SnapDump class >> configuration [
 	<configurationStep>
 	^ {  
 		#group -> #SnapDump.
-		#action -> [ :config | SnapDump current applyConfig: config ] }
+		#action -> [ :config | SnapDump current applyConfiguration: config ] }
 ]
 
 { #category : #accessing }
@@ -33,6 +33,16 @@ SnapDump class >> hackUIManager [
 		super logError: anError'
 ]
 
+{ #category : #public }
+SnapDump class >> handleException: exception [
+	^ self current handleException: exception 
+]
+
+{ #category : #'as yet unclassified' }
+SnapDump class >> handleSnapshot: aSnapshot [ 
+	^ self current handleSnapshot: aSnapshot 
+]
+
 { #category : #'as yet unclassified' }
 SnapDump class >> http: aUri [
 	^ self current 
@@ -40,20 +50,26 @@ SnapDump class >> http: aUri [
 		yourself 
 ]
 
-{ #category : #public }
-SnapDump class >> storeException: exception [
-	^ self current storeException: exception 
-]
-
 { #category : #'as yet unclassified' }
-SnapDump class >> storeSnapshot: aSnapshot [ 
-	^ self current storeSnapshot: aSnapshot 
-]
-
-{ #category : #'as yet unclassified' }
-SnapDump >> applyConfig: aConfig [
+SnapDump >> applyConfiguration: aConfig [
 	store := (SDStore withName: aConfig store) new.
-	store applyConfig: aConfig
+	store applyConfiguration: aConfig
+]
+
+{ #category : #'as yet unclassified' }
+SnapDump >> handleException: exception [
+
+	^ self handleSnapshot: exception asSnapshot
+
+]
+
+{ #category : #'as yet unclassified' }
+SnapDump >> handleSnapshot: snapshot [
+	self store ifNotNil: [
+		self store storeSnapshot: (snapshot 
+			project: project;
+			version: version ) ].
+	^ snapshot 
 ]
 
 { #category : #accessing }
@@ -95,22 +111,6 @@ SnapDump >> store [
 { #category : #accessing }
 SnapDump >> store: anObject [
 	store := anObject 
-]
-
-{ #category : #'as yet unclassified' }
-SnapDump >> storeException: exception [
-
-	^ self storeSnapshot: exception asSnapshot
-
-]
-
-{ #category : #'as yet unclassified' }
-SnapDump >> storeSnapshot: snapshot [
-	self store ifNotNil: [
-		self store storeSnapshot: (snapshot 
-			project: project;
-			version: version ) ].
-	^ snapshot 
 ]
 
 { #category : #accessing }

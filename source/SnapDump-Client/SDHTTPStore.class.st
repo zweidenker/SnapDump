@@ -1,44 +1,12 @@
 Class {
 	#name : #SDHTTPStore,
-	#superclass : #SDStore,
-	#instVars : [
-		'username',
-		'uri',
-		'password'
-	],
+	#superclass : #SDBasicHTTPStore,
 	#category : #'SnapDump-Client'
 }
 
 { #category : #accessing }
 SDHTTPStore class >> storeName [
 	^ #http
-]
-
-{ #category : #'as yet unclassified' }
-SDHTTPStore >> applyConfig: aConfig [
-	uri := aConfig uri.
-   username := aConfig username.
-   password := aConfig password.
-
-]
-
-{ #category : #accessing }
-SDHTTPStore >> client [
-	^ ZnClient new
-		setBasicAuthenticationUsername: username password: password 
-]
-
-{ #category : #testing }
-SDHTTPStore >> hasSnapshotNamed: snapshotId [
-	^ (self client
-		url: (self urlFor: snapshotId);
-		head;
-		response) status = 200
-]
-
-{ #category : #printing }
-SDHTTPStore >> printOn: aStream [
-	aStream << uri asString
 ]
 
 { #category : #'as yet unclassified' }
@@ -125,22 +93,6 @@ SDHTTPStore >> snapshotsWithVersion: aVersion [
 		ifFalse: [ NotFound signal ]
 ]
 
-{ #category : #accessing }
-SDHTTPStore >> uri: anUri [
-	uri := anUri asZnUrl 
-]
-
-{ #category : #accessing }
-SDHTTPStore >> urlFor: snapshotId [
-	^ uri / #snapshots / snapshotId
-]
-
-{ #category : #accessing }
-SDHTTPStore >> username: aUsername password: aPassword [
-	username := aUsername.
-	password := aPassword
-]
-
 { #category : #'as yet unclassified' }
 SDHTTPStore >> versionsOfProject: aProject [ 
 	| response |
@@ -153,21 +105,4 @@ SDHTTPStore >> versionsOfProject: aProject [
 			^ ((NeoJSONReader on: response contents readStream) nextListAs: SDVersion) do: [ :v |
 				v project: aProject ] ]
 		ifFalse: [ NotFound signal ]
-]
-
-{ #category : #'as yet unclassified' }
-SDHTTPStore >> writeSnapshot: snapshot [
-	| writeStream request response |
-	writeStream := ByteArray new writeStream.
-	[ snapshot writeTo: writeStream .
-	request := ZnRequest put: (self urlFor: snapshot id).
-	"snapshot preparePutRequest: request."
-	request entity: (ZnByteArrayEntity bytes: writeStream contents).
-	response := self client
-		request: request;
-		put;
-		response.
-	]
-		on: Error 
-		do: [ :err | err pass. Transcript show: 'error happened: ', err description ]
 ]
