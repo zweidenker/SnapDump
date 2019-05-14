@@ -6,7 +6,8 @@ Class {
 		'versionList',
 		'snapshotList',
 		'snapshot',
-		'snapDump'
+		'snapDump',
+		'client'
 	],
 	#category : #'SnapDump-UI'
 }
@@ -23,6 +24,12 @@ SnapDumpUI class >> defaultSpec [
 				newColumn: [ :c | c add: #snapshotList ] left: 0.175 right: 0.40;
 				newColumn: [ :c | c add: #snapshot ] left: 0.6 right: 0 ];
 		yourself
+]
+
+{ #category : #'as yet unclassified' }
+SnapDumpUI >> client [
+	^ client ifNil: [
+		client := SnapDump client ]
 ]
 
 { #category : #api }
@@ -53,7 +60,7 @@ SnapDumpUI >> initializeWidgets [
 				versionList resetSelection ".versionList items: projectList selectedItem versions. " ]  ]. 
 	projectList
 		allowToSelect: false;
-		items: SnapDump current projects;
+		items: self client projects;
 		displayBlock: [ :m | m name ];
 		whenSelectedItemChanged: [ :selection | 
 			(selection isKindOf: SDProject) 
