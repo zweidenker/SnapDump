@@ -18,7 +18,7 @@ BaselineOfSnapDump >> baseline: spec [
 		spec package: #'SnapDump-UI' with: [ spec requires: #('SnapDump-Client' ) ].
 
 		spec 
-			group: 'default' with: #( server 'basic-client' client ui tests);
+			group: 'default' with: #( server 'handler' client ui tests);
 			group: 'handler' with: #( #'SnapDump-Handler' );
 			group: 'server' with: #( #'SnapDump-Server' 'Cinic');
 			group: 'client' with: #( #'SnapDump-Client' );
