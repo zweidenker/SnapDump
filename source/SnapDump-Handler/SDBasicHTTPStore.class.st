@@ -6,7 +6,7 @@ Class {
 		'uri',
 		'password'
 	],
-	#category : #'SnapDump-BasicClient'
+	#category : #'SnapDump-Handler'
 }
 
 { #category : #accessing }
