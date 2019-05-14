@@ -1,0 +1,9 @@
+PharoDebug.log
+*.image
+*.changes
+*.sources  
+pharo
+pharo-ui
+pharo-local/
+pharo-vm/
+snaps/
