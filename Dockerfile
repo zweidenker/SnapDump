@@ -15,12 +15,9 @@ RUN mv /opt/Pharo.changes /opt/SnapDump.changes
 COPY start.st /opt/
 
 RUN /opt/pharo /opt/SnapDump.image eval --save "Metacello new repository: 'github://zweidenker/SnapDump/source'; baseline: #SnapDump; load"
-#RUN /opt/pharo /opt/SnapDump.image eval --save "Iceberg enableMetacelloIntegration: false. Metacello new repository: 'github://zweidenker/SnapDump/source'; baseline: #SnapDump; load"
 
-# Define working directory.
 WORKDIR /opt
 
-# Define default command.
 CMD "/opt/pharo" "--mmap" "64m" "/opt/SnapDump.image" "--no-default-preferences" "st" "/opt/start.st"
 
 EXPOSE 5555
