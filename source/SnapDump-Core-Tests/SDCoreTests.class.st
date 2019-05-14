@@ -14,7 +14,7 @@ SDCoreTests >> testProject [
 
 	self createSimpleSnapshot.
 	self 
-		shouldnt: [ snapDump projectNamed: 'TestProject' ifAbsent: [ nil ] ]
+		shouldnt: [ client projectNamed: 'TestProject' ifAbsent: [ nil ] ]
 		raise: NotFound
 ]
 
@@ -23,7 +23,7 @@ SDCoreTests >> testProjectList [
 
 	| projects |
 	self createSimpleSnapshot.
-	projects := snapDump projects.
+	projects := client projects.
 	self assert: projects size equals: 1.
 	self assert: projects anyOne name equals: 'TestProject'
 
@@ -32,7 +32,7 @@ SDCoreTests >> testProjectList [
 { #category : #tests }
 SDCoreTests >> testProjectListEmpty [
 
-	self assert: snapDump projects isEmpty.
+	self assert: client projects isEmpty.
 
 ]
 
@@ -41,7 +41,7 @@ SDCoreTests >> testProjectNotFound [
 
 	self createSimpleSnapshot.
 	self 
-		should: [ snapDump projectNamed: 'DoesNotExist' ]
+		should: [ client projectNamed: 'DoesNotExist' ]
 		raise: NotFound
 ]
 
@@ -50,7 +50,7 @@ SDCoreTests >> testProjectRemove [
 
 	| project |
 	self createSimpleSnapshot.
-	project := snapDump projectNamed: 'TestProject'.
+	project := client projectNamed: 'TestProject'.
 	self 
 		shouldnt: [ project remove ]
 		raise: Error
@@ -61,7 +61,7 @@ SDCoreTests >> testProjectVersion [
 
 	| version |
 	self createSimpleSnapshot.
-	version := (snapDump projectNamed: 'TestProject') versionAt: '0.1'.
+	version := (client projectNamed: 'TestProject') versionAt: '0.1'.
 	self assert: version string equals: '0.1'
 ]
 
@@ -70,7 +70,7 @@ SDCoreTests >> testProjectVersionNotFound [
 
 	self createSimpleSnapshot.
 	self 
-		should: [ (snapDump projectNamed: 'TestProject') versionAt: 'N/A' ]
+		should: [ (client projectNamed: 'TestProject') versionAt: 'N/A' ]
 		raise: NotFound.
 
 ]
@@ -80,7 +80,7 @@ SDCoreTests >> testProjectVersions [
 
 	| versions |
 	self createSimpleSnapshot.
-	versions := (snapDump projectNamed: 'TestProject') versions.
+	versions := (client projectNamed: 'TestProject') versions.
 	self assert: versions size equals: 1
 ]
 
@@ -89,7 +89,7 @@ SDCoreTests >> testRemoveProjectVersion [
 
 	| version project |
 	self createSimpleSnapshot.
-	project := snapDump projectNamed: 'TestProject'.
+	project := client projectNamed: 'TestProject'.
 	version := project versionAt: '0.1'.
 	self 
 		shouldnt: [ version remove ]
@@ -103,12 +103,12 @@ SDCoreTests >> testRemoveSnapshot [
 
 	|  snapshot |
 	self createSimpleSnapshot.
-	snapshot := snapDump snapshotWithId: self dummySnapshotId.
+	snapshot := client snapshotWithId: self dummySnapshotId.
 	self assert: snapshot className equals: 'Object'.
 	self 
 		shouldnt: [ snapshot remove ]
 		raise: Error.
-	self assert: snapDump projects isEmpty 
+	self assert: client projects isEmpty 
 ]
 
 { #category : #tests }
@@ -116,10 +116,10 @@ SDCoreTests >> testRemoveVersion [
 
 	|  snapshot |
 	self createSimpleSnapshot.
-	snapshot := snapDump snapshotWithId: self dummySnapshotId.
+	snapshot := client snapshotWithId: self dummySnapshotId.
 	self assert: snapshot className equals: 'Object'.
 	snapshot version remove.
-	self assert: snapDump projects isEmpty 
+	self assert: client projects isEmpty 
 ]
 
 { #category : #tests }
@@ -127,7 +127,7 @@ SDCoreTests >> testSetup [
 	| mock |
 	mock := self snapshotMock.
 	self 
-		shouldnt: [ snapDump handleException: mock ]
+		shouldnt: [ handler handleException: mock ]
 		raise: Error.
 	self assert: rootPath hasFiles.
 	self assert: ((rootPath / mock asSnapshot id), #fuel) exists.
@@ -139,6 +139,6 @@ SDCoreTests >> testSnapshot [
 
 	|  snapshot |
 	self createSimpleSnapshot.
-	snapshot := snapDump snapshotWithId: self dummySnapshotId.
+	snapshot := client snapshotWithId: self dummySnapshotId.
 	self assert: snapshot className equals: 'Object'
 ]

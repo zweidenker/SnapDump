@@ -3,14 +3,15 @@ Class {
 	#superclass : #TestCase,
 	#instVars : [
 		'rootPath',
-		'snapDump'
+		'handler',
+		'client'
 	],
 	#category : #'SnapDump-Core-Tests'
 }
 
 { #category : #'as yet unclassified' }
 SDTests >> createSimpleSnapshot [
-	^ snapDump handleException: self snapshotMock.
+	^ handler handleException: self snapshotMock.
 
 ]
 
@@ -49,9 +50,12 @@ SDTests >> filesystemStore [
 
 { #category : #running }
 SDTests >> setUp [ 
+	| store |
 	rootPath := FileSystem memory / #snaps.
-	snapDump := SnapDump new store: self store. 
-	snapDump 
+	store := self store.
+	handler := SDHandler new store: store. 
+	client := SDClient new store: store. 
+	handler 
 		projectName: 'TestProject'
 		versionString: '0.1'
 ]
