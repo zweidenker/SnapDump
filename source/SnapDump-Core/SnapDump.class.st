@@ -53,16 +53,18 @@ SnapDump class >> handleSnapshot: aSnapshot [
 ]
 
 { #category : #'as yet unclassified' }
-SnapDump class >> http: aUri [
+SnapDump class >> uri: aUri [
 	^ self current 
 		store: (SDHTTPStore new uri: aUri asZnUrl);
 		yourself 
 ]
 
 { #category : #'as yet unclassified' }
-SnapDump class >> uri: aUri [
+SnapDump class >> uri: aUri username: aUsername password: aPassword [
 	^ self current 
-		store: (SDHTTPStore new uri: aUri asZnUrl);
+		store: (SDHTTPStore new 
+			uri: aUri asZnUrl;
+			username: aUsername password: aPassword);
 		yourself 
 ]
 
