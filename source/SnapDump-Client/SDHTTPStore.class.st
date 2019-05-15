@@ -17,7 +17,7 @@ SDHTTPStore >> projectNamed: aString [
 { #category : #'as yet unclassified' }
 SDHTTPStore >> projectNamed: aString ifAbsent: aBlock [
 	| response |
-	response := ZnClient new
+	response := self client
 		url: uri / #projects / aString;
 		get;
 		response.
@@ -31,7 +31,7 @@ SDHTTPStore >> projectNamed: aString ifAbsent: aBlock [
 { #category : #'as yet unclassified' }
 SDHTTPStore >> projectNamed: aString ifAbsentPut: aBlock [
 	| response |
-	response := ZnClient new
+	response := self client
 		url: uri / #projects / aString;
 		get;
 		response.
@@ -45,7 +45,7 @@ SDHTTPStore >> projectNamed: aString ifAbsentPut: aBlock [
 { #category : #'as yet unclassified' }
 SDHTTPStore >> projects [
 	| response |
-	response := ZnClient new
+	response := self client
 		url: uri / #projects;
 		get;
 		response.
@@ -56,7 +56,7 @@ SDHTTPStore >> projects [
 { #category : #'as yet unclassified' }
 SDHTTPStore >> removeSnapshot: aSnapshot [ 
 	| response |
-	response := ZnClient new
+	response := self client
 		url: uri / #snapshots / aSnapshot id;
 		delete;
 		response.
@@ -66,7 +66,7 @@ SDHTTPStore >> removeSnapshot: aSnapshot [
 
 { #category : #'as yet unclassified' }
 SDHTTPStore >> snapshotDumpWithId: aString [ 
-	^ ZnClient new
+	^ self client
 		headerAt: 'Accept' put: 'application/X-SnapDump-Fuel';
 		url: uri / #snapshots / aString;
 		get
@@ -74,7 +74,7 @@ SDHTTPStore >> snapshotDumpWithId: aString [
 
 { #category : #'as yet unclassified' }
 SDHTTPStore >> snapshotWithId: aString [ 
-	^ ZnClient new
+	^ self client
 		url: uri / #snapshots / aString / #fuel;
 		get
 ]
@@ -82,7 +82,7 @@ SDHTTPStore >> snapshotWithId: aString [
 { #category : #'as yet unclassified' }
 SDHTTPStore >> snapshotsWithVersion: aVersion [ 
 	| response |
-	response := ZnClient new
+	response := self client
 		url: uri / #projects / aVersion project name / #versions / aVersion string / #snapshots;
 		get;
 		response.
@@ -96,7 +96,7 @@ SDHTTPStore >> snapshotsWithVersion: aVersion [
 { #category : #'as yet unclassified' }
 SDHTTPStore >> versionsOfProject: aProject [ 
 	| response |
-	response := ZnClient new
+	response := self client
 		url: uri / #projects / aProject name / #versions;
 		get;
 		response.
