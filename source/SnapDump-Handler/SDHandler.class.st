@@ -22,6 +22,11 @@ SDHandler >> applyConfiguration: aConfig [
 
 ]
 
+{ #category : #accessing }
+SDHandler >> defaultStoreClass [
+	^ SDBasicHTTPStore 
+]
+
 { #category : #'as yet unclassified' }
 SDHandler >> handleException: exception [
 
@@ -45,7 +50,7 @@ SDHandler >> project [
 
 { #category : #'as yet unclassified' }
 SDHandler >> projectName: projectName versionString: versionString [
-	project := (SDProject name: projectName).
+	project := (SDProject name: projectName) store: store.
 	version := (SDVersion string: versionString) project: project
 ]
 

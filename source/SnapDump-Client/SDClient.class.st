@@ -10,6 +10,11 @@ SDClient class >> type [
 ]
 
 { #category : #accessing }
+SDClient >> defaultStoreClass [
+	^ SDHTTPStore 
+]
+
+{ #category : #accessing }
 SDClient >> projectNamed: aString [ 
 	^ self store projectNamed: aString
 ]

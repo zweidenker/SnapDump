@@ -61,11 +61,9 @@ SnapDump class >> uri: aUri [
 
 { #category : #'as yet unclassified' }
 SnapDump class >> uri: aUri username: aUsername password: aPassword [
-	^ self current 
-		store: (SDHTTPStore new 
+	^ self current store 
 			uri: aUri asZnUrl;
-			username: aUsername password: aPassword);
-		yourself 
+			username: aUsername password: aPassword
 ]
 
 { #category : #'accessing structure variables' }
@@ -80,11 +78,24 @@ SnapDump >> applyConfiguration: aConfig [
 ]
 
 { #category : #accessing }
+SnapDump >> defaultStoreClass [
+	self subclassResponsibility 
+]
+
+{ #category : #accessing }
 SnapDump >> store [
-	^ store
+	^ store ifNil: [ 
+		store := self defaultStoreClass new ]
 ]
 
 { #category : #accessing }
 SnapDump >> store: anObject [
 	store := anObject 
+]
+
+{ #category : #'as yet unclassified' }
+SnapDump >> uri: aUri username: aUsername password: aPassword [
+	^ self store 
+			uri: aUri asZnUrl;
+			username: aUsername password: aPassword
 ]
