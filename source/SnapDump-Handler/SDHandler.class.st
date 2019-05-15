@@ -36,10 +36,12 @@ SDHandler >> handleException: exception [
 
 { #category : #'as yet unclassified' }
 SDHandler >> handleSnapshot: snapshot [
-	self store ifNotNil: [
-		self store storeSnapshot: (snapshot 
-			project: project;
-			version: version ) ].
+	self store isSetUp 
+		ifTrue: [
+			self store storeSnapshot: (snapshot 
+				project: project;
+				version: version ) ]
+		ifFalse: [ Transcript show: 'tried to store snapshot but store is not set up'; cr ].
 	^ snapshot 
 ]
 

@@ -32,7 +32,7 @@ SnapDump class >> configuration [
 { #category : #accessing }
 SnapDump class >> current [ 
 	^ current ifNil: [ 
-		current := self new ]
+		current := SDHandler new ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -50,6 +50,11 @@ SnapDump class >> handleException: exception [
 { #category : #'as yet unclassified' }
 SnapDump class >> handleSnapshot: aSnapshot [ 
 	^ self current handleSnapshot: aSnapshot 
+]
+
+{ #category : #initialization }
+SnapDump class >> reset [
+	current := nil 
 ]
 
 { #category : #'as yet unclassified' }

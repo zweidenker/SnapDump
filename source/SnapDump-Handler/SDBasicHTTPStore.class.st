@@ -36,6 +36,11 @@ SDBasicHTTPStore >> hasSnapshotNamed: snapshotId [
 		response) status = 200
 ]
 
+{ #category : #testing }
+SDBasicHTTPStore >> isSetUp [
+	^ uri notNil
+]
+
 { #category : #printing }
 SDBasicHTTPStore >> printOn: aStream [
 	aStream << uri asString

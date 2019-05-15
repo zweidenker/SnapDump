@@ -57,6 +57,11 @@ SDFilesystemStore >> hasSnapshotNamed: snapshotId [
 	^ ( self snapshotPathFor: snapshotId ) exists
 ]
 
+{ #category : #testing }
+SDFilesystemStore >> isSetUp [
+	^ path notNil
+]
+
 { #category : #accessing }
 SDFilesystemStore >> path: anObject [
 	path := anObject asFileReference.

@@ -14,6 +14,11 @@ SDStore >> hasSnapshotNamed: aString [
 	self subclassResponsibility 
 ]
 
+{ #category : #testing }
+SDStore >> isSetUp [
+	self subclassResponsibility 
+]
+
 { #category : #'as yet unclassified' }
 SDStore >> removeSnapshot: aSnapshot [ 
 	
