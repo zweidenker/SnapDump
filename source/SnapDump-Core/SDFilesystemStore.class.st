@@ -17,23 +17,23 @@ SDFilesystemStore class >> storeName [
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> buildSnapshotFrom: stream [
-	| header projectName project versionString version |
+	| projectName project versionString version snapshot dict |
 	
-	header := FLMaterializer new materializeHeaderFrom: stream.
-	projectName := header additionalObjectAt: #projectName.
+	dict := SDFileSnapshot readMetaFrom: stream.
+	snapshot := SDFileSnapshot new initializeMeta: dict.
+	projectName := dict at: #projectName.
 	project := self projects 
 		at: projectName
 		ifAbsentPut: [ (SDProject name: projectName) store: self ].
-	versionString := header additionalObjectAt: #versionString.
+	versionString := dict at: #versionString.
 	version := (SDVersion string: versionString) project: project.
 	(versions
 		at: project
 		ifAbsentPut: [ Set new ]) add: version.
 		
-	^ SDFileSnapshot new 
+	^ snapshot
 		project: project;
 		version: version;
-		setFuelHeader: header;
 		yourself
 ]
 

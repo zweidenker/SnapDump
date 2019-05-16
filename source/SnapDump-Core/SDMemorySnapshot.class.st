@@ -36,7 +36,6 @@ SDMemorySnapshot >> serializeContext: aContext on: stream [
 	| serializer |
 	
 	serializer := FLSerializer newDefault.
-	self encodeMetaOn: serializer.
 	serializer addPostMaterializationAction: [ :materialization | | session |
 		session := Processor activeProcess newDebugSessionNamed: 'External stack' startedAt: materialization root.
 		Smalltalk tools debugger openOn: session withFullView: true].
@@ -57,7 +56,14 @@ SDMemorySnapshot >> setContext: aContext exceptionClassName: exceptionClassName 
 ]
 
 { #category : #writing }
+SDMemorySnapshot >> writeMetaOn: stream [
+	stream nextPutAll: (NeoJSONWriter toString: self) utf8Encoded 
+]
+
+{ #category : #writing }
 SDMemorySnapshot >> writeTo: stream [
+	self writeMetaOn: stream.
+	stream nextPut: self class metaSeparator.
 	self 
 		serializeContext: context 
 		on: stream 

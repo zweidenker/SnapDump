@@ -25,6 +25,11 @@ SDSnapshot class >> exception: anException [
 	^ self new exception: anException
 ]
 
+{ #category : #'as yet unclassified' }
+SDSnapshot class >> metaSeparator [
+	^ 255
+]
+
 { #category : #accessing }
 SDSnapshot class >> neoJsonMapping: mapper [
 	mapper for: self do: [ :mapping |

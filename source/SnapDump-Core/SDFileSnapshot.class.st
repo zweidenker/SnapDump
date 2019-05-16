@@ -29,6 +29,12 @@ SDFileSnapshot class >> readFrom: aStream [
 ]
 
 { #category : #'as yet unclassified' }
+SDFileSnapshot class >> readMetaFrom: stream [ 
+	^ NeoJSONReader fromString: (stream upTo: self metaSeparator) utf8Decoded 
+
+]
+
+{ #category : #'as yet unclassified' }
 SDFileSnapshot >> contentStream [
 	^ file binaryReadStream
 ]
@@ -46,6 +52,12 @@ SDFileSnapshot >> file: aFileReference [
 { #category : #'as yet unclassified' }
 SDFileSnapshot >> fileSize [
 	^ file size
+]
+
+{ #category : #'as yet unclassified' }
+SDFileSnapshot >> initializeMeta: dictionary [
+	self basicMetaFields do: [ :field |
+		self instVarNamed: field put: (dictionary at: field) ]
 ]
 
 { #category : #'instance creation' }
