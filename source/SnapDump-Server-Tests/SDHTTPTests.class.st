@@ -126,7 +126,7 @@ SDHTTPTests >> testSetup [
 		shouldnt: [ handler handleException: mock ]
 		raise: Error.
 	self assert: rootPath hasFiles.
-	self assert: ((rootPath / mock asSnapshot id), #fuel) exists.
+	self assert: ((rootPath / mock asSnapshot id), #snap) exists.
 
 ]
 

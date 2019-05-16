@@ -41,15 +41,10 @@ SDFilesystemStore >> buildSnapshotFrom: stream [
 SDFilesystemStore >> buildSnapshots [
 	projects := Dictionary new.
 	versions := Dictionary new.
-	snapshots := self fuelFiles collect: [ :file |
+	snapshots := self snapshotFiles collect: [ :file |
 		(self buildSnapshotFrom: file binaryReadStream)
 			file: file;
 			yourself ] 
-]
-
-{ #category : #'as yet unclassified' }
-SDFilesystemStore >> fuelFiles [
-	^ path childrenMatching: '*.fuel'
 ]
 
 { #category : #testing }
@@ -122,8 +117,13 @@ SDFilesystemStore >> reset [
 ]
 
 { #category : #'as yet unclassified' }
+SDFilesystemStore >> snapshotFiles [
+	^ path childrenMatching: '*.snap'
+]
+
+{ #category : #'as yet unclassified' }
 SDFilesystemStore >> snapshotPathFor: aString [ 
-	^ (path / aString) , #fuel
+	^ (path / aString) , #snap
 ]
 
 { #category : #'as yet unclassified' }
@@ -160,7 +160,7 @@ SDFilesystemStore >> versionsOfProject: aProject [
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> writeSnapshot: snapshot [
 	| stream file |
-	file := (path / snapshot id) , #fuel.
+	file := (path / snapshot id) , #snap.
 	stream := file fileSystem  binaryWriteStreamOn: file path.
 	[ snapshot writeTo: stream ]
 		ensure: [ stream close ]

@@ -75,7 +75,7 @@ SDHTTPStore >> snapshotDumpWithId: aString [
 { #category : #'as yet unclassified' }
 SDHTTPStore >> snapshotWithId: aString [ 
 	^ self client
-		url: uri / #snapshots / aString / #fuel;
+		url: uri / #snapshots / aString / #snap;
 		get
 ]
 
