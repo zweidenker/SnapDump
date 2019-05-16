@@ -25,6 +25,7 @@ SDBasicHTTPStore >> applyConfiguration: aConfig [
 { #category : #accessing }
 SDBasicHTTPStore >> client [
 	^ ZnClient new
+		beOneShot;
 		setBasicAuthenticationUsername: username password: password 
 ]
 
