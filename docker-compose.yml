@@ -1,8 +1,15 @@
 version: '3'
 
 services:
-    snapdump:
-        build: .
-        image: registry/snap-dump:${PROJECT_VERSION}
-        ports:
-          - "5555:5555"
+  snapdump:
+    build: .
+    image: zweidenket/snap-dump:latest
+    ports:
+      - "5556:5555"
+    volumes:
+      - "SnapDump:/snapshots"
+
+volumes:
+  SnapDump:
+    external: true
+
