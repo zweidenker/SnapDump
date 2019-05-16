@@ -3,7 +3,7 @@ version: '3'
 services:
   snapdump:
     build: .
-    image: zweidenket/snap-dump:latest
+    image: zweidenker/snap-dump:latest
     ports:
       - "5556:5555"
     volumes:
