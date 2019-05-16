@@ -37,6 +37,7 @@ SDFileSnapshot class >> readMetaFrom: stream [
 { #category : #'as yet unclassified' }
 SDFileSnapshot >> contentStream [
 	^ file binaryReadStream
+		upTo: self class metaSeparator
 ]
 
 { #category : #'as yet unclassified' }
