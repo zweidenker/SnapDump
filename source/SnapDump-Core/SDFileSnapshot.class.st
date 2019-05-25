@@ -14,18 +14,9 @@ SDFileSnapshot class >> fromFile: aFileReference [
 ]
 
 { #category : #accessing }
-SDFileSnapshot class >> fromFile: aFileReference store: store [
-	^ self new 
-		store: store;
-		file: aFileReference;
-		readFrom: aFileReference binaryReadStream
-	
-]
-
-{ #category : #accessing }
 SDFileSnapshot class >> readFrom: aStream [
-	^ self new
-		setFuelHeader: (FLMaterializer new materializeHeaderFrom: aStream)
+	^ self new 
+		initializeMeta: (self readMetaFrom: aStream)
 ]
 
 { #category : #'as yet unclassified' }

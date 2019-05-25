@@ -61,13 +61,13 @@ SDHTTPTests >> testInternalServerError [
 	server debugMode: false.
 	response := ZnClient new
 		url: self apiUri / #snapshots / self dummySnapshotId;
-		entity: (ZnStringEntity text: '{bogus ;json');
+		entity: (ZnByteArrayEntity bytes: '{bogus ;json' asByteArray );
 		put;
 		response.
 	self assert: response isError.
 	self assert: rootPath hasFiles.
 	snapshot := SDFileSnapshot fromFile: rootPath children anyOne.
-	self assert: snapshot className equals: 'FLMaterializer'
+	self assert: snapshot className equals: 'NeoJSONReader'
 ]
 
 { #category : #tests }
