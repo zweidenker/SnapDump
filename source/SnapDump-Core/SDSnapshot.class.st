@@ -4,7 +4,6 @@ Class {
 	#instVars : [
 		'id',
 		'timestamp',
-		'store',
 		'project',
 		'version',
 		'className',
