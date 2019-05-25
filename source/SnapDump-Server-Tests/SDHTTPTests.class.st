@@ -56,6 +56,21 @@ SDHTTPTests >> tearDown [
 ]
 
 { #category : #tests }
+SDHTTPTests >> testInternalServerError [
+	| response snapshot |
+	server debugMode: false.
+	response := ZnClient new
+		url: self apiUri / #snapshots / self dummySnapshotId;
+		entity: (ZnStringEntity text: '{bogus ;json');
+		put;
+		response.
+	self assert: response isError.
+	self assert: rootPath hasFiles.
+	snapshot := SDFileSnapshot fromFile: rootPath children anyOne.
+	self assert: snapshot className equals: 'FLMaterializer'
+]
+
+{ #category : #tests }
 SDHTTPTests >> testProject [
 	| response project |
 	self createSimpleSnapshot.

@@ -66,7 +66,6 @@ SDBasicHTTPStore >> writeSnapshot: snapshot [
 		url: (self urlForSnapshot: snapshot id);
 		entity: (ZnByteArrayEntity bytes: writeStream contents);
 		put
-	]
-		on: Error 
-		do: [ :err | err pass. Transcript show: 'error happened: ', err description ]
+	] on: Error do: [ :err | 
+		Transcript show: 'error happened: ', err description ]
 ]
