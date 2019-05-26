@@ -78,7 +78,7 @@ SDHTTPTests >> testProject [
 		url: self apiUri / #projects / #TestProject;
 		get;
 		response.
-	self assert: response isSuccess equals: true.
+	self assert: response isSuccess.
 	project := NeoJSONReader fromString: response contents.
 	self assert: (project at: 'name') equals: 'TestProject'
 	
