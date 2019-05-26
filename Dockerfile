@@ -15,7 +15,15 @@ RUN mv /opt/Pharo.changes /opt/SnapDump.changes
 COPY start.st /opt/
 
 ARG CACHEBUST=1
-RUN /opt/pharo /opt/SnapDump.image eval --save "Metacello new repository: 'github://zweidenker/SnapDump/source'; baseline: #SnapDump; load: #('server')"
+RUN \
+    /opt/pharo /opt/SnapDump.image eval --save "Metacello new repository: 'github://zweidenker/SnapDump/source'; baseline: #SnapDump; load: #('server')" && \
+    /opt/pharo /opt/SnapDump.image eval --save "LGitLibrary class compile: 'startUp: isImageStarting'" && \
+    rm -rf /opt/pharo-local
+
+RUN \
+  apt-get -y remove --purge unzip libgit2-26 && \
+  apt-get -y autoremove --purge && \
+  apt-get clean
 
 WORKDIR /opt
 
@@ -23,4 +31,4 @@ CMD "/opt/pharo" "--mmap" "64m" "/opt/SnapDump.image" "--no-default-preferences"
 
 EXPOSE 5555
 
-HEALTHCHECK CMD curl --fail -H 'Connection: close' http://localhost:5555/health/sunit/ServerHealth || exit 1
+HEALTHCHECK CMD curl --fail -H 'Connection: close' http://localhost:5555/health/sunit/SnapDumpHealth || exit 1
