@@ -61,8 +61,13 @@ SDSnapshotCall >> head [
 { #category : #public }
 SDSnapshotCall >> put [
 | snapshot |
-	snapshot := self store buildSnapshotFrom: request contents readStream.
-	snapshot validate.
+	[snapshot := self store buildSnapshotFrom: request contents readStream.
+	snapshot validate]
+	on: ZnCharacterEncodingError  
+	do: [:err | 
+		^ response := ZnResponse 
+			badRequest: request 
+			entity: (ZnStringEntity text: err description) ].
 	self store storeRaw: snapshot contents: request contents.
 	response := ZnResponse ok: (ZnStringEntity text: 'OK')
 ]
