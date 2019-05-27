@@ -9,8 +9,8 @@ Class {
 
 { #category : #accessing }
 SDFileSnapshot class >> fromFile: aFileReference [
-	^ (self readFrom: aFileReference binaryReadStream)
-		file: aFileReference
+	^ (self readFrom: aFileReference asFileReference binaryReadStream)
+		file: aFileReference asFileReference 
 ]
 
 { #category : #accessing }
@@ -51,6 +51,11 @@ SDFileSnapshot >> fileSize [
 SDFileSnapshot >> initializeMeta: dictionary [
 	self basicMetaFields do: [ :field |
 		self instVarNamed: field put: (dictionary at: field) ]
+]
+
+{ #category : #actions }
+SDFileSnapshot >> openDebugger [ 
+	FLMaterializer materializeFromByteArray: self contents
 ]
 
 { #category : #'instance creation' }
