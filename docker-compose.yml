@@ -1,9 +1,10 @@
 version: '3'
 
 services:
-  snapdump:
+  SnapDump:
     build: .
     image: zweidenker/snap-dump:latest
+    container_name: "SnapDump"
     ports:
       - "5556:5555"
     volumes:
