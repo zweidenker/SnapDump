@@ -11,7 +11,7 @@ Class {
 SDServerDelegate >> serverError: request exception: exception [
 	| project version |
 	project := (SDProject name: 'SnapDump').
-	version := (SDVersion string: (SDServer version ifNil: [ 'N/A' ]))
+	version := (SDVersion string: (SDServer version ifNil: [ 'None' ]))
 		project: project.
 	[ self store storeSnapshot: (exception asSnapshot
 		project: project;
