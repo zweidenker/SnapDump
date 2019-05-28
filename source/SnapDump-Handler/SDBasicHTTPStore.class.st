@@ -65,11 +65,12 @@ SDBasicHTTPStore >> username: aUsername password: aPassword [
 
 { #category : #'as yet unclassified' }
 SDBasicHTTPStore >> writeSnapshot: snapshot [
-	| writeStream |
+	| writeStream response |
 	writeStream := ByteArray new writeStream.
 	snapshot writeTo: writeStream .
-	self client
+	response := self client
 		url: (self urlForSnapshot: snapshot id);
 		entity: (ZnByteArrayEntity bytes: writeStream contents);
-		put
+		put.
+	Transcript show: 'SnapDump: Error reporting gave response: ', response asString. 
 ]

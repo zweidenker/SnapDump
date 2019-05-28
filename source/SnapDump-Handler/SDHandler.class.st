@@ -29,7 +29,7 @@ SDHandler >> defaultStoreClass [
 
 { #category : #'as yet unclassified' }
 SDHandler >> handleException: exception [
-
+	Transcript show: 'SnapDump: exception to report: ', exception description asString.
 	^ [ self handleSnapshot: exception asSnapshot ]
 		on: Error 
 		do: [ :err | 
@@ -43,6 +43,7 @@ SDHandler >> handleException: exception [
 SDHandler >> handleSnapshot: snapshot [
 	self store isSetUp 
 		ifTrue: [
+			Transcript show: 'SnapDump: store is set up'.
 			self store storeSnapshot: (snapshot 
 				project: project;
 				version: version ) ]

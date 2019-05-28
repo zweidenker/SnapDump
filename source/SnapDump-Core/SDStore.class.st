@@ -32,8 +32,10 @@ SDStore >> reset [
 
 { #category : #'as yet unclassified' }
 SDStore >> storeSnapshot: snapshot [
+	Transcript show: 'SnapDump: checking if error needs to be reported'.
 	(self hasSnapshotNamed: snapshot id)
 		ifFalse: [ 
+			Transcript show: 'SnapDump: error is being uploaded'.
 			self writeSnapshot: snapshot.
 			self reset ]
 ]
