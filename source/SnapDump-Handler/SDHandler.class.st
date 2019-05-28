@@ -30,7 +30,12 @@ SDHandler >> defaultStoreClass [
 { #category : #'as yet unclassified' }
 SDHandler >> handleException: exception [
 
-	^ self handleSnapshot: exception asSnapshot
+	^ [ self handleSnapshot: exception asSnapshot ]
+		on: Error 
+		do: [ :err | 
+			"if an error occurrs while reporting an error there is nothing
+			we can do"
+			Transcript show: 'Error ', err description asString, ' happened while report error ', exception description asString ]
 
 ]
 
