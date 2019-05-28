@@ -67,11 +67,9 @@ SDBasicHTTPStore >> username: aUsername password: aPassword [
 SDBasicHTTPStore >> writeSnapshot: snapshot [
 	| writeStream |
 	writeStream := ByteArray new writeStream.
-	[ snapshot writeTo: writeStream .
+	snapshot writeTo: writeStream .
 	self client
 		url: (self urlForSnapshot: snapshot id);
 		entity: (ZnByteArrayEntity bytes: writeStream contents);
 		put
-	] on: Error do: [ :err | 
-		Transcript show: 'error happened: ', err description ]
 ]

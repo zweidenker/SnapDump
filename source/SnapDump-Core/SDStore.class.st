@@ -37,3 +37,8 @@ SDStore >> storeSnapshot: snapshot [
 			self writeSnapshot: snapshot.
 			self reset ]
 ]
+
+{ #category : #writing }
+SDStore >> writeSnapshot: aSnapshot [
+	self subclassResponsibility 
+]
