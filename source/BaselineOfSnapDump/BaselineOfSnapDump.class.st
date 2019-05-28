@@ -11,7 +11,7 @@ BaselineOfSnapDump >> baseline: spec [
 	spec for: #'common' do: [
 		spec package: #'SnapDump-Core'.
 		spec package: #'SnapDump-Core-Tests' with: [ spec requires: #('SnapDump-Core' 'Mocketry') ].
-		spec package: #'SnapDump-Handler' with: [ spec requires: #('SnapDump-Core' ) ].
+		spec package: #'SnapDump-Handler' with: [ spec requires: #('SnapDump-Core' 'NeoJSON') ].
 		spec package: #'SnapDump-Client' with: [ spec requires: #('SnapDump-Handler' 'NeoJSON') ].
 		spec package: #'SnapDump-Server' with: [ spec requires: #('SnapDump-Core' 'ZincHTTPComponents' 'OpenAPI') ].
 		spec package: #'SnapDump-Server-Tests' with: [ spec requires: #('SnapDump-Server' 'Mocketry' ) ].
