@@ -21,13 +21,15 @@ SDVersion class >> string: aString [
 
 { #category : #comparing }
 SDVersion >> <  aVersion [
-	| own other |
+	| own other versionPart1 versionPart2 |
 	own := $. split: string.
 	other := $. split: aVersion string.
-	self assert: own size = other size.
-	own withIndexDo: [ :part :index | 
-		 part = (other at: index) ifFalse: [ 
-			^ part asNumber < (other at: index) asNumber ] ].
+	
+	1 to: (own size max: other size) do: [ :index | 
+		versionPart1 := (own at: index ifAbsent: [0]).
+		versionPart2 := (other at: index ifAbsent: [0]).
+		 versionPart1 = versionPart2 ifFalse: [ 
+			^ versionPart1 asNumber < versionPart2 asNumber ] ].
 	^ false
 ]
 
