@@ -52,6 +52,13 @@ SnapDump class >> handleSnapshot: aSnapshot [
 	^ self current handleSnapshot: aSnapshot 
 ]
 
+{ #category : #accessing }
+SnapDump class >> path: aPathString [
+	^ self current 
+		store: (SDFilesystemStore new path: aPathString asFileReference);
+		yourself 
+]
+
 { #category : #initialization }
 SnapDump class >> reset [
 	current := nil 
