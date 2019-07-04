@@ -56,6 +56,11 @@ SDHandler >> project [
 	^ project
 ]
 
+{ #category : #accessing }
+SDHandler >> project: anObject [
+	project := anObject
+]
+
 { #category : #'as yet unclassified' }
 SDHandler >> projectName: projectName versionString: versionString [
 	project := (SDProject name: projectName) store: store.
@@ -65,4 +70,9 @@ SDHandler >> projectName: projectName versionString: versionString [
 { #category : #accessing }
 SDHandler >> version [
 	^ version
+]
+
+{ #category : #accessing }
+SDHandler >> version: anObject [
+	version := anObject
 ]
