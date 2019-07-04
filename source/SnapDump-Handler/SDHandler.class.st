@@ -33,9 +33,12 @@ SDHandler >> handleException: exception [
 	^ [ self handleSnapshot: exception asSnapshot ]
 		on: Error 
 		do: [ :err | 
+			"if we run inside a test case raise the error"
+			CurrentExecutionEnvironment value isTest ifTrue: [ err pass ].
 			"if an error occurrs while reporting an error there is nothing
 			we can do"
-			Transcript show: 'Error ', err description asString, ' happened while report error ', exception description asString ]
+			Transcript show: 'Error ', err description asString, ' happened while report error ', exception description asString.
+			nil]
 
 ]
 
@@ -56,6 +59,11 @@ SDHandler >> project [
 	^ project
 ]
 
+{ #category : #accessing }
+SDHandler >> project: anObject [
+	project := anObject
+]
+
 { #category : #'as yet unclassified' }
 SDHandler >> projectName: projectName versionString: versionString [
 	project := (SDProject name: projectName) store: store.
@@ -65,4 +73,9 @@ SDHandler >> projectName: projectName versionString: versionString [
 { #category : #accessing }
 SDHandler >> version [
 	^ version
+]
+
+{ #category : #accessing }
+SDHandler >> version: anObject [
+	version := anObject
 ]

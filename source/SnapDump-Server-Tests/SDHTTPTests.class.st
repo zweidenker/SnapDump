@@ -175,6 +175,25 @@ SDHTTPTests >> testSnapshotList [
 ]
 
 { #category : #tests }
+SDHTTPTests >> testSnapshotNoVersion [
+	| response snapshot snap json |
+	handler version: ((SDVersion string: '') project: handler project).
+	snap := self createSimpleSnapshot.
+	self assert: (snap isKindOf: SDMemorySnapshot).
+	response := ZnClient new
+		url: self apiUri / #snapshots / snap id;
+		get;
+		response.
+	self assert: response isSuccess.
+	snapshot := (NeoJSONReader on: response contents readStream) nextAs: SDSnapshot.
+	json := (NeoJSONReader on: response contents readStream) next.
+	self assert: snapshot id equals: snap id.
+	self deny: (json at: 'versionString') isNil.
+	self deny: (json at: 'versionString') isEmpty.
+	
+]
+
+{ #category : #tests }
 SDHTTPTests >> testVersion [
 	| response version |
 	self createSimpleSnapshot.

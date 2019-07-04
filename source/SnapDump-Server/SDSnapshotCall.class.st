@@ -62,6 +62,7 @@ SDSnapshotCall >> head [
 SDSnapshotCall >> put [
 | snapshot |
 	[snapshot := self store buildSnapshotFrom: request contents readStream.
+	snapshot sanitize.
 	snapshot validate]
 	on: ZnCharacterEncodingError  
 	do: [:err | 
