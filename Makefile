@@ -1,5 +1,5 @@
 docker: SnapDump.image
-	docker build .
+	docker build -t zweidenker/snap-dump:latest .
 
 SnapDump.image: Pharo.image
 	./pharo Pharo.image save SnapDump
