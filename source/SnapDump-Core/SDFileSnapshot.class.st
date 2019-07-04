@@ -86,7 +86,10 @@ SDFileSnapshot >> setFuelHeader: aFLHeader [
 
 { #category : #'as yet unclassified' }
 SDFileSnapshot >> storeRaw: aByteArray [
+	"write file with new json header in case the fields have been changed"
 	file binaryWriteStream 
-		nextPutAll: aByteArray;
+		nextPutAll: (NeoJSONWriter toString: self) utf8Encoded;  
+		nextPut: self class metaSeparator;
+		nextPutAll: (aByteArray copyFrom: ((aByteArray indexOf: self class metaSeparator) + 1) to: aByteArray size );
 		close
 ]

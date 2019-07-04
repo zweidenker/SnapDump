@@ -33,9 +33,12 @@ SDHandler >> handleException: exception [
 	^ [ self handleSnapshot: exception asSnapshot ]
 		on: Error 
 		do: [ :err | 
+			"if we run inside a test case raise the error"
+			CurrentExecutionEnvironment value isTest ifTrue: [ err pass ].
 			"if an error occurrs while reporting an error there is nothing
 			we can do"
-			Transcript show: 'Error ', err description asString, ' happened while report error ', exception description asString ]
+			Transcript show: 'Error ', err description asString, ' happened while report error ', exception description asString.
+			nil]
 
 ]
 
