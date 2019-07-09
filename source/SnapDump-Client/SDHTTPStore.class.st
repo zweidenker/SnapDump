@@ -81,9 +81,10 @@ SDHTTPStore >> snapshotWithId: aString [
 
 { #category : #'as yet unclassified' }
 SDHTTPStore >> snapshotsWithVersion: aVersion [ 
-	| response |
+	| response vs |
+	vs := ZnResourceMetaUtils encodePercent: aVersion string safeSet: #urlPathSafeSet encoder: ZnCharacterEncoder utf8.
 	response := self client
-		url: uri / #projects / aVersion project name / #versions / aVersion string / #snapshots;
+		url: uri / #projects / aVersion project name / #versions / vs / #snapshots;
 		get;
 		response.
 	response isSuccess 

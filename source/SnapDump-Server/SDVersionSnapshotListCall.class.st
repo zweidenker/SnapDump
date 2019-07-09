@@ -39,6 +39,8 @@ SDVersionSnapshotListCall class >> path [
 
 { #category : #accessing }
 SDVersionSnapshotListCall >> get [
-	self jsonResponse: (self projectNamed: projectName versionAt: versionString) snapshots
+	self jsonResponse: (self 
+		projectNamed: (ZnResourceMetaUtils decodePercent: projectName)
+		versionAt: (ZnResourceMetaUtils decodePercent: versionString)) snapshots
 	
 ]
