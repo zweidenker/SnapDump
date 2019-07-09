@@ -29,6 +29,14 @@ SDOpenAPICall >> projectNamed: projectName versionAt: versionString [
 	
 ]
 
+{ #category : #public }
+SDOpenAPICall >> snapshotWithId: aString [
+	[ ^ self store snapshotWithId: aString ]
+		on: NotFound 
+		do: [ :err |
+			ZnRespond signalWith: (ZnResponse notFound: request url) ]
+]
+
 { #category : #accessing }
 SDOpenAPICall >> store [
 	^ self delegate store

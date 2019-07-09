@@ -36,7 +36,7 @@ SDSnapshotCall >> delete [
 SDSnapshotCall >> get [
 	| fuelFile json |
 	json := true.
-	fuelFile := self store snapshotWithId: snapshotId.
+	fuelFile := self snapshot.
 	request headers 
 		at: 'Accept'
 		ifPresent: [ :header | 
@@ -71,4 +71,9 @@ SDSnapshotCall >> put [
 			entity: (ZnStringEntity text: err description) ].
 	self store storeRaw: snapshot contents: request contents.
 	response := ZnResponse ok: (ZnStringEntity text: 'OK')
+]
+
+{ #category : #public }
+SDSnapshotCall >> snapshot [
+	^ self snapshotWithId: snapshotId 
 ]
