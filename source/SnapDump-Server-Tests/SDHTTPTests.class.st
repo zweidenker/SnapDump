@@ -57,7 +57,7 @@ SDHTTPTests >> tearDown [
 
 { #category : #tests }
 SDHTTPTests >> testInternalServerError [
-	| response snapshot |
+	| response snapshot exceptionId snapshotId |
 	server debugMode: false.
 	response := ZnClient new
 		url: self apiUri / #snapshots / self dummySnapshotId;

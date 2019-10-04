@@ -50,7 +50,7 @@ SDSnapshot >> asSnapshot [
 
 { #category : #private }
 SDSnapshot >> basicMetaFields [
-	^ #(id timestamp className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild)
+	^ #(snapshotId exceptionId timestamp className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild)
 ]
 
 { #category : #private }

@@ -161,7 +161,11 @@ SDFilesystemStore >> snapshotPathFor: aSnaphot [
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> snapshotPathForId: snapshotId project: aProjectName version: aVersionName exceptionId: exceptionId [
-	^ (path / aProjectName / aVersionName / exceptionId / snapshotId) , #snap
+	^ (((path / aProjectName)
+		ensureCreateDirectory;
+		/ aVersionName)
+		ensureCreateDirectory;
+		/ exceptionId) ensureCreateDirectory / snapshotId , #snap
 ]
 
 { #category : #'as yet unclassified' }
