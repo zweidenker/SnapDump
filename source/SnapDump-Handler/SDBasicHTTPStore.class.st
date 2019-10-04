@@ -30,9 +30,15 @@ SDBasicHTTPStore >> client [
 ]
 
 { #category : #testing }
-SDBasicHTTPStore >> hasSnapshotNamed: snapshotId [
+SDBasicHTTPStore >> hasSnapshot: snapshot [
+	^ self hasSnapshot: snapshot snapshotId project: snapshot projectName version: snapshot versionString exception: snapshot exceptionId
+]
+
+{ #category : #testing }
+SDBasicHTTPStore >> hasSnapshot: snapshotId project: projectName version: versionName exception: anExceptionId [
+
 	^ (self client
-		url: (self urlForSnapshot: snapshotId);
+		url: (self urlForSnapshot: snapshotId project: projectName version: versionName exception: anExceptionId);
 		head;
 		response) status = 200
 ]
@@ -53,8 +59,14 @@ SDBasicHTTPStore >> uri: anUri [
 ]
 
 { #category : #accessing }
-SDBasicHTTPStore >> urlForSnapshot: snapshotId [
-	^ uri / #snapshots / snapshotId
+SDBasicHTTPStore >> urlForSnapshot: snapshot [
+
+	^ self urlForSnapshot: snapshot snapshotId project: snapshot projectName version: snapshot versionString exception: snapshot exceptionId
+]
+
+{ #category : #accessing }
+SDBasicHTTPStore >> urlForSnapshot: snapshotId project: projectName version: versionName exception: anExceptionId [
+	^ uri / #projects / projectName urlEncoded / #versions / versionName urlEncoded / #exceptions / anExceptionId / #snapshots / snapshotId
 ]
 
 { #category : #accessing }
@@ -69,7 +81,7 @@ SDBasicHTTPStore >> writeSnapshot: snapshot [
 	writeStream := ByteArray new writeStream.
 	snapshot writeTo: writeStream .
 	response := self client
-		url: (self urlForSnapshot: snapshot id);
+		url: (self urlForSnapshot: snapshot);
 		entity: (ZnByteArrayEntity bytes: writeStream contents);
 		put.
 	Transcript show: 'SnapDump: Error reporting gave response: ', response asString. 

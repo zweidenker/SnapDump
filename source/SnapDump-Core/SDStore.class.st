@@ -10,7 +10,7 @@ SDStore class >> withName: aString [
 ]
 
 { #category : #testing }
-SDStore >> hasSnapshotNamed: aString [
+SDStore >> hasSnapshot: aString [
 	self subclassResponsibility 
 ]
 
@@ -22,7 +22,8 @@ SDStore >> isSetUp [
 { #category : #'as yet unclassified' }
 SDStore >> removeSnapshot: aSnapshot [ 
 	
-	^ self removeSnapshotWithId: aSnapshot id.
+	(self snapshotPathFor: aSnapshot) delete.
+	self reset
 
 ]
 
@@ -33,7 +34,7 @@ SDStore >> reset [
 { #category : #'as yet unclassified' }
 SDStore >> storeSnapshot: snapshot [
 	Transcript show: 'SnapDump: checking if error needs to be reported'.
-	(self hasSnapshotNamed: snapshot id)
+	(self hasSnapshot: snapshot)
 		ifFalse: [ 
 			Transcript show: 'SnapDump: error is being uploaded'.
 			self writeSnapshot: snapshot.

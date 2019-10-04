@@ -14,7 +14,9 @@ Class {
 		'operatingSystemVersion',
 		'vmVersion',
 		'imageVersion',
-		'imageBuild'
+		'imageBuild',
+		'snapshotId',
+		'exceptionId'
 	],
 	#category : #'SnapDump-Core'
 }
@@ -34,7 +36,7 @@ SDSnapshot class >> neoJsonMapping: mapper [
 	mapper for: self do: [ :mapping |
 		mapping mapAccessors: #( projectName versionString ).
 		(mapping mapInstVar: #timestamp) valueSchema: DateAndTime.
-		mapping mapInstVars: #(id className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild) ].
+		mapping mapInstVars: #(id exceptionId snapshotId className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild) ].
 	mapper for: DateAndTime customDo: [ :mapping |
 		mapping decoder: [ :string | DateAndTime fromString: string ].
 		mapping encoder: [ :dateAndTime | dateAndTime printString ] ].
@@ -51,9 +53,21 @@ SDSnapshot >> basicMetaFields [
 	^ #(id timestamp className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild)
 ]
 
-{ #category : #accessing }
+{ #category : #private }
+SDSnapshot >> buildExceptionId [
+	^ (SHA256 hashMessage: self errorSignature) hex
+
+]
+
+{ #category : #private }
 SDSnapshot >> buildId [
 	^ (SHA256 hashMessage: self fullSignature) hex
+
+]
+
+{ #category : #private }
+SDSnapshot >> buildSnapshotId [
+	^ (SHA256 hashMessage: self snapshotSignature) hex
 
 ]
 
@@ -103,6 +117,12 @@ SDSnapshot >> exceptionClass [
 { #category : #accessing }
 SDSnapshot >> exceptionClass: aString [ 
 	exceptionClass := aString
+]
+
+{ #category : #accessing }
+SDSnapshot >> exceptionId [ 
+	^ exceptionId ifNil: [ 
+		exceptionId := self buildSnapshotId ]
 ]
 
 { #category : #signatures }
@@ -233,6 +253,25 @@ SDSnapshot >> selector [
 { #category : #accessing }
 SDSnapshot >> selector: aString [ 
 	selector := aString
+]
+
+{ #category : #accessing }
+SDSnapshot >> snapshotId [ 
+	^ snapshotId ifNil: [ 
+		snapshotId := self buildSnapshotId ]
+]
+
+{ #category : #signatures }
+SDSnapshot >> snapshotSignature [
+	^ String streamContents: [ :stream |
+		stream 
+			<< className 
+			<< '_'
+			<< selector 
+			<< '_'
+			<< exceptionClass 
+			<< '_'
+			<< timestamp printString ]
 ]
 
 { #category : #accessing }

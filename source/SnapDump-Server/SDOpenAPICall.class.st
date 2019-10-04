@@ -30,8 +30,8 @@ SDOpenAPICall >> projectNamed: projectName versionAt: versionString [
 ]
 
 { #category : #public }
-SDOpenAPICall >> snapshotWithId: aString [
-	[ ^ self store snapshotWithId: aString ]
+SDOpenAPICall >> snapshotWithId: aString project: aProjectName version: aVersionName exceptionId: anExceptionId [
+	[ ^ self store snapshotWithId: aString project: aProjectName version: aVersionName exceptionId: anExceptionId ]
 		on: NotFound 
 		do: [ :err |
 			ZnRespond signalWith: (ZnResponse notFound: request url) ]

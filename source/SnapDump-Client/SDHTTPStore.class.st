@@ -73,9 +73,9 @@ SDHTTPStore >> snapshotDumpWithId: aString [
 ]
 
 { #category : #'as yet unclassified' }
-SDHTTPStore >> snapshotWithId: aString [ 
+SDHTTPStore >> snapshotWithId: aString project: aProjectName version: aVersionName exceptionId: anExceptionId [
 	^ self client
-		url: uri / #snapshots / aString / #snap;
+		url: (self urlForSnapshot: aString project: aProjectName version: aVersionName exception: anExceptionId) / #snap;
 		get
 ]
 

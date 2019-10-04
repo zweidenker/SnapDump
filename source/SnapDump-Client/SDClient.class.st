@@ -30,6 +30,6 @@ SDClient >> projects [
 ]
 
 { #category : #searching }
-SDClient >> snapshotWithId: aString [ 
-	^ self store snapshotWithId: aString 
+SDClient >> snapshotWithId: aString project: aProjectName version: aVersionName exceptionId: anExceptionId [
+	^ self store snapshotWithId: aString project: aProjectName version: aVersionName exceptionId: anExceptionId
 ]

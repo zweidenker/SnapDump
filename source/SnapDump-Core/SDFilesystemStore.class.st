@@ -38,6 +38,26 @@ SDFilesystemStore >> buildSnapshotFrom: stream [
 ]
 
 { #category : #'as yet unclassified' }
+SDFilesystemStore >> buildSnapshotFrom: stream project: projectName version: versionName [
+	| project version snapshot dict |
+	
+	dict := SDFileSnapshot readMetaFrom: stream.
+	snapshot := SDFileSnapshot new initializeMeta: dict.
+	project := self projects 
+		at: projectName
+		ifAbsentPut: [ (SDProject name: projectName) store: self ].
+	version := (SDVersion string: versionName) project: project.
+	(versions
+		at: project
+		ifAbsentPut: [ Set new ]) add: version.
+		
+	^ snapshot
+		project: project;
+		version: version;
+		yourself
+]
+
+{ #category : #'as yet unclassified' }
 SDFilesystemStore >> buildSnapshots [
 	projects := Dictionary new.
 	versions := Dictionary new.
@@ -48,8 +68,17 @@ SDFilesystemStore >> buildSnapshots [
 ]
 
 { #category : #testing }
-SDFilesystemStore >> hasSnapshotNamed: snapshotId [
-	^ ( self snapshotPathFor: snapshotId ) exists
+SDFilesystemStore >> hasSnapshot: snapshot [
+	^ ( self snapshotPathFor: snapshot ) exists
+]
+
+{ #category : #testing }
+SDFilesystemStore >> hasSnapshot: snapshotId project: projectName version: versionName exception: exceptionId [
+	^ (self
+		snapshotPathForId: snapshotId
+		project: projectName
+		version: versionName
+		exceptionId: exceptionId) exists
 ]
 
 { #category : #testing }
@@ -95,9 +124,9 @@ SDFilesystemStore >> removeProject: aProject [
 ]
 
 { #category : #'as yet unclassified' }
-SDFilesystemStore >> removeSnapshotWithId: aString [ 
+SDFilesystemStore >> removeSnapshotWithId: aSnapshotId project: projectName version: versionName exception: exceptionId [ 
 	
-	(self snapshotPathFor: aString) delete.
+	(self snapshotPathForId: aSnapshotId project: projectName version: versionName exceptionId: exceptionId) delete.
 	self reset
 	
 ]
@@ -118,18 +147,30 @@ SDFilesystemStore >> reset [
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> snapshotFiles [
-	^ path childrenMatching: '*.snap'
+	^ path allChildrenMatching: '*.snap'
 ]
 
 { #category : #'as yet unclassified' }
-SDFilesystemStore >> snapshotPathFor: aString [ 
-	^ (path / aString) , #snap
+SDFilesystemStore >> snapshotPathFor: aSnaphot [
+	^ self
+		snapshotPathForId: aSnaphot snapshotId
+		project: aSnaphot projectName
+		version: aSnaphot versionString
+		exceptionId: aSnaphot exceptionId
 ]
 
 { #category : #'as yet unclassified' }
-SDFilesystemStore >> snapshotWithId: aString [ 
-	^ self snapshots 
-		detect: [ :each | each id = aString ]
+SDFilesystemStore >> snapshotPathForId: snapshotId project: aProjectName version: aVersionName exceptionId: exceptionId [
+	^ (path / aProjectName / aVersionName / exceptionId / snapshotId) , #snap
+]
+
+{ #category : #'as yet unclassified' }
+SDFilesystemStore >> snapshotWithId: aString project: aProjectName version: aVersionName exceptionId: anExceptionId [
+	^ self snapshots
+		detect: [ :each | 
+			((each snapshotId = aString and: [ each projectName = aProjectName ])
+				and: [ each versionString = aVersionName ])
+				and: [ each exceptionId = anExceptionId ] ]
 		ifNone: [ NotFound signal ]
 ]
 
@@ -147,7 +188,7 @@ SDFilesystemStore >> snapshotsWithVersion: aVersion [
 
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> storeRaw: snapshot contents: aByteArray [
-	snapshot file: (self snapshotPathFor: snapshot id).
+	snapshot file: (self snapshotPathFor: snapshot).
 	snapshot storeRaw: aByteArray.
 	self reset
 ]
@@ -160,7 +201,7 @@ SDFilesystemStore >> versionsOfProject: aProject [
 { #category : #'as yet unclassified' }
 SDFilesystemStore >> writeSnapshot: snapshot [
 	| stream file |
-	file := (path / snapshot id) , #snap.
+	file := self snapshotPathFor: snapshot.
 	stream := file fileSystem  binaryWriteStreamOn: file path.
 	[ snapshot writeTo: stream ]
 		ensure: [ stream close ]
