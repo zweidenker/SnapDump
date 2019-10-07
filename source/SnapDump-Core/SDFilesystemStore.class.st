@@ -5,7 +5,8 @@ Class {
 		'path',
 		'snapshots',
 		'projects',
-		'versions'
+		'versions',
+		'snapshotOccurrencesLimit'
 	],
 	#category : #'SnapDump-Core'
 }
@@ -15,38 +16,24 @@ SDFilesystemStore class >> storeName [
 	^ #file
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #private }
 SDFilesystemStore >> buildSnapshotFrom: stream [
-	| projectName project versionString version snapshot dict |
 	
-	dict := SDFileSnapshot readMetaFrom: stream.
-	snapshot := SDFileSnapshot new initializeMeta: dict.
-	projectName := dict at: #projectName.
-	project := self projects 
-		at: projectName
-		ifAbsentPut: [ (SDProject name: projectName) store: self ].
-	versionString := dict at: #versionString.
-	version := (SDVersion string: versionString) project: project.
-	(versions
-		at: project
-		ifAbsentPut: [ Set new ]) add: version.
-		
-	^ snapshot
-		project: project;
-		version: version;
-		yourself
+		^ self buildSnapshotFrom: stream project: nil version: nil
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #services }
 SDFilesystemStore >> buildSnapshotFrom: stream project: projectName version: versionName [
 	| project version snapshot dict |
 	
 	dict := SDFileSnapshot readMetaFrom: stream.
 	snapshot := SDFileSnapshot new initializeMeta: dict.
+	self ensureProjectTo: snapshot with: projectName.
+	self ensureVersionTo: snapshot with: versionName.
 	project := self projects 
-		at: projectName
-		ifAbsentPut: [ (SDProject name: projectName) store: self ].
-	version := (SDVersion string: versionName) project: project.
+		at: snapshot projectName
+		ifAbsentPut: [ (SDProject name: snapshot projectName) store: self ].
+	version := (SDVersion string: snapshot versionString) project: project; yourself.
 	(versions
 		at: project
 		ifAbsentPut: [ Set new ]) add: version.
@@ -57,7 +44,7 @@ SDFilesystemStore >> buildSnapshotFrom: stream project: projectName version: ver
 		yourself
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #private }
 SDFilesystemStore >> buildSnapshots [
 	projects := Dictionary new.
 	versions := Dictionary new.
@@ -67,23 +54,54 @@ SDFilesystemStore >> buildSnapshots [
 			yourself ] 
 ]
 
-{ #category : #testing }
-SDFilesystemStore >> hasSnapshot: snapshot [
-	^ ( self snapshotPathFor: snapshot ) exists
+{ #category : #accessing }
+SDFilesystemStore >> defaultSnapshotOccurrencesLimit [
+
+	^ 10
+	
+	
+]
+
+{ #category : #private }
+SDFilesystemStore >> ensureProjectTo: snapshot with: projectName [
+	snapshot projectName isEmptyOrNil
+		ifTrue: [ projectName isEmptyOrNil
+				ifTrue: [ snapshot projectName: SDProject defaultProjectName]
+				ifFalse: [ snapshot projectName: projectName ] ].
+	^ snapshot projectName
+]
+
+{ #category : #private }
+SDFilesystemStore >> ensureVersionTo: snapshot with: versionName [
+	snapshot versionString isEmptyOrNil
+		ifTrue: [ versionName isEmptyOrNil
+				ifTrue: [ snapshot versionString: SDVersion defaultVersionString ]
+				ifFalse: [ snapshot versionString: versionName ] ].
+	^ snapshot versionString
 ]
 
 { #category : #testing }
-SDFilesystemStore >> hasSnapshot: snapshotId project: projectName version: versionName exception: exceptionId [
-	^ (self
-		snapshotPathForId: snapshotId
-		project: projectName
-		version: versionName
-		exceptionId: exceptionId) exists
+SDFilesystemStore >> hasSnapshot: snapshot [
+	^ self hasSnapshotId: snapshot snapshotId exceptionId:  snapshot exceptionId
+]
+
+{ #category : #testing }
+SDFilesystemStore >> hasSnapshotId: snapshotId exceptionId: exceptionId [
+	^ (self snapshots anySatisfy: [:eachSnapshot | eachSnapshot snapshotId = snapshotId])
+	 or: [ 
+				(self numberOfSnapshotsForException: exceptionId) >= self snapshotOccurrencesLimit 
+			 ]
 ]
 
 { #category : #testing }
 SDFilesystemStore >> isSetUp [
 	^ path notNil
+]
+
+{ #category : #accessing }
+SDFilesystemStore >> numberOfSnapshotsForException: anExceptionId [
+
+	^ (self snapshotsForException: anExceptionId) size
 ]
 
 { #category : #accessing }
@@ -93,50 +111,50 @@ SDFilesystemStore >> path: anObject [
 	self reset
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SDFilesystemStore >> projectNamed: aString [ 
 	^ self projects at: aString 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SDFilesystemStore >> projectNamed: aString ifAbsent: aBlock [
 	^ self projects 
 		at: aString
 		ifAbsent: aBlock
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SDFilesystemStore >> projectNamed: aString ifAbsentPut: aBlock [
 	^ self projects 
 		at: aString 
 		ifAbsentPut: aBlock
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SDFilesystemStore >> projects [
 	^ projects 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #services }
 SDFilesystemStore >> removeProject: aProject [ 
 	"projects are derived from snapshots. Nothing to do"
 	^ aProject 
 ]
 
-{ #category : #'as yet unclassified' }
-SDFilesystemStore >> removeSnapshotWithId: aSnapshotId project: projectName version: versionName exception: exceptionId [ 
+{ #category : #services }
+SDFilesystemStore >> removeSnapshot: snapshot [
 	
-	(self snapshotPathForId: aSnapshotId project: projectName version: versionName exceptionId: exceptionId) delete.
+	(self snapshotPathFor: snapshot ) delete.
 	self reset
 	
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #services }
 SDFilesystemStore >> removeVersion: aVersion [ 
 	"version are created from snapshots. So nothing to do"
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #services }
 SDFilesystemStore >> reset [
 	super reset.
 	snapshots := nil.
@@ -145,36 +163,49 @@ SDFilesystemStore >> reset [
 	self buildSnapshots 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SDFilesystemStore >> snapshotFiles [
 	^ path allChildrenMatching: '*.snap'
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
+SDFilesystemStore >> snapshotOccurrencesLimit [
+	"answers the maximum number of snapshots that should be stored for a same exception id"
+	
+		^ snapshotOccurrencesLimit ifNil: [ snapshotOccurrencesLimit := self defaultSnapshotOccurrencesLimit  ]
+	
+	
+]
+
+{ #category : #accessing }
+SDFilesystemStore >> snapshotOccurrencesLimit: aNumber [
+	
+		snapshotOccurrencesLimit := aNumber
+	
+	
+]
+
+{ #category : #services }
 SDFilesystemStore >> snapshotPathFor: aSnaphot [
 	^ self
 		snapshotPathForId: aSnaphot snapshotId
 		project: aSnaphot projectName
 		version: aSnaphot versionString
-		exceptionId: aSnaphot exceptionId
 ]
 
-{ #category : #'as yet unclassified' }
-SDFilesystemStore >> snapshotPathForId: snapshotId project: aProjectName version: aVersionName exceptionId: exceptionId [
+{ #category : #services }
+SDFilesystemStore >> snapshotPathForId: snapshotId project: aProjectName version: aVersionName [
 	^ (((path / aProjectName)
 		ensureCreateDirectory;
 		/ aVersionName)
-		ensureCreateDirectory;
-		/ exceptionId) ensureCreateDirectory / snapshotId , #snap
+		ensureCreateDirectory)/ snapshotId , #snap
 ]
 
-{ #category : #'as yet unclassified' }
-SDFilesystemStore >> snapshotWithId: aString project: aProjectName version: aVersionName exceptionId: anExceptionId [
+{ #category : #services }
+SDFilesystemStore >> snapshotWithId: aString [ 
 	^ self snapshots
 		detect: [ :each | 
-			((each snapshotId = aString and: [ each projectName = aProjectName ])
-				and: [ each versionString = aVersionName ])
-				and: [ each exceptionId = anExceptionId ] ]
+			each snapshotId = aString ]
 		ifNone: [ NotFound signal ]
 ]
 
@@ -184,25 +215,39 @@ SDFilesystemStore >> snapshots [
 		
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
+SDFilesystemStore >> snapshotsForException: anExceptionId [
+
+	^ self snapshots select: [ :eachSnapshot |
+			eachSnapshot exceptionId = anExceptionId
+		 ]
+]
+
+{ #category : #services }
+SDFilesystemStore >> snapshotsWithProject: projectName version: versionString [
+	^ self snapshots
+		select: [ :each | (each project name = projectName) and: [ each version string = versionString] ]
+]
+
+{ #category : #services }
 SDFilesystemStore >> snapshotsWithVersion: aVersion [ 
 	^ self snapshots
 		select: [ :each | (each project name = aVersion project name) and: [ each version string = aVersion string ] ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #services }
 SDFilesystemStore >> storeRaw: snapshot contents: aByteArray [
 	snapshot file: (self snapshotPathFor: snapshot).
 	snapshot storeRaw: aByteArray.
 	self reset
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SDFilesystemStore >> versionsOfProject: aProject [ 
 	^ versions at: aProject ifAbsent: [ #() ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #services }
 SDFilesystemStore >> writeSnapshot: snapshot [
 	| stream file |
 	file := self snapshotPathFor: snapshot.

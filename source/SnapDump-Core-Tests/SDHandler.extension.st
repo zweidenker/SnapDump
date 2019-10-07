@@ -13,8 +13,8 @@ SDHandler class >> fillExamples [
 		projectName: ('projectname', x asString) 
 		versionString: '1.', y asString.
 	snapshot := SDTests new dummyContext asSnapshot
-		project: handler project;
-		version: (handler version).
+		projectName: handler project;
+		versionString: (handler version).
 	"snapshot id: (snapshot id at: snapshot id size atRandom put: Character alphabet atRandom; yourself)".
 	handler handleSnapshot: snapshot ] ] ]
 ]

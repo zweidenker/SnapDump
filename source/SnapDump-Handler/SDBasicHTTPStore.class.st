@@ -14,7 +14,7 @@ SDBasicHTTPStore class >> storeName [
 	^ #http
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #initialization }
 SDBasicHTTPStore >> applyConfiguration: aConfig [
 	uri := aConfig uri.
    username := aConfig username.
@@ -31,14 +31,8 @@ SDBasicHTTPStore >> client [
 
 { #category : #testing }
 SDBasicHTTPStore >> hasSnapshot: snapshot [
-	^ self hasSnapshot: snapshot snapshotId project: snapshot projectName version: snapshot versionString exception: snapshot exceptionId
-]
-
-{ #category : #testing }
-SDBasicHTTPStore >> hasSnapshot: snapshotId project: projectName version: versionName exception: anExceptionId [
-
 	^ (self client
-		url: (self urlForSnapshot: snapshotId project: projectName version: versionName exception: anExceptionId);
+		url: (self urlForSnapshot: snapshot);
 		head;
 		response) status = 200
 ]
@@ -46,6 +40,16 @@ SDBasicHTTPStore >> hasSnapshot: snapshotId project: projectName version: versio
 { #category : #testing }
 SDBasicHTTPStore >> isSetUp [
 	^ uri notNil
+]
+
+{ #category : #accessing }
+SDBasicHTTPStore >> parametersFor: snapshot [
+
+	^ Dictionary new 
+			at: #projectName put: snapshot projectName;
+			at: #versionName put: snapshot versionString;
+			at: #exceptionId put: snapshot exceptionId;
+			yourself
 ]
 
 { #category : #printing }
@@ -61,12 +65,33 @@ SDBasicHTTPStore >> uri: anUri [
 { #category : #accessing }
 SDBasicHTTPStore >> urlForSnapshot: snapshot [
 
-	^ self urlForSnapshot: snapshot snapshotId project: snapshot projectName version: snapshot versionString exception: snapshot exceptionId
+	^ self urlForSnapshot: snapshot snapshotId  project: snapshot projectName version: snapshot versionString exception:  snapshot exceptionId
+]
+
+{ #category : #accessing }
+SDBasicHTTPStore >> urlForSnapshot: snapshotId parameters: aParameterDictionary [
+	^ (String
+		streamContents: [ :stream | 
+			stream
+				<< (uri / #snapshots / snapshotId) printString;
+				<< '?'.
+			aParameterDictionary keys
+				do: [ :eachParameterName | 
+					stream
+						<< eachParameterName;
+						<< '=';
+						<< (aParameterDictionary at: eachParameterName) urlEncoded ]
+				separatedBy: [ stream << '&' ] ]) asUrl
 ]
 
 { #category : #accessing }
 SDBasicHTTPStore >> urlForSnapshot: snapshotId project: projectName version: versionName exception: anExceptionId [
-	^ uri / #projects / projectName urlEncoded / #versions / versionName urlEncoded / #exceptions / anExceptionId / #snapshots / snapshotId
+	
+	^ self urlForSnapshot: snapshotId parameters: (Dictionary new 
+		at: #projectName put: projectName;
+		at: #versionName put: versionName;
+		at: #exceptionId put: anExceptionId;
+		yourself)
 ]
 
 { #category : #accessing }
@@ -75,7 +100,7 @@ SDBasicHTTPStore >> username: aUsername password: aPassword [
 	password := aPassword
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #services }
 SDBasicHTTPStore >> writeSnapshot: snapshot [
 	| writeStream response |
 	writeStream := ByteArray new writeStream.

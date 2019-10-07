@@ -8,6 +8,12 @@ Class {
 	#category : #'SnapDump-Core'
 }
 
+{ #category : #accessing }
+SDProject class >> defaultProjectName [
+
+	^ 'unknown'
+]
+
 { #category : #'instance creation' }
 SDProject class >> name: aString [ 
 	^ self new name: aString 

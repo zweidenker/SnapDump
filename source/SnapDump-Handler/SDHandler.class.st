@@ -48,8 +48,8 @@ SDHandler >> handleSnapshot: snapshot [
 		ifTrue: [
 			Transcript show: 'SnapDump: store is set up'.
 			self store storeSnapshot: (snapshot 
-				project: project;
-				version: version ) ]
+				projectName: project;
+				versionString: version ) ]
 		ifFalse: [ Transcript show: 'tried to store snapshot but store is not set up'; cr ].
 	^ snapshot 
 ]
@@ -66,8 +66,8 @@ SDHandler >> project: anObject [
 
 { #category : #'as yet unclassified' }
 SDHandler >> projectName: projectName versionString: versionString [
-	project := (SDProject name: projectName) store: store.
-	version := (SDVersion string: versionString) project: project
+	self project: projectName.
+	self version: versionString
 ]
 
 { #category : #accessing }

@@ -19,17 +19,19 @@ SDFileTests >> store [
 SDFileTests >> testSimpleRead [
 	| snapshot |
 	snapshot := self createSimpleSnapshot.
-	self assert: rootPath hasFiles.
-	self assert: snapshot project name equals: 'TestProject'.
-	self assert: snapshot version string equals: '0.1'
+	self deny: rootPath hasFiles.
+	self assert: rootPath hasDirectories.
+	self assert: snapshot projectName equals: 'TestProject'.
+	self assert: snapshot versionString equals: '0.1'
 
 ]
 
 { #category : #tests }
 SDFileTests >> testSimpleWrite [
-	| snapshot |
+	| snapshot root |
 	snapshot := self createSimpleSnapshot.
-	self assert: rootPath hasFiles.
-	self assert: ((rootPath / snapshot id), #snap) exists.
-
+	self deny: rootPath hasFiles.
+	self assert: rootPath hasDirectories.
+	root := self dummySnapshotRootPath.
+	self assert: (root / snapshot snapshotId , #snap) exists
 ]

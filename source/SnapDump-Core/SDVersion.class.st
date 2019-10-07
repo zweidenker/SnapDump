@@ -9,6 +9,12 @@ Class {
 }
 
 { #category : #accessing }
+SDVersion class >> defaultVersionString [
+
+	^ 'unknown'
+]
+
+{ #category : #accessing }
 SDVersion class >> neoJsonMapping: mapper [
 	mapper for: self do: [ :mapping |
 		mapping mapInstVars: #(string) ]
@@ -77,7 +83,7 @@ SDVersion >> store [
 
 { #category : #accessing }
 SDVersion >> string [
-	^ string
+	^ string 
 ]
 
 { #category : #accessing }

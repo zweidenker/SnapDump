@@ -2,7 +2,6 @@ Class {
 	#name : #SDSnapshot,
 	#superclass : #Object,
 	#instVars : [
-		'id',
 		'timestamp',
 		'project',
 		'version',
@@ -16,7 +15,9 @@ Class {
 		'imageVersion',
 		'imageBuild',
 		'snapshotId',
-		'exceptionId'
+		'exceptionId',
+		'versionString',
+		'projectName'
 	],
 	#category : #'SnapDump-Core'
 }
@@ -36,7 +37,7 @@ SDSnapshot class >> neoJsonMapping: mapper [
 	mapper for: self do: [ :mapping |
 		mapping mapAccessors: #( projectName versionString ).
 		(mapping mapInstVar: #timestamp) valueSchema: DateAndTime.
-		mapping mapInstVars: #(id exceptionId snapshotId className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild) ].
+		mapping mapInstVars: #(exceptionId snapshotId className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild) ].
 	mapper for: DateAndTime customDo: [ :mapping |
 		mapping decoder: [ :string | DateAndTime fromString: string ].
 		mapping encoder: [ :dateAndTime | dateAndTime printString ] ].
@@ -50,18 +51,12 @@ SDSnapshot >> asSnapshot [
 
 { #category : #private }
 SDSnapshot >> basicMetaFields [
-	^ #(snapshotId exceptionId timestamp className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild)
+	^ #(projectName versionString snapshotId exceptionId timestamp className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild)
 ]
 
 { #category : #private }
 SDSnapshot >> buildExceptionId [
 	^ (SHA256 hashMessage: self errorSignature) hex
-
-]
-
-{ #category : #private }
-SDSnapshot >> buildId [
-	^ (SHA256 hashMessage: self fullSignature) hex
 
 ]
 
@@ -81,13 +76,13 @@ SDSnapshot >> className: aString [
 	className := aString
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SDSnapshot >> dateAndTimeString [ 
 	^ String streamContents: [ :stream |
 		stream << self dateString << ' ' << self timeString  ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SDSnapshot >> dateString [ 
 	^ timestamp asDate printFormat: #(1 2 3 $. 1 1)
 ]
@@ -101,12 +96,22 @@ SDSnapshot >> encodeMetaOn: aSerializer [
 { #category : #signatures }
 SDSnapshot >> errorSignature [
 	^ String streamContents: [ :stream |
-		stream 
+		self errorSignatureOn: stream  ]
+]
+
+{ #category : #signatures }
+SDSnapshot >> errorSignatureOn: stream [
+
+	^  stream 
+			<< self projectName asString 
+			<< '_'
+			<< self versionString asString 
+			<< '_'
 			<< className 
 			<< '_'
 			<< selector 
 			<< '_'
-			<< exceptionClass  ]
+			<< exceptionClass 
 ]
 
 { #category : #accessing }
@@ -122,33 +127,7 @@ SDSnapshot >> exceptionClass: aString [
 { #category : #accessing }
 SDSnapshot >> exceptionId [ 
 	^ exceptionId ifNil: [ 
-		exceptionId := self buildSnapshotId ]
-]
-
-{ #category : #signatures }
-SDSnapshot >> fullSignature [
-	^ String streamContents: [ :stream |
-		stream 
-			<< self projectName asString 
-			<< '_'
-			<< self versionString asString 
-			<< '_'
-			<< className 
-			<< '_'
-			<< selector 
-			<< '_'
-			<< exceptionClass  ]
-]
-
-{ #category : #accessing }
-SDSnapshot >> id [ 
-	^ id ifNil: [ 
-		id := self buildId ]
-]
-
-{ #category : #accessing }
-SDSnapshot >> id: anObject [
-	id := anObject
+		exceptionId := self buildExceptionId ]
 ]
 
 { #category : #accessing }
@@ -180,9 +159,6 @@ SDSnapshot >> initialize [
 { #category : #private }
 SDSnapshot >> metaFields [
 	^ self basicMetaFields asOrderedCollection
-		add: #projectName;
-		add: #versionString;
-		yourself
 ]
 
 { #category : #signatures }
@@ -197,7 +173,7 @@ SDSnapshot >> methodSignature [
 { #category : #actions }
 SDSnapshot >> openDebugger [
 	FLMaterializer materializeFromByteArray: (
-		self store snapshotDumpWithId: id )
+		self store snapshotDumpFor: self )
 ]
 
 { #category : #accessing }
@@ -227,17 +203,19 @@ SDSnapshot >> project [
 
 { #category : #accessing }
 SDSnapshot >> project: aProject [
-	project := aProject
+	project := aProject.
+	projectName :=  aProject name
 ]
 
 { #category : #accessing }
 SDSnapshot >> projectName [
-	^ project name
+	^ projectName
 ]
 
 { #category : #accessing }
-SDSnapshot >> projectName: aString [ 
-	"we only use project objects"
+SDSnapshot >> projectName: aString [
+	
+	projectName := aString
 ]
 
 { #category : #actions }
@@ -264,12 +242,8 @@ SDSnapshot >> snapshotId [
 { #category : #signatures }
 SDSnapshot >> snapshotSignature [
 	^ String streamContents: [ :stream |
+		self errorSignatureOn: stream.
 		stream 
-			<< className 
-			<< '_'
-			<< selector 
-			<< '_'
-			<< exceptionClass 
 			<< '_'
 			<< timestamp printString ]
 ]
@@ -289,7 +263,7 @@ SDSnapshot >> systemArchitecture: aString [
 	systemArchitecture := aString
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SDSnapshot >> timeString [ 
 	^ timestamp asTime print24
 ]
@@ -316,17 +290,19 @@ SDSnapshot >> version [
 { #category : #accessing }
 SDSnapshot >> version: aVersion [
 	version := aVersion.
+	versionString := aVersion string.
 	project := aVersion project
 ]
 
 { #category : #accessing }
 SDSnapshot >> versionString [
-	^ version string
+	^ versionString
 ]
 
 { #category : #accessing }
 SDSnapshot >> versionString: aString [ 
-	"we only use version object"
+	
+	versionString := aString
 ]
 
 { #category : #accessing }

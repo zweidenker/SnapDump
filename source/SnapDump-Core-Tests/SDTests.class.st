@@ -38,19 +38,29 @@ SDTests >> dummyContext [
 	^ context
 ]
 
-{ #category : #tests }
-SDTests >> dummyProjectName [
-	^ 'dummy-project'
+{ #category : #'as yet unclassified' }
+SDTests >> dummyContextSnapshot [
+	
+	^ self dummyContext asSnapshot 
+			instVarNamed: #exceptionId  put: self dummyExceptionId;
+			instVarNamed: #snapshotId  put: self dummySnapshotId;
+			yourself
 ]
 
 { #category : #tests }
-SDTests >> dummySnapshotId [
+SDTests >> dummyExceptionId [
 	^ '292310505b9f7c1493d42c91693b6222e09f5ec6cd1e16d18d1b7ec1570d8a03'
 ]
 
 { #category : #tests }
-SDTests >> dummyVersionString [
-	^ '1.0'
+SDTests >> dummySnapshotId [
+	^ 'a946512aec0333fecaa26fbb58131ffec168e43b8f8e56999603005c94e39c92'
+]
+
+{ #category : #tests }
+SDTests >> dummySnapshotRootPath [
+	^ rootPath / self projectNameForTests / self versionStringForTests
+	
 ]
 
 { #category : #running }
@@ -59,22 +69,28 @@ SDTests >> filesystemStore [
 ]
 
 { #category : #running }
-SDTests >> setUp [ 
+SDTests >> projectNameForTests [
+	^ 'TestProject'
+]
+
+{ #category : #running }
+SDTests >> setUp [
 	| store |
 	rootPath := FileSystem memory / #snaps.
 	store := self store.
-	handler := SDHandler new store: store. 
-	client := SDClient new store: store. 
-	handler 
-		projectName: 'TestProject'
-		versionString: '0.1'
+	handler := SDHandler new store: store.
+	client := SDClient new store: store.
+	handler
+		projectName: self projectNameForTests
+		versionString: self versionStringForTests
 ]
 
 { #category : #tests }
 SDTests >> snapshotMock [
 	| mock |
 	mock := Mock new. 
-	mock stub asSnapshot willReturn: self dummyContext asSnapshot.
+	mock stub asSnapshot  
+		willReturn: self dummyContextSnapshot.
 	^ mock
 
 ]
@@ -82,4 +98,9 @@ SDTests >> snapshotMock [
 { #category : #accessing }
 SDTests >> store [
 	self subclassResponsibility 
+]
+
+{ #category : #running }
+SDTests >> versionStringForTests [
+	^ '0.1'
 ]

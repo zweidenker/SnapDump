@@ -57,7 +57,7 @@ SDHTTPStore >> projects [
 SDHTTPStore >> removeSnapshot: aSnapshot [ 
 	| response |
 	response := self client
-		url: uri / #snapshots / aSnapshot id;
+		url: (self urlForSnapshot: aSnapshot);
 		delete;
 		response.
 	response isSuccess 
@@ -65,10 +65,10 @@ SDHTTPStore >> removeSnapshot: aSnapshot [
 ]
 
 { #category : #'as yet unclassified' }
-SDHTTPStore >> snapshotDumpWithId: aString [ 
+SDHTTPStore >> snapshotDumpFor: aSnapshot [ 
 	^ self client
 		headerAt: 'Accept' put: 'application/X-SnapDump-Fuel';
-		url: uri / #snapshots / aString;
+		url: (self urlForSnapshot: aSnapshot);
 		get
 ]
 
@@ -77,6 +77,20 @@ SDHTTPStore >> snapshotWithId: aString project: aProjectName version: aVersionNa
 	^ self client
 		url: (self urlForSnapshot: aString project: aProjectName version: aVersionName exception: anExceptionId) / #snap;
 		get
+]
+
+{ #category : #'as yet unclassified' }
+SDHTTPStore >> snapshotsWithProject: projectName version: versionString [
+	| response  |
+	
+	response := self client
+		url: uri / #projects / projectName urlEncoded / #versions / versionString urlEncoded  / #snapshots;
+		get;
+		response.
+	response isSuccess 
+		ifTrue: [  
+	^ ((NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot) ]
+		ifFalse: [ NotFound signal ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -98,7 +112,7 @@ SDHTTPStore >> snapshotsWithVersion: aVersion [
 SDHTTPStore >> versionsOfProject: aProject [ 
 	| response |
 	response := self client
-		url: uri / #projects / aProject name / #versions;
+		url: uri / #projects / aProject name urlEncoded / #versions;
 		get;
 		response.
 	response isSuccess 

@@ -4,6 +4,12 @@ Class {
 	#category : #'SnapDump-Core-Tests'
 }
 
+{ #category : #tests }
+SDCoreTests >> getDummySnapshotFromClient [
+	^ client
+		snapshotWithId: self dummySnapshotId
+]
+
 { #category : #accessing }
 SDCoreTests >> store [ 
 	^ self filesystemStore
@@ -103,7 +109,7 @@ SDCoreTests >> testRemoveSnapshot [
 
 	|  snapshot |
 	self createSimpleSnapshot.
-	snapshot := client snapshotWithId: self dummySnapshotId.
+	snapshot := self getDummySnapshotFromClient.
 	self assert: snapshot className equals: 'Object'.
 	self 
 		shouldnt: [ snapshot remove ]
@@ -113,24 +119,28 @@ SDCoreTests >> testRemoveSnapshot [
 
 { #category : #tests }
 SDCoreTests >> testRemoveVersion [
-
-	|  snapshot |
+	| snapshot |
 	self createSimpleSnapshot.
-	snapshot := client snapshotWithId: self dummySnapshotId.
+	snapshot := self getDummySnapshotFromClient.
 	self assert: snapshot className equals: 'Object'.
 	snapshot version remove.
-	self assert: client projects isEmpty 
+	self assert: client projects isEmpty
 ]
 
 { #category : #tests }
 SDCoreTests >> testSetup [
-	| mock |
+	| mock root |
 	mock := self snapshotMock.
 	self 
 		shouldnt: [ handler handleException: mock ]
 		raise: Error.
-	self assert: rootPath hasFiles.
-	self assert: ((rootPath / mock asSnapshot id), #snap) exists.
+	"only directories should be contained by the root path"
+	self deny: rootPath hasFiles.
+	self assert: rootPath hasDirectories.
+	root := self dummySnapshotRootPath.
+	self assert: root exists. 
+	self assert: root isDirectory. 
+	self assert: ((root / mock asSnapshot snapshotId), #snap) exists.
 
 ]
 
@@ -139,6 +149,6 @@ SDCoreTests >> testSnapshot [
 
 	|  snapshot |
 	self createSimpleSnapshot.
-	snapshot := client snapshotWithId: self dummySnapshotId.
+	snapshot := self getDummySnapshotFromClient.
 	self assert: snapshot className equals: 'Object'
 ]
