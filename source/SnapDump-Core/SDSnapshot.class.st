@@ -131,6 +131,11 @@ SDSnapshot >> exceptionId [
 ]
 
 { #category : #accessing }
+SDSnapshot >> exceptionId: aString [
+	exceptionId := aString
+]
+
+{ #category : #accessing }
 SDSnapshot >> imageBuild [
 	^ imageBuild
 ]
@@ -237,6 +242,11 @@ SDSnapshot >> selector: aString [
 SDSnapshot >> snapshotId [ 
 	^ snapshotId ifNil: [ 
 		snapshotId := self buildSnapshotId ]
+]
+
+{ #category : #accessing }
+SDSnapshot >> snapshotId: aString [
+	snapshotId := aString
 ]
 
 { #category : #signatures }

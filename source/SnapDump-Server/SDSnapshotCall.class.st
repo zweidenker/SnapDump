@@ -18,6 +18,7 @@ SDSnapshotCall class >> parameterExceptionId [
 		in: #query;
 		beString;
 		required: false;
+		allowEmptyValue: false;
 		description: 'Identify a given exception within the context of this server. Several snapshots can be reported for a same exceptionId'
 
 ]
@@ -30,7 +31,7 @@ SDSnapshotCall class >> parameterProjectName [
 		in: #query;
 		beString;
 		required: false;
-		allowEmptyValue: true;
+		allowEmptyValue: false;
 		description: 'Name of the project to which a snapshot belongs to'
 
 ]
@@ -54,8 +55,8 @@ SDSnapshotCall class >> parameterVersionName [
 		name: 'versionName';
 		in: #query;
 		beString;
-		allowEmptyValue: true;
 		required: false;
+		allowEmptyValue: false;
 		description: 'Version of the project to which a snapshot belongs to'
 
 ]
@@ -95,16 +96,28 @@ SDSnapshotCall >> get [
 { #category : #accessing }
 SDSnapshotCall >> head [
 
-	response := (self store hasSnapshotId: snapshotId exceptionId: exceptionId )
-		ifTrue: [ ZnResponse ok: (ZnStringEntity text: 'OK') ]
-		ifFalse: [ ZnResponse notFound: request uri ]
+	self validateRequiredParameters: #(exceptionId projectName versionName).
+	[ self snapshot ]
+		on: NotFound
+		do: [ :ex | 
+			(self store
+				shouldReportProject: projectName
+				version: versionName
+				exception: exceptionId)
+				ifTrue: [ ^ ZnResponse notFound: request uri ] ].
+	ZnResponse ok: (ZnStringEntity text: 'OK')
 ]
 
 { #category : #public }
 SDSnapshotCall >> put [
-| snapshot |
+| snapshot dict |
 
-	[snapshot := self store buildSnapshotFrom: request contents readStream project: projectName version: versionName.
+	self validateRequiredParameters: #(projectName versionName exceptionId).
+	[
+	snapshot := self store buildSnapshot: snapshotId exception: exceptionId project: projectName version: versionName.
+	"still need to read the meta data to get all variables initialized before being written on disk "
+	dict := SDFileSnapshot readMetaFrom: request contents readStream.
+	snapshot initializeMeta: dict.
 	snapshot validate]
 	on: ZnCharacterEncodingError  
 	do: [:err | 
@@ -117,5 +130,25 @@ SDSnapshotCall >> put [
 
 { #category : #public }
 SDSnapshotCall >> snapshot [
-	^ self snapshotWithId: snapshotId
+	[ (projectName isNil or: [ versionName isNil ])
+		ifTrue: [ 
+			"here we give the possibility to fetch a given snapshot from its snapshotId only.
+			handy but slower than fetching with a known project and version "
+			^ self store snapshotWithId: snapshotId ].
+	^ self store
+		snapshotWithId: snapshotId
+		project: projectName
+		version: versionName ]
+		on: NotFound
+		do: [ :err | ZnRespond signalWith: (ZnResponse notFound: request url) ]
+]
+
+{ #category : #public }
+SDSnapshotCall >> validateRequiredParameters: aCollectionOfParameterNames [
+
+ 	aCollectionOfParameterNames do: [ :eachParameterName |
+		(self instVarNamed: eachParameterName) isEmptyOrNil ifTrue: [ 
+			OAMissingRequiredParameter signal: 'parameter ' , eachParameterName , ' is required but not present'
+			 ]
+		 ]
 ]

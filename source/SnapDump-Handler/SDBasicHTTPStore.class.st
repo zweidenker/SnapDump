@@ -30,14 +30,6 @@ SDBasicHTTPStore >> client [
 ]
 
 { #category : #testing }
-SDBasicHTTPStore >> hasSnapshot: snapshot [
-	^ (self client
-		url: (self urlForSnapshot: snapshot);
-		head;
-		response) status = 200
-]
-
-{ #category : #testing }
 SDBasicHTTPStore >> isSetUp [
 	^ uri notNil
 ]
@@ -57,6 +49,14 @@ SDBasicHTTPStore >> printOn: aStream [
 	aStream << uri asString
 ]
 
+{ #category : #testing }
+SDBasicHTTPStore >> shouldReportSnapshot: snapshot [
+	^ ((self client
+		url: (self urlForSnapshot: snapshot);
+		head;
+		response) status = 200) not
+]
+
 { #category : #accessing }
 SDBasicHTTPStore >> uri: anUri [
 	uri := anUri asZnUrl 
@@ -70,7 +70,14 @@ SDBasicHTTPStore >> urlForSnapshot: snapshot [
 
 { #category : #accessing }
 SDBasicHTTPStore >> urlForSnapshot: snapshotId parameters: aParameterDictionary [
-	^ (String
+	| url |
+	url :=  (uri / #snapshots / snapshotId).
+	aParameterDictionary keysAndValuesDo: [:eachname :eachValue |
+		url queryAt: eachname put: eachValue
+		].
+	^ url
+	
+"	^ (String
 		streamContents: [ :stream | 
 			stream
 				<< (uri / #snapshots / snapshotId) printString;
@@ -81,7 +88,7 @@ SDBasicHTTPStore >> urlForSnapshot: snapshotId parameters: aParameterDictionary 
 						<< eachParameterName;
 						<< '=';
 						<< (aParameterDictionary at: eachParameterName) urlEncoded ]
-				separatedBy: [ stream << '&' ] ]) asUrl
+				separatedBy: [ stream << '&' ] ]) asUrl"
 ]
 
 { #category : #accessing }

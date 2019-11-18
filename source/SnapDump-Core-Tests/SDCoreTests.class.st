@@ -7,7 +7,7 @@ Class {
 { #category : #tests }
 SDCoreTests >> getDummySnapshotFromClient [
 	^ client
-		snapshotWithId: self dummySnapshotId
+		snapshotWithId: self dummySnapshotId project: self projectNameForTests version: self versionStringForTests
 ]
 
 { #category : #accessing }
