@@ -59,7 +59,7 @@ SDTests >> dummySnapshotId [
 
 { #category : #tests }
 SDTests >> dummySnapshotRootPath [
-	^ rootPath / self projectNameForTests / self versionStringForTests
+	^ rootPath / self projectNameForTests / self versionStringForTests / self dummyExceptionId 
 	
 ]
 

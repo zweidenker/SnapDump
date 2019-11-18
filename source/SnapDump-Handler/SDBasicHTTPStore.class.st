@@ -30,14 +30,6 @@ SDBasicHTTPStore >> client [
 ]
 
 { #category : #testing }
-SDBasicHTTPStore >> hasSnapshot: snapshot [
-	^ (self client
-		url: (self urlForSnapshot: snapshot);
-		head;
-		response) status = 200
-]
-
-{ #category : #testing }
 SDBasicHTTPStore >> isSetUp [
 	^ uri notNil
 ]
@@ -55,6 +47,14 @@ SDBasicHTTPStore >> parametersFor: snapshot [
 { #category : #printing }
 SDBasicHTTPStore >> printOn: aStream [
 	aStream << uri asString
+]
+
+{ #category : #testing }
+SDBasicHTTPStore >> shouldReportSnapshot: snapshot [
+	^ (self client
+		url: (self urlForSnapshot: snapshot);
+		head;
+		response) status = 200
 ]
 
 { #category : #accessing }

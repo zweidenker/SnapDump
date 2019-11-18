@@ -25,6 +25,15 @@ SDHTTPTests >> apiUri [
 
 { #category : #tests }
 SDHTTPTests >> dummySnapshotUrl [
+	^ (self apiUri 
+		/ #snapshots / self dummySnapshotId) queryAt: 'projectName' put: self projectNameForTests ; queryAt: 'versionName' put: self versionStringForTests; yourself 
+		
+	" #projects / self projectNameForTests / #versions
+		/ self versionStringForTests / #exceptions / self dummyExceptionId"
+]
+
+{ #category : #tests }
+SDHTTPTests >> dummySnapshotUrlWithoutProject [
 	^ self apiUri 
 		/ #snapshots / self dummySnapshotId
 		
@@ -197,15 +206,23 @@ SDHTTPTests >> testSnapshotNoVersion [
 		/ #snapshots / self dummySnapshotId ;
 		get;
 		response.
-	self assert: response isSuccess.
+	self deny: response isSuccess.
 	
 
-	snapshot := (NeoJSONReader on: response contents readStream) nextAs: SDSnapshot.
-	json := (NeoJSONReader on: response contents readStream) next.
-	self assert: snapshot snapshotId equals: snap snapshotId.
-	self deny: (json at: 'versionString') isNil.
-	self deny: (json at: 'versionString') isEmpty.
 	
+]
+
+{ #category : #tests }
+SDHTTPTests >> testSnapshotWithoutProject [
+	| response snapshot |
+	server debugMode: false.
+	response := ZnClient new
+		url: self dummySnapshotUrlWithoutProject;
+		entity: (ZnByteArrayEntity bytes: '{bogus ;json' asByteArray);
+		put;
+		response.
+	self assert: response isError.
+	self deny: rootPath hasDirectories.
 ]
 
 { #category : #tests }

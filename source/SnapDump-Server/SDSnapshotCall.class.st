@@ -29,8 +29,7 @@ SDSnapshotCall class >> parameterProjectName [
 		name: 'projectName';
 		in: #query;
 		beString;
-		required: false;
-		allowEmptyValue: true;
+		required: true;
 		description: 'Name of the project to which a snapshot belongs to'
 
 ]
@@ -54,8 +53,7 @@ SDSnapshotCall class >> parameterVersionName [
 		name: 'versionName';
 		in: #query;
 		beString;
-		allowEmptyValue: true;
-		required: false;
+		required: true;
 		description: 'Version of the project to which a snapshot belongs to'
 
 ]
@@ -94,17 +92,26 @@ SDSnapshotCall >> get [
 
 { #category : #accessing }
 SDSnapshotCall >> head [
-
-	response := (self store hasSnapshotId: snapshotId exceptionId: exceptionId )
-		ifTrue: [ ZnResponse ok: (ZnStringEntity text: 'OK') ]
-		ifFalse: [ ZnResponse notFound: request uri ]
+	[ self snapshot ]
+		on: NotFound
+		do: [ :ex | 
+			(self store
+				shouldReportProject: projectName
+				version: versionName
+				exception: exceptionId)
+				ifTrue: [ ^ ZnResponse notFound: request uri ] ].
+	ZnResponse ok: (ZnStringEntity text: 'OK')
 ]
 
 { #category : #public }
 SDSnapshotCall >> put [
-| snapshot |
+| snapshot dict |
 
-	[snapshot := self store buildSnapshotFrom: request contents readStream project: projectName version: versionName.
+	[
+	snapshot := self store buildSnapshot: snapshotId exception: exceptionId project: projectName version: versionName.
+	"still need to read the meta data to get all variables initialized before being written on disk "
+	dict := SDFileSnapshot readMetaFrom: request contents readStream.
+	snapshot initializeMeta: dict.
 	snapshot validate]
 	on: ZnCharacterEncodingError  
 	do: [:err | 
@@ -117,5 +124,5 @@ SDSnapshotCall >> put [
 
 { #category : #public }
 SDSnapshotCall >> snapshot [
-	^ self snapshotWithId: snapshotId
+	^ self snapshotWithId: snapshotId project: projectName  version: versionName 
 ]

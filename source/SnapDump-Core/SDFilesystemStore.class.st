@@ -3,10 +3,9 @@ Class {
 	#superclass : #SDStore,
 	#instVars : [
 		'path',
-		'snapshots',
+		'snapshotOccurrencesLimit',
 		'projects',
-		'versions',
-		'snapshotOccurrencesLimit'
+		'versions'
 	],
 	#category : #'SnapDump-Core'
 }
@@ -16,81 +15,46 @@ SDFilesystemStore class >> storeName [
 	^ #file
 ]
 
-{ #category : #private }
-SDFilesystemStore >> buildSnapshotFrom: stream [
-	
-		^ self buildSnapshotFrom: stream project: nil version: nil
+{ #category : #services }
+SDFilesystemStore >> buildSnapshot: snapshotId exception: exceptionId project: projectName version: versionName [
+	.
+	^ (self buildSnapshot: snapshotId project: projectName version: versionName) exceptionId: exceptionId; yourself
 ]
 
 { #category : #services }
-SDFilesystemStore >> buildSnapshotFrom: stream project: projectName version: versionName [
-	| project version snapshot dict |
-	
-	dict := SDFileSnapshot readMetaFrom: stream.
-	snapshot := SDFileSnapshot new initializeMeta: dict.
-	self ensureProjectTo: snapshot with: projectName.
-	self ensureVersionTo: snapshot with: versionName.
-	project := self projects 
-		at: snapshot projectName
-		ifAbsentPut: [ (SDProject name: snapshot projectName) store: self ].
-	version := (SDVersion string: snapshot versionString) project: project; yourself.
-	(versions
-		at: project
-		ifAbsentPut: [ Set new ]) add: version.
-		
-	^ snapshot
-		project: project;
-		version: version;
+SDFilesystemStore >> buildSnapshot: snapshotId project: projectName version: versionName [
+	.
+	^ SDFileSnapshot new
+		snapshotId: snapshotId;
+		projectName: projectName;
+		versionString: versionName;
 		yourself
 ]
 
-{ #category : #private }
-SDFilesystemStore >> buildSnapshots [
-	projects := Dictionary new.
-	versions := Dictionary new.
-	snapshots := self snapshotFiles collect: [ :file |
-		(self buildSnapshotFrom: file binaryReadStream)
-			file: file;
-			yourself ] 
-]
-
-{ #category : #accessing }
-SDFilesystemStore >> defaultSnapshotOccurrencesLimit [
-
-	^ 10
+{ #category : #'services - removing' }
+SDFilesystemStore >> cleanSnapshotRemoval: file [
 	
+	| versionDirectory projectDirectory |
+	versionDirectory := file parent.
+	projectDirectory := versionDirectory parent.
+	versionDirectory hasChildren ifFalse: [ versionDirectory delete ].
+	projectDirectory hasChildren ifFalse: [ projectDirectory delete  ].
 	
 ]
 
-{ #category : #private }
-SDFilesystemStore >> ensureProjectTo: snapshot with: projectName [
-	snapshot projectName isEmptyOrNil
-		ifTrue: [ projectName isEmptyOrNil
-				ifTrue: [ snapshot projectName: SDProject defaultProjectName]
-				ifFalse: [ snapshot projectName: projectName ] ].
-	^ snapshot projectName
-]
+{ #category : #testing }
+SDFilesystemStore >> hasSnapshot: aSnapshot [
 
-{ #category : #private }
-SDFilesystemStore >> ensureVersionTo: snapshot with: versionName [
-	snapshot versionString isEmptyOrNil
-		ifTrue: [ versionName isEmptyOrNil
-				ifTrue: [ snapshot versionString: SDVersion defaultVersionString ]
-				ifFalse: [ snapshot versionString: versionName ] ].
-	^ snapshot versionString
+
+	^ self hasSnapshot: aSnapshot snapshotId project: aSnapshot projectName version: aSnapshot versionString
+
 ]
 
 { #category : #testing }
-SDFilesystemStore >> hasSnapshot: snapshot [
-	^ self hasSnapshotId: snapshot snapshotId exceptionId:  snapshot exceptionId
-]
-
-{ #category : #testing }
-SDFilesystemStore >> hasSnapshotId: snapshotId exceptionId: exceptionId [
-	^ (self snapshots anySatisfy: [:eachSnapshot | eachSnapshot snapshotId = snapshotId])
-	 or: [ 
-				(self numberOfSnapshotsForException: exceptionId) >= self snapshotOccurrencesLimit 
-			 ]
+SDFilesystemStore >> hasSnapshot: snapshotId project: aProjectName version: aVersionName [
+	^ (self snapshotFilesForProject: aProjectName version: aVersionName)
+		anySatisfy:
+			[ :eachFile | eachFile basename = self snapshotFileNameFor: snapshotId ]
 ]
 
 { #category : #testing }
@@ -99,73 +63,97 @@ SDFilesystemStore >> isSetUp [
 ]
 
 { #category : #accessing }
-SDFilesystemStore >> numberOfSnapshotsForException: anExceptionId [
-
-	^ (self snapshotsForException: anExceptionId) size
-]
-
-{ #category : #accessing }
 SDFilesystemStore >> path: anObject [
 	path := anObject asFileReference.
 	path ensureCreateDirectory.
-	self reset
 ]
 
 { #category : #accessing }
 SDFilesystemStore >> projectNamed: aString [ 
-	^ self projects at: aString 
+
+	| file project |
+	file := self snapshotPathForProject: aString.
+	file exists ifFalse: [NotFound signal].
+	project := (SDProject name: aString) store: self.
+	^ project
 ]
 
 { #category : #accessing }
 SDFilesystemStore >> projectNamed: aString ifAbsent: aBlock [
-	^ self projects 
-		at: aString
-		ifAbsent: aBlock
-]
-
-{ #category : #accessing }
-SDFilesystemStore >> projectNamed: aString ifAbsentPut: aBlock [
-	^ self projects 
-		at: aString 
-		ifAbsentPut: aBlock
+	^ [self projectNamed: aString] on: NotFound do: [ :ex | aBlock value ]
 ]
 
 { #category : #accessing }
 SDFilesystemStore >> projects [
-	^ projects 
+	^ path children collect: [ :directory |
+		 (SDProject name: directory basename) store: self.
+		 ]
 ]
 
-{ #category : #services }
+{ #category : #'services - removing' }
 SDFilesystemStore >> removeProject: aProject [ 
 	"projects are derived from snapshots. Nothing to do"
 	^ aProject 
 ]
 
-{ #category : #services }
+{ #category : #'services - removing' }
 SDFilesystemStore >> removeSnapshot: snapshot [
 	
-	(self snapshotPathFor: snapshot ) delete.
-	self reset
+	| file |
+	file := (self snapshotPathFor: snapshot ).
+	file delete.
+	self cleanSnapshotRemoval: file.
 	
 ]
 
-{ #category : #services }
+{ #category : #'services - removing' }
 SDFilesystemStore >> removeVersion: aVersion [ 
 	"version are created from snapshots. So nothing to do"
 ]
 
-{ #category : #services }
-SDFilesystemStore >> reset [
-	super reset.
-	snapshots := nil.
-	projects := nil.
-	versions := nil.
-	self buildSnapshots 
+{ #category : #testing }
+SDFilesystemStore >> shouldReportProject: projectName version: versionName exception: exceptionId [
+
+	| directory |
+	directory := (self snapshotPathForException: exceptionId project: projectName version: versionName).
+	directory exists ifFalse: [ ^ true ]. 
+	^ directory children size < self snapshotOccurrencesLimit
+]
+
+{ #category : #testing }
+SDFilesystemStore >> shouldReportSnapshot: snapshot [
+	^ (self
+		hasSnapshot: snapshot) not
+		and: [ self
+				shouldReportProject: snapshot projectName
+				version: snapshot versionString
+				exception: snapshot exceptionId ]
+]
+
+{ #category : #'services - files' }
+SDFilesystemStore >> snapshotFileNameFor: snapshotId [
+
+	^ snapshotId , '.snap'
 ]
 
 { #category : #accessing }
 SDFilesystemStore >> snapshotFiles [
 	^ path allChildrenMatching: '*.snap'
+]
+
+{ #category : #'services - files' }
+SDFilesystemStore >> snapshotFilesForProject: aProjectName version: aVersionName [
+
+	| directory |
+	directory := self snapshotPathForProject: aProjectName version: aVersionName.
+	directory exists ifFalse: [ ^ #() ].
+	^ directory allFiles
+]
+
+{ #category : #'services - files' }
+SDFilesystemStore >> snapshotIdFrom: aFileBasename [
+
+	^ aFileBasename asFileReference basenameWithoutExtension
 ]
 
 { #category : #accessing }
@@ -185,72 +173,91 @@ SDFilesystemStore >> snapshotOccurrencesLimit: aNumber [
 	
 ]
 
-{ #category : #services }
+{ #category : #'services - files' }
 SDFilesystemStore >> snapshotPathFor: aSnaphot [
+
+
 	^ self
 		snapshotPathForId: aSnaphot snapshotId
+		exception: aSnaphot exceptionId
 		project: aSnaphot projectName
 		version: aSnaphot versionString
 ]
 
-{ #category : #services }
-SDFilesystemStore >> snapshotPathForId: snapshotId project: aProjectName version: aVersionName [
-	^ (((path / aProjectName)
-		ensureCreateDirectory;
-		/ aVersionName)
-		ensureCreateDirectory)/ snapshotId , #snap
+{ #category : #'services - files' }
+SDFilesystemStore >> snapshotPathForException: exceptionId project: projectName version: versionName [
+	^ (self snapshotPathForProject: projectName version: versionName)/ exceptionId
+]
+
+{ #category : #'services - files' }
+SDFilesystemStore >> snapshotPathForId: snapshotId exception: exceptionId project: aProjectName version: aVersionName [
+	^ (self snapshotPathForException: exceptionId project: aProjectName version: aVersionName) / (self snapshotFileNameFor: snapshotId)
+]
+
+{ #category : #'services - files' }
+SDFilesystemStore >> snapshotPathForProject: projectName [ 
+	^ path / projectName 
+]
+
+{ #category : #'services - files' }
+SDFilesystemStore >> snapshotPathForProject: projectName version: versionName [
+	^ (self snapshotPathForProject: projectName) / versionName 
 ]
 
 { #category : #services }
-SDFilesystemStore >> snapshotWithId: aString [ 
-	^ self snapshots
-		detect: [ :each | 
-			each snapshotId = aString ]
-		ifNone: [ NotFound signal ]
-]
-
-{ #category : #accessing }
-SDFilesystemStore >> snapshots [
-	^ snapshots 
-		
-]
-
-{ #category : #accessing }
-SDFilesystemStore >> snapshotsForException: anExceptionId [
-
-	^ self snapshots select: [ :eachSnapshot |
-			eachSnapshot exceptionId = anExceptionId
-		 ]
+SDFilesystemStore >> snapshotWithId: anIdString project: aProjectName version: aVersionString [
+	| file |
+	file := (self
+		snapshotFilesForProject: aProjectName
+		version: aVersionString)
+		detect:
+			[ :eachFile | eachFile basename = (self snapshotFileNameFor: anIdString) ]
+		ifNone: [ NotFound signal ].
+	^ (self
+		buildSnapshot: anIdString
+		exception: file parent basename
+		project: aProjectName
+		version: aVersionString)
+		file: file;
+		yourself
 ]
 
 { #category : #services }
-SDFilesystemStore >> snapshotsWithProject: projectName version: versionString [
-	^ self snapshots
-		select: [ :each | (each project name = projectName) and: [ each version string = versionString] ]
+SDFilesystemStore >> snapshotsWithVersion: aVersion [
+
+	^ (self
+		snapshotFilesForProject: aVersion project name
+		version: aVersion string)
+		collect: [ :eachFile | 
+			(SDFileSnapshot fromFile: eachFile)  ]
 ]
 
-{ #category : #services }
-SDFilesystemStore >> snapshotsWithVersion: aVersion [ 
-	^ self snapshots
-		select: [ :each | (each project name = aVersion project name) and: [ each version string = aVersion string ] ]
-]
-
-{ #category : #services }
+{ #category : #'services - adding' }
 SDFilesystemStore >> storeRaw: snapshot contents: aByteArray [
-	snapshot file: (self snapshotPathFor: snapshot).
+
+	| file |
+	file := (self snapshotPathFor: snapshot).
+	file parent  ensureCreateDirectory. 
+	snapshot file: file.
 	snapshot storeRaw: aByteArray.
-	self reset
+
 ]
 
 { #category : #accessing }
 SDFilesystemStore >> versionsOfProject: aProject [ 
-	^ versions at: aProject ifAbsent: [ #() ]
+	| file |
+	file := (self snapshotPathForProject:  aProject name). 
+	file exists ifFalse: [ ^ #() ].
+	^ file children collect: [ :eachDirectory |
+		(SDVersion string: eachDirectory basename) project: aProject
+		 ].
 ]
 
-{ #category : #services }
+{ #category : #'services - adding' }
 SDFilesystemStore >> writeSnapshot: snapshot [
 	| stream file |
 	file := self snapshotPathFor: snapshot.
+	file parent ensureCreateDirectory.
 	stream := file fileSystem  binaryWriteStreamOn: file path.
 	[ snapshot writeTo: stream ]
 		ensure: [ stream close ]

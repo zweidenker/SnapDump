@@ -9,9 +9,12 @@ SDStore class >> withName: aString [
 	^ self subclasses detect: [ :each | each storeName = aString ]
 ]
 
-{ #category : #testing }
-SDStore >> hasSnapshot: aSnapshot [
-	self subclassResponsibility 
+{ #category : #accessing }
+SDStore >> defaultSnapshotOccurrencesLimit [
+
+	^ 10
+	
+	
 ]
 
 { #category : #testing }
@@ -30,14 +33,19 @@ SDStore >> removeSnapshot: aSnapshot [
 SDStore >> reset [
 ]
 
+{ #category : #testing }
+SDStore >> shouldReportSnapshot: aSnapshot [
+	self subclassResponsibility 
+]
+
 { #category : #services }
 SDStore >> storeSnapshot: snapshot [
 	Transcript show: 'SnapDump: checking if error needs to be reported'.
-	(self hasSnapshot: snapshot)
-		ifFalse: [ 
+	(self shouldReportSnapshot: snapshot)
+		ifTrue: [ 
 			Transcript show: 'SnapDump: error is being uploaded'.
 			self writeSnapshot: snapshot.
-			self reset ]
+	]
 ]
 
 { #category : #writing }
