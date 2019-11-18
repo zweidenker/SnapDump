@@ -30,14 +30,6 @@ SDBasicHTTPStore >> client [
 ]
 
 { #category : #testing }
-SDBasicHTTPStore >> hasSnapshot: snapshot [
-	^ (self client
-		url: (self urlForSnapshot: snapshot);
-		head;
-		response) status = 200
-]
-
-{ #category : #testing }
 SDBasicHTTPStore >> isSetUp [
 	^ uri notNil
 ]
@@ -57,6 +49,16 @@ SDBasicHTTPStore >> printOn: aStream [
 	aStream << uri asString
 ]
 
+{ #category : #testing }
+SDBasicHTTPStore >> shouldReportSnapshot: snapshot [
+	^ ((self client
+		url: (self urlForSnapshot: snapshot);
+		head;
+		response) status = 200) not and: [ 
+			(self freeSlotsForExceptionId: snapshot exceptionId project: snapshot projectName version: snapshot versionString) > 0
+		 ]
+]
+
 { #category : #accessing }
 SDBasicHTTPStore >> uri: anUri [
 	uri := anUri asZnUrl 
@@ -69,29 +71,11 @@ SDBasicHTTPStore >> urlForSnapshot: snapshot [
 ]
 
 { #category : #accessing }
-SDBasicHTTPStore >> urlForSnapshot: snapshotId parameters: aParameterDictionary [
-	^ (String
-		streamContents: [ :stream | 
-			stream
-				<< (uri / #snapshots / snapshotId) printString;
-				<< '?'.
-			aParameterDictionary keys
-				do: [ :eachParameterName | 
-					stream
-						<< eachParameterName;
-						<< '=';
-						<< (aParameterDictionary at: eachParameterName) urlEncoded ]
-				separatedBy: [ stream << '&' ] ]) asUrl
-]
-
-{ #category : #accessing }
 SDBasicHTTPStore >> urlForSnapshot: snapshotId project: projectName version: versionName exception: anExceptionId [
 	
-	^ self urlForSnapshot: snapshotId parameters: (Dictionary new 
-		at: #projectName put: projectName;
-		at: #versionName put: versionName;
-		at: #exceptionId put: anExceptionId;
-		yourself)
+	
+	^  (uri / #projects / projectName urlEncoded / #versions / versionName urlEncoded/ #exceptions/ anExceptionId /  #snapshots / snapshotId)
+	
 ]
 
 { #category : #accessing }

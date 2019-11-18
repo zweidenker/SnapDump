@@ -25,6 +25,11 @@ SDHTTPTests >> apiUri [
 
 { #category : #tests }
 SDHTTPTests >> dummySnapshotUrl [
+	^ (self apiUri /#projects / self projectNameForTests / #versions / self versionStringForTests / #exceptions / self dummyExceptionId / #snapshots / self dummySnapshotId)
+]
+
+{ #category : #tests }
+SDHTTPTests >> dummySnapshotUrlWithoutProject [
 	^ self apiUri 
 		/ #snapshots / self dummySnapshotId
 		
@@ -123,7 +128,7 @@ SDHTTPTests >> testProjectListEmpty [
 
 { #category : #tests }
 SDHTTPTests >> testProjectNotFound [
-	| response list |
+	| response |
 	response := ZnClient new
 		url: self apiUri / #projects / 'NoneExisting';
 		get;
@@ -158,7 +163,18 @@ SDHTTPTests >> testSetup [
 ]
 
 { #category : #tests }
-SDHTTPTests >> testSnapshot [
+SDHTTPTests >> testSnapshotEmptyVersion [
+	| response  snap  |
+	handler version: ('').
+	"reporting empty version should not be allowed"
+	self should: [self createSimpleSnapshot] raise: NotFound.
+	
+
+	
+]
+
+{ #category : #tests }
+SDHTTPTests >> testSnapshotGet [
 	| response snapshot |
 	self createSimpleSnapshot.
 	response := ZnClient new
@@ -168,6 +184,20 @@ SDHTTPTests >> testSnapshot [
 	self assert: response isSuccess.
 	snapshot := (NeoJSONReader on: response contents readStream) nextAs: SDSnapshot .
 	self assert: snapshot snapshotId equals: self dummySnapshotId .
+	
+]
+
+{ #category : #tests }
+SDHTTPTests >> testSnapshotGetById [
+	| response snapshot |
+	self createSimpleSnapshot.
+	response := ZnClient new
+		url: self dummySnapshotUrlWithoutProject ;
+		get;
+		response.
+	"this call should not exist"
+	self assert: response isError.
+	self assert: response code = 404.
 	
 ]
 
@@ -183,28 +213,6 @@ SDHTTPTests >> testSnapshotList [
 	list := (NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot .
 	self assert: list size equals: 1.
 	self assert: (list first errorSignature) equals: 'TestProject_0.1_Object_printString_ContextWithoutException'
-	
-]
-
-{ #category : #tests }
-SDHTTPTests >> testSnapshotNoVersion [
-	| response snapshot snap json |
-	handler version: ('').
-	snap := self createSimpleSnapshot.
-	self assert: (snap isKindOf: SDMemorySnapshot).
-	response := ZnClient new
-		url: self apiUri
-		/ #snapshots / self dummySnapshotId ;
-		get;
-		response.
-	self assert: response isSuccess.
-	
-
-	snapshot := (NeoJSONReader on: response contents readStream) nextAs: SDSnapshot.
-	json := (NeoJSONReader on: response contents readStream) next.
-	self assert: snapshot snapshotId equals: snap snapshotId.
-	self deny: (json at: 'versionString') isNil.
-	self deny: (json at: 'versionString') isEmpty.
 	
 ]
 

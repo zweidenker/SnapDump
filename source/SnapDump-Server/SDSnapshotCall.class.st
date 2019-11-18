@@ -4,8 +4,8 @@ Class {
 	#instVars : [
 		'snapshotId',
 		'projectName',
-		'versionName',
-		'exceptionId'
+		'exceptionId',
+		'versionString'
 	],
 	#category : #'SnapDump-Server-REST'
 }
@@ -15,9 +15,9 @@ SDSnapshotCall class >> parameterExceptionId [
 	<openApiParameter: #( common )>
 	^ OAParameter new
 		name: 'exceptionId';
-		in: #query;
+		in: #path;
 		beString;
-		required: false;
+		required: true;
 		description: 'Identify a given exception within the context of this server. Several snapshots can be reported for a same exceptionId'
 
 ]
@@ -27,10 +27,9 @@ SDSnapshotCall class >> parameterProjectName [
 	<openApiParameter: #( common )>
 	^ OAParameter new
 		name: 'projectName';
-		in: #query;
+		in: #path;
 		beString;
-		required: false;
-		allowEmptyValue: true;
+		required: true;
 		description: 'Name of the project to which a snapshot belongs to'
 
 ]
@@ -43,26 +42,25 @@ SDSnapshotCall class >> parameterSnapshotId [
 		in: #path;
 		beString;
 		required: true;
-		description: 'Identify a given snapshot within the context of this server'
+		description: 'Snapshot identifier'
 
 ]
 
 { #category : #accessing }
-SDSnapshotCall class >> parameterVersionName [
+SDSnapshotCall class >> parameterVersionString [
 	<openApiParameter: #( common )>
 	^ OAParameter new
-		name: 'versionName';
-		in: #query;
+		name: 'versionString';
+		in: #path;
 		beString;
-		allowEmptyValue: true;
-		required: false;
+		required: true;
 		description: 'Version of the project to which a snapshot belongs to'
 
 ]
 
 { #category : #accessing }
 SDSnapshotCall class >> path [
-	^ '/snapshots/{snapshotId}'
+	^ '/projects/{projectName}/versions/{versionString}/exceptions/{exceptionId}/snapshots/{snapshotId}'
 ]
 
 { #category : #'submorphs-add/remove' }
@@ -95,16 +93,22 @@ SDSnapshotCall >> get [
 { #category : #accessing }
 SDSnapshotCall >> head [
 
-	response := (self store hasSnapshotId: snapshotId exceptionId: exceptionId )
-		ifTrue: [ ZnResponse ok: (ZnStringEntity text: 'OK') ]
-		ifFalse: [ ZnResponse notFound: request uri ]
+	[ self snapshot ]
+		on: NotFound
+		do: [ :ex | 
+		 ^ ZnResponse notFound: request uri ].
+	ZnResponse ok: (ZnStringEntity text: 'OK')
 ]
 
 { #category : #public }
 SDSnapshotCall >> put [
-| snapshot |
+| snapshot dict |
 
-	[snapshot := self store buildSnapshotFrom: request contents readStream project: projectName version: versionName.
+	[
+	snapshot := self store buildSnapshot: snapshotId exception: exceptionId project: projectName version: versionString.
+	"still need to read the meta data to get all variables initialized before being written on disk "
+	dict := SDFileSnapshot readMetaFrom: request contents readStream.
+	snapshot initializeMeta: dict.
 	snapshot validate]
 	on: ZnCharacterEncodingError  
 	do: [:err | 
@@ -117,5 +121,11 @@ SDSnapshotCall >> put [
 
 { #category : #public }
 SDSnapshotCall >> snapshot [
-	^ self snapshotWithId: snapshotId
+	[  
+	^ self store
+		snapshotWithId: snapshotId
+		project: projectName
+		version: versionString ]
+		on: NotFound
+		do: [ :err | ZnRespond signalWith: (ZnResponse notFound: request url) ]
 ]

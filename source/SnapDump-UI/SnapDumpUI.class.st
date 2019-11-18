@@ -7,7 +7,8 @@ Class {
 		'snapshotList',
 		'snapshot',
 		'snapDump',
-		'client'
+		'client',
+		'exceptionList'
 	],
 	#category : #'SnapDump-UI'
 }
@@ -21,9 +22,26 @@ SnapDumpUI class >> defaultSpec [
 			row 
 				newColumn: [ :c | c add: #projectList ] left: 0 right: 0.9;
 				newColumn: [ :c | c add: #versionList ] left: 0.1 right: 0.825;
-				newColumn: [ :c | c add: #snapshotList ] left: 0.175 right: 0.40;
+				newColumn: [ :c | c add: #exceptionList ] left: 0.175 right: 0.50;
+				newColumn: [ :c | c add: #snapshotList ] left: 0.58 right: 0.30;
 				newColumn: [ :c | c add: #snapshot ] left: 0.6 right: 0 ];
 		yourself
+]
+
+{ #category : #example }
+SnapDumpUI class >> example [ 
+
+	|port server|
+	port := 9995.
+	server := (Smalltalk at: #SDServer) port: port path: './sd-ui-example' asFileReference.
+	"server start."
+	
+	"configure the SnapDump client to access the docker container"
+	SnapDump uri: 'http://localhost:', port asString,'/api'.
+	"Uploaded a few snapshots to see something in the client"
+	SDHandler fillExamples.
+	"open the ui"
+	SnapDump ui
 ]
 
 { #category : #'as yet unclassified' }
@@ -32,49 +50,71 @@ SnapDumpUI >> client [
 		client := SnapDump client ]
 ]
 
+{ #category : #'as yet unclassified' }
+SnapDumpUI >> exceptionList [
+	^ exceptionList
+]
+
 { #category : #api }
 SnapDumpUI >> extent [ 
 	^ 1000@400
 ]
 
 { #category : #initialization }
-SnapDumpUI >> initializeWidgets [
-	snapshot := SDSnapshotPresenter new.
-	snapshotList := self newMultiColumnList
-		displayBlock: [ :s | { s dateAndTimeString . s methodSignature . s exceptionClass }  ];
-		sortingBlock: [ :a :b | a timestamp < b timestamp ];
-		whenSelectedItemChanged: [ :s | 
-			snapshot item: s ].
-	versionList := self newList
-		displayBlock: [ :m | m string ];
-		sortingBlock: [ :a :b | a < b ];
-		whenSelectedItemChanged: [ :version | 
-			self selectedVersion: version ].
-	projectList := self newList .
-	snapshot whenChangedDo: [:s | 
-		[
-		snapshotList resetSelection.
-		snapshotList items: versionList selectedItem snapshots.
-		]
-			on: NotFound 
-			do: [ :err | 
-				snapshotList items: { }.
-				versionList resetSelection ".versionList items: projectList selectedItem versions. " ]  ]. 
+SnapDumpUI >> initializeExceptionList [
+	exceptionList := self newMultiColumnList
+		displayBlock: [ :snapshotAssoc | 
+			{snapshotAssoc value first methodSignature.
+			snapshotAssoc value first exceptionClass} ];
+		sortingBlock: [ :a :b | a value first timestamp < b value first timestamp ];
+		whenSelectedItemChanged: [ :snapshotAssoc | 
+			self resetSnapshotsWith:  (snapshotAssoc ifNil: [ #() ] ifNotNil: [ snapshotAssoc value ]).
+			]
+]
+
+{ #category : #initialization }
+SnapDumpUI >> initializeProjectList [
+	projectList := self newList.
 	projectList
 		allowToSelect: false;
 		items: self client projects;
 		displayBlock: [ :m | m name ];
 		sortingBlock: [ :a :b | a name < b name ];
 		whenSelectedItemChanged: [ :selection | 
-			(selection isKindOf: SDProject) 
-			ifTrue: [ 
-				[versionList items: selection versions] 
-					on: NotFound 
-					do: [:err |.
-						projectList items: snapDump projects ] ]
-			ifFalse: [ projectList items: snapDump projects ] ];
-		allowToSelect: true.
+			self resetVersionsWith: (selection ifNil: [ #() ] ifNotNil: [ :aProject | aProject versions ]).
+			 ];
+		allowToSelect: true
+]
 
+{ #category : #initialization }
+SnapDumpUI >> initializeSnapshotList [
+	snapshotList := self newMultiColumnList
+		displayBlock: [ :s | {s dateAndTimeString} ];
+		sortingBlock: [ :a :b | a timestamp < b timestamp ];
+		whenSelectedItemChanged: [ :s | snapshot item: s ]
+]
+
+{ #category : #initialization }
+SnapDumpUI >> initializeVersionList [
+	versionList := self newList
+		displayBlock: [ :m | m string ];
+		sortingBlock: [ :a :b | a < b ];
+		whenSelectedItemChanged: [ :version | 
+			self resetExceptionsWith: 
+					(version
+						ifNil: [ #() ]
+						ifNotNil: [ (version snapshots groupedBy: #exceptionId) associations ]).
+			]
+]
+
+{ #category : #initialization }
+SnapDumpUI >> initializeWidgets [
+	snapshot := SDSnapshotPresenter new.
+	self initializeSnapshotList.
+	self initializeExceptionList.
+	self initializeVersionList.
+	self initializeProjectList.
+	snapshot whenChangedDo: [ :s | self updateLists ].
 ]
 
 { #category : #'as yet unclassified' }
@@ -83,18 +123,35 @@ SnapDumpUI >> projectList [
 ]
 
 { #category : #initialization }
-SnapDumpUI >> selectedVersion: version [
-	version 
-		ifNotNil: [ snapshotList items: version snapshots ]
-		ifNil: [ 
-			projectList selectedItem 
-			ifNotNil: [  
-				[ versionList items: projectList selectedItem versions ]
-					on: NotFound 
-					do: [ :err | 
-						versionList items: {  }.
-						projectList resetSelection ] ]
-			ifNil: [ snapshotList items: {  } ] ]
+SnapDumpUI >> resetExceptionsWith: aCollectionOfAssociations [
+
+	exceptionList items: aCollectionOfAssociations.
+	exceptionList resetSelection.
+	snapshotList items: #()
+]
+
+{ #category : #initialization }
+SnapDumpUI >> resetProjectsWith: aCollectionOfProjects [
+	projectList items: aCollectionOfProjects.
+	versionList resetSelection.
+	versionList items: #().
+	exceptionList items: #().
+	snapshotList items: #()
+]
+
+{ #category : #initialization }
+SnapDumpUI >> resetSnapshotsWith: aCollectionOfSnapshots [
+
+	snapshotList items: aCollectionOfSnapshots.
+	snapshotList resetSelection
+]
+
+{ #category : #initialization }
+SnapDumpUI >> resetVersionsWith: aCollectionOfVersions [
+	versionList items: aCollectionOfVersions.
+	versionList resetSelection.
+	exceptionList items: #().
+	snapshotList items: #()
 ]
 
 { #category : #accessing }
@@ -128,6 +185,37 @@ SnapDumpUI >> subMenu [
 { #category : #api }
 SnapDumpUI >> title [
 	^ 'SnapDump on ', snapDump store printString 
+]
+
+{ #category : #initialization }
+SnapDumpUI >> updateLists [
+	| project version exceptionId exceptionSnapshots snap projects |
+	projects := self client projects.
+	project := projects
+		detect: [ :eachProject | 
+			eachProject name
+				= (projectList selectedItem ifNotNil: [ :selection | selection name ]) ]
+		ifNone: [ ^ self resetProjectsWith: projects ].
+	version := project versions
+		detect: [ :eachVersion | 
+			eachVersion string
+				= (versionList selectedItem ifNotNil: [ :selection | selection string ]) ]
+		ifNone: [ ^ self resetVersionsWith: project versions ].
+	exceptionId := (version snapshots collect: #exceptionId) asSet
+		detect: [ :eachExId | 
+			eachExId
+				= (exceptionList selectedItem ifNotNil: [ :selection | selection key ]) ]
+		ifNone: [ ^ self
+				resetExceptionsWith: (version snapshots groupedBy: #exceptionId) associations ].
+	exceptionSnapshots := (version snapshots groupedBy: #exceptionId)
+		at: exceptionId.
+	snap := exceptionSnapshots
+		detect: [ :eachSnap | 
+			eachSnap snapshotId
+				=
+					(snapshotList selectedItem
+						ifNotNil: [ :selection | selection snapshotId ]) ]
+		ifNone: [ self resetSnapshotsWith: exceptionSnapshots ]
 ]
 
 { #category : #'as yet unclassified' }

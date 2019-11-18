@@ -64,6 +64,12 @@ SDVersion >> project: anObject [
 	project := anObject
 ]
 
+{ #category : #accessing }
+SDVersion >> projectName [ 
+
+	^ project name
+]
+
 { #category : #removing }
 SDVersion >> remove [
 	self snapshots 

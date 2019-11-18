@@ -10,6 +10,26 @@ SDHTTPStore class >> storeName [
 ]
 
 { #category : #'as yet unclassified' }
+SDHTTPStore >> freeSlotsForException: anException [ 
+	
+		^ self freeSlotsForExceptionId: anException id project: anException projectName version: anException versionString
+]
+
+{ #category : #'as yet unclassified' }
+SDHTTPStore >> freeSlotsForExceptionId: anExceptionId project: aProjectName version: aVersionString [
+	| response |
+	
+	response := self client
+		url: uri / #projects / aProjectName / #versions / aVersionString / #exceptions / anExceptionId / #freeslots;
+		get;
+		response.
+	response isSuccess 
+		ifTrue: [  
+	^ ((NeoJSONReader on: response contents readStream) next)  ]
+		ifFalse: [ NotFound signal ]
+]
+
+{ #category : #'as yet unclassified' }
 SDHTTPStore >> projectNamed: aString [
 	^ self projectNamed: aString ifAbsent: [ NotFound signal: 'no project found' ]
 ]
@@ -80,6 +100,21 @@ SDHTTPStore >> snapshotWithId: aString project: aProjectName version: aVersionNa
 ]
 
 { #category : #'as yet unclassified' }
+SDHTTPStore >> snapshotsWithException: anException [ 
+	| response |
+	
+	response := self client
+		url: uri / #projects / anException projectName / #versions / anException versionString / #exceptions / anException / #snapshots;
+		get;
+		response.
+	response isSuccess 
+		ifTrue: [  
+	^ ((NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot) do: [ :s |
+			s exception: anException ] ]
+		ifFalse: [ NotFound signal ]
+]
+
+{ #category : #'as yet unclassified' }
 SDHTTPStore >> snapshotsWithProject: projectName version: versionString [
 	| response  |
 	
@@ -119,5 +154,5 @@ SDHTTPStore >> versionsOfProject: aProject [
 		ifTrue: [  
 			^ ((NeoJSONReader on: response contents readStream) nextListAs: SDVersion) do: [ :v |
 				v project: aProject ] ]
-		ifFalse: [ NotFound signal ]
+		ifFalse: [ NotFound signal: (aProject name , ' project not found') ]
 ]

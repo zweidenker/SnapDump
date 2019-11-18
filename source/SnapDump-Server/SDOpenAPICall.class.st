@@ -8,6 +8,14 @@ Class {
 }
 
 { #category : #accessing }
+SDOpenAPICall >> exceptionAt: anExceptionId project: aProjectName  version: aVersionString [
+	^ (self store exceptionAt: anExceptionId project: aProjectName version: aVersionString) ifNil: [ 
+		 ZnRespond signalWith: (ZnResponse notFound: request uri)
+		 ]
+	
+]
+
+{ #category : #accessing }
 SDOpenAPICall >> jsonResponse: data [
 	| entity |
 	entity := ZnEntity with: (self toJson: data) type: ZnMimeType applicationJson.
@@ -30,8 +38,8 @@ SDOpenAPICall >> projectNamed: projectName versionAt: versionString [
 ]
 
 { #category : #public }
-SDOpenAPICall >> snapshotWithId: aString [ 
-	[ ^ self store snapshotWithId: aString ]
+SDOpenAPICall >> snapshotWithId: aString project: aProjectString version: aVersionString [
+	[ ^ self store snapshotWithId: aString project: aProjectString version: aVersionString]
 		on: NotFound 
 		do: [ :err |
 			ZnRespond signalWith: (ZnResponse notFound: request url) ]
