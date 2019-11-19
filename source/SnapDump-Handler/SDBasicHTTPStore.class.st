@@ -51,10 +51,10 @@ SDBasicHTTPStore >> printOn: aStream [
 
 { #category : #testing }
 SDBasicHTTPStore >> shouldReportSnapshot: snapshot [
-	^ (self client
+	^ ((self client
 		url: (self urlForSnapshot: snapshot);
 		head;
-		response) status = 200
+		response) status = 200) not
 ]
 
 { #category : #accessing }

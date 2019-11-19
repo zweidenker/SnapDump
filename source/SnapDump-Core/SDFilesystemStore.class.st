@@ -34,9 +34,11 @@ SDFilesystemStore >> buildSnapshot: snapshotId project: projectName version: ver
 { #category : #'services - removing' }
 SDFilesystemStore >> cleanSnapshotRemoval: file [
 	
-	| versionDirectory projectDirectory |
-	versionDirectory := file parent.
+	| versionDirectory projectDirectory exceptionDirectory |
+	exceptionDirectory := file parent.
+	versionDirectory := exceptionDirectory parent.
 	projectDirectory := versionDirectory parent.
+	exceptionDirectory hasChildren ifFalse: [ exceptionDirectory delete ].
 	versionDirectory hasChildren ifFalse: [ versionDirectory delete ].
 	projectDirectory hasChildren ifFalse: [ projectDirectory delete  ].
 	
