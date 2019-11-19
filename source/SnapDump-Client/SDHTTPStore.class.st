@@ -119,5 +119,5 @@ SDHTTPStore >> versionsOfProject: aProject [
 		ifTrue: [  
 			^ ((NeoJSONReader on: response contents readStream) nextListAs: SDVersion) do: [ :v |
 				v project: aProject ] ]
-		ifFalse: [ NotFound signal ]
+		ifFalse: [ NotFound signal: (aProject name , ' project not found') ]
 ]

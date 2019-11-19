@@ -18,6 +18,7 @@ SDSnapshotCall class >> parameterExceptionId [
 		in: #query;
 		beString;
 		required: false;
+		allowEmptyValue: false;
 		description: 'Identify a given exception within the context of this server. Several snapshots can be reported for a same exceptionId'
 
 ]
@@ -29,7 +30,8 @@ SDSnapshotCall class >> parameterProjectName [
 		name: 'projectName';
 		in: #query;
 		beString;
-		required: true;
+		required: false;
+		allowEmptyValue: false;
 		description: 'Name of the project to which a snapshot belongs to'
 
 ]
@@ -53,7 +55,8 @@ SDSnapshotCall class >> parameterVersionName [
 		name: 'versionName';
 		in: #query;
 		beString;
-		required: true;
+		required: false;
+		allowEmptyValue: false;
 		description: 'Version of the project to which a snapshot belongs to'
 
 ]
@@ -92,6 +95,8 @@ SDSnapshotCall >> get [
 
 { #category : #accessing }
 SDSnapshotCall >> head [
+
+	self validateRequiredParameters: #(exceptionId projectName versionName).
 	[ self snapshot ]
 		on: NotFound
 		do: [ :ex | 
@@ -107,6 +112,7 @@ SDSnapshotCall >> head [
 SDSnapshotCall >> put [
 | snapshot dict |
 
+	self validateRequiredParameters: #(projectName versionName exceptionId).
 	[
 	snapshot := self store buildSnapshot: snapshotId exception: exceptionId project: projectName version: versionName.
 	"still need to read the meta data to get all variables initialized before being written on disk "
@@ -124,5 +130,25 @@ SDSnapshotCall >> put [
 
 { #category : #public }
 SDSnapshotCall >> snapshot [
-	^ self snapshotWithId: snapshotId project: projectName  version: versionName 
+	[ (projectName isNil or: [ versionName isNil ])
+		ifTrue: [ 
+			"here we give the possibility to fetch a given snapshot from its snapshotId only.
+			handy but slower than fetching with a known project and version "
+			^ self store snapshotWithId: snapshotId ].
+	^ self store
+		snapshotWithId: snapshotId
+		project: projectName
+		version: versionName ]
+		on: NotFound
+		do: [ :err | ZnRespond signalWith: (ZnResponse notFound: request url) ]
+]
+
+{ #category : #public }
+SDSnapshotCall >> validateRequiredParameters: aCollectionOfParameterNames [
+
+ 	aCollectionOfParameterNames do: [ :eachParameterName |
+		(self instVarNamed: eachParameterName) isEmptyOrNil ifTrue: [ 
+			OAMissingRequiredParameter signal: 'parameter ' , eachParameterName , ' is required but not present'
+			 ]
+		 ]
 ]

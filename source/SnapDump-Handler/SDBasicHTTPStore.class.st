@@ -70,7 +70,14 @@ SDBasicHTTPStore >> urlForSnapshot: snapshot [
 
 { #category : #accessing }
 SDBasicHTTPStore >> urlForSnapshot: snapshotId parameters: aParameterDictionary [
-	^ (String
+	| url |
+	url :=  (uri / #snapshots / snapshotId).
+	aParameterDictionary keysAndValuesDo: [:eachname :eachValue |
+		url queryAt: eachname put: eachValue
+		].
+	^ url
+	
+"	^ (String
 		streamContents: [ :stream | 
 			stream
 				<< (uri / #snapshots / snapshotId) printString;
@@ -81,7 +88,7 @@ SDBasicHTTPStore >> urlForSnapshot: snapshotId parameters: aParameterDictionary 
 						<< eachParameterName;
 						<< '=';
 						<< (aParameterDictionary at: eachParameterName) urlEncoded ]
-				separatedBy: [ stream << '&' ] ]) asUrl
+				separatedBy: [ stream << '&' ] ]) asUrl"
 ]
 
 { #category : #accessing }

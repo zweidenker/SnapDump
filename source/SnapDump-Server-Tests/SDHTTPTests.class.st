@@ -25,11 +25,11 @@ SDHTTPTests >> apiUri [
 
 { #category : #tests }
 SDHTTPTests >> dummySnapshotUrl [
-	^ (self apiUri 
-		/ #snapshots / self dummySnapshotId) queryAt: 'projectName' put: self projectNameForTests ; queryAt: 'versionName' put: self versionStringForTests; yourself 
-		
-	" #projects / self projectNameForTests / #versions
-		/ self versionStringForTests / #exceptions / self dummyExceptionId"
+	^ (self apiUri / #snapshots / self dummySnapshotId)
+		queryAt: #exceptionId put: self dummyExceptionId;
+		queryAt: 'projectName' put: self projectNameForTests;
+		queryAt: 'versionName' put: self versionStringForTests;
+		yourself
 ]
 
 { #category : #tests }
@@ -132,7 +132,7 @@ SDHTTPTests >> testProjectListEmpty [
 
 { #category : #tests }
 SDHTTPTests >> testProjectNotFound [
-	| response list |
+	| response |
 	response := ZnClient new
 		url: self apiUri / #projects / 'NoneExisting';
 		get;
@@ -167,11 +167,43 @@ SDHTTPTests >> testSetup [
 ]
 
 { #category : #tests }
-SDHTTPTests >> testSnapshot [
+SDHTTPTests >> testSnapshotEmptyVersion [
+	| response  snap  |
+	handler version: ('').
+	snap := self createSimpleSnapshot.
+	self assert: (snap isKindOf: SDMemorySnapshot).
+	response := ZnClient new
+		url: self apiUri
+		/ #snapshots / self dummySnapshotId ;
+		get;
+		response.
+	self deny: response isSuccess.
+	self assert: response code = 404
+	
+
+	
+]
+
+{ #category : #tests }
+SDHTTPTests >> testSnapshotGet [
 	| response snapshot |
 	self createSimpleSnapshot.
 	response := ZnClient new
 		url: self dummySnapshotUrl ;
+		get;
+		response.
+	self assert: response isSuccess.
+	snapshot := (NeoJSONReader on: response contents readStream) nextAs: SDSnapshot .
+	self assert: snapshot snapshotId equals: self dummySnapshotId .
+	
+]
+
+{ #category : #tests }
+SDHTTPTests >> testSnapshotGetById [
+	| response snapshot |
+	self createSimpleSnapshot.
+	response := ZnClient new
+		url: self dummySnapshotUrlWithoutProject ;
 		get;
 		response.
 	self assert: response isSuccess.
@@ -196,25 +228,8 @@ SDHTTPTests >> testSnapshotList [
 ]
 
 { #category : #tests }
-SDHTTPTests >> testSnapshotNoVersion [
-	| response snapshot snap json |
-	handler version: ('').
-	snap := self createSimpleSnapshot.
-	self assert: (snap isKindOf: SDMemorySnapshot).
-	response := ZnClient new
-		url: self apiUri
-		/ #snapshots / self dummySnapshotId ;
-		get;
-		response.
-	self deny: response isSuccess.
-	
-
-	
-]
-
-{ #category : #tests }
-SDHTTPTests >> testSnapshotWithoutProject [
-	| response snapshot |
+SDHTTPTests >> testSnapshotPutIdOnly [
+	| response |
 	server debugMode: false.
 	response := ZnClient new
 		url: self dummySnapshotUrlWithoutProject;
@@ -222,6 +237,8 @@ SDHTTPTests >> testSnapshotWithoutProject [
 		put;
 		response.
 	self assert: response isError.
+	self assert: response code = 400.
+	self assert: (response entity string includesSubstring: 'MissingParameter').
 	self deny: rootPath hasDirectories.
 ]
 

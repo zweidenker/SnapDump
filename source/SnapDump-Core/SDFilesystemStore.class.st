@@ -207,6 +207,23 @@ SDFilesystemStore >> snapshotPathForProject: projectName version: versionName [
 ]
 
 { #category : #services }
+SDFilesystemStore >> snapshotWithId: anIdString [
+	| file |
+	file := self snapshotFiles
+		detect:
+			[ :eachFile | eachFile basename = (self snapshotFileNameFor: anIdString) ]
+		ifNone: [ NotFound signal ].
+	
+	^ (self
+		buildSnapshot: anIdString
+		exception: file parent basename
+		project: file parent parent parent basename
+		version: file parent parent basename)
+		file: file;
+		yourself
+]
+
+{ #category : #services }
 SDFilesystemStore >> snapshotWithId: anIdString project: aProjectName version: aVersionString [
 	| file |
 	file := (self
