@@ -7,6 +7,14 @@ Class {
 	#category : #'SnapDump-Core'
 }
 
+{ #category : #'instance-creation' }
+SDMemorySnapshot class >> fromException: anException [
+
+	^ self new 
+			smalltalkException: anException;
+			yourself
+]
+
 { #category : #accessing }
 SDMemorySnapshot >> context [
 	^ context
@@ -44,14 +52,24 @@ SDMemorySnapshot >> serializeContext: aContext on: stream [
 		on: stream
 ]
 
-{ #category : #accessing }
+{ #category : #initialization }
 SDMemorySnapshot >> setContext: aContext exceptionClassName: exceptionClassName [
 	| method |
 	context := aContext.
 	method := context sender method.
-	className := method classBinding key asString.
-	selector :=  (method selector asString copyWithout: $:) .
-	exceptionClass := exceptionClassName
+	self
+		exception:
+			(SDException new
+				initializeFromClassName: exceptionClassName method: method;
+				yourself).
+	self initializeExceptionProperties.
+]
+
+{ #category : #initialization }
+SDMemorySnapshot >> smalltalkException: anException [
+	self 
+		setContext: anException signalerContext 
+		exceptionClassName: anException class name
 
 ]
 

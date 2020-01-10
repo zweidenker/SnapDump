@@ -6,8 +6,11 @@ Class {
 
 { #category : #tests }
 SDCoreTests >> getDummySnapshotFromClient [
-	^ client
-		snapshotWithId: self dummySnapshotId project: self projectNameForTests version: self versionStringForTests
+	| snap |
+	snap := (client
+		snapshotWithId: self dummySnapshotId project: self projectNameForTests version: self versionStringForTests) .
+	snap project store: self store.
+	^ snap
 ]
 
 { #category : #accessing }

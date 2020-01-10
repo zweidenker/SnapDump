@@ -63,12 +63,12 @@ SnapDumpUI >> extent [
 { #category : #initialization }
 SnapDumpUI >> initializeExceptionList [
 	exceptionList := self newMultiColumnList
-		displayBlock: [ :snapshotAssoc | 
-			{snapshotAssoc value first methodSignature.
-			snapshotAssoc value first exceptionClass} ];
-		sortingBlock: [ :a :b | a value first timestamp < b value first timestamp ];
-		whenSelectedItemChanged: [ :snapshotAssoc | 
-			self resetSnapshotsWith:  (snapshotAssoc ifNil: [ #() ] ifNotNil: [ snapshotAssoc value ]).
+		displayBlock: [ :anException | 
+			{anException signalerSignature.
+			anException exceptionClassName} ];
+		sortingBlock: [ :a :b | a snapshots last timestamp < b snapshots last timestamp ];
+		whenSelectedItemChanged: [ :anException | 
+			self resetSnapshotsWith:  (anException ifNil: [ #() ] ifNotNil: [ anException snapshots ]).
 			]
 ]
 
@@ -103,7 +103,7 @@ SnapDumpUI >> initializeVersionList [
 			self resetExceptionsWith: 
 					(version
 						ifNil: [ #() ]
-						ifNotNil: [ (version snapshots groupedBy: #exceptionId) associations ]).
+						ifNotNil: [ (version exceptions)]).
 			]
 ]
 
@@ -123,9 +123,9 @@ SnapDumpUI >> projectList [
 ]
 
 { #category : #initialization }
-SnapDumpUI >> resetExceptionsWith: aCollectionOfAssociations [
+SnapDumpUI >> resetExceptionsWith: aCollectionOfExceptions [
 
-	exceptionList items: aCollectionOfAssociations.
+	exceptionList items: aCollectionOfExceptions.
 	exceptionList resetSelection.
 	snapshotList items: #()
 ]
@@ -189,7 +189,7 @@ SnapDumpUI >> title [
 
 { #category : #initialization }
 SnapDumpUI >> updateLists [
-	| project version exceptionId exceptionSnapshots snap projects |
+	| project version projects exception |
 	projects := self client projects.
 	project := projects
 		detect: [ :eachProject | 
@@ -201,21 +201,20 @@ SnapDumpUI >> updateLists [
 			eachVersion string
 				= (versionList selectedItem ifNotNil: [ :selection | selection string ]) ]
 		ifNone: [ ^ self resetVersionsWith: project versions ].
-	exceptionId := (version snapshots collect: #exceptionId) asSet
-		detect: [ :eachExId | 
-			eachExId
-				= (exceptionList selectedItem ifNotNil: [ :selection | selection key ]) ]
+	exception := (version exceptions) 
+		detect: [ :eachException | 
+			eachException id
+				= (exceptionList selectedItem ifNotNil: [ :selection | selection id ]) ]
 		ifNone: [ ^ self
-				resetExceptionsWith: (version snapshots groupedBy: #exceptionId) associations ].
-	exceptionSnapshots := (version snapshots groupedBy: #exceptionId)
-		at: exceptionId.
-	snap := exceptionSnapshots
+				resetExceptionsWith: (version exceptions) ].
+
+	exception snapshots
 		detect: [ :eachSnap | 
 			eachSnap snapshotId
 				=
 					(snapshotList selectedItem
 						ifNotNil: [ :selection | selection snapshotId ]) ]
-		ifNone: [ self resetSnapshotsWith: exceptionSnapshots ]
+		ifNone: [ self resetSnapshotsWith: exception snapshots ]
 ]
 
 { #category : #'as yet unclassified' }

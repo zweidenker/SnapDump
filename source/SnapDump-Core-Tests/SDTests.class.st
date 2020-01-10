@@ -41,10 +41,14 @@ SDTests >> dummyContext [
 { #category : #'as yet unclassified' }
 SDTests >> dummyContextSnapshot [
 	
-	^ self dummyContext asSnapshot 
-			instVarNamed: #exceptionId  put: self dummyExceptionId;
-			instVarNamed: #snapshotId  put: self dummySnapshotId;
-			yourself
+	| snapshot |
+	snapshot := self dummyContext asSnapshot.
+	snapshot exception instVarNamed: #id  put: self dummyExceptionId.
+	snapshot		
+		instVarNamed: #exceptionId  put: self dummyExceptionId;
+		instVarNamed: #snapshotId  put: self dummySnapshotId;
+		yourself.
+	^ snapshot
 ]
 
 { #category : #tests }

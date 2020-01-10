@@ -14,8 +14,8 @@ SDServerDelegate >> serverError: request exception: exception [
 	version := (SDVersion string: (SDServer version ifNil: [ 'None' ]))
 		project: project.
 	[ self store storeSnapshot: (exception asSnapshot
-		project: project;
-		version: version ) ]
+		version: version;
+		yourself ) ]
 		on: Error do: [ :err | "nothing we can do here" ]	.
 	^ super serverError: request exception: exception
 ]

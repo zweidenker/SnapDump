@@ -32,15 +32,12 @@ SDClient >> projects [
 { #category : #searching }
 SDClient >> snapshotWithId: aString project: aProjectString version: aVersionString [
 
-	| project version |
-	project := (self store  projectNamed: aProjectString).
-	version := (SDVersion string: aVersionString) project: project; yourself. 
+
 	^ (self store
 		snapshotWithId: aString
 		project: aProjectString
 		version: aVersionString)
 		initializeMetaFromFile;
-		project: project;
-		version: version;
+		initializeException;
 		yourself
 ]

@@ -65,7 +65,7 @@ SDProject >> store: anObject [
 	store := anObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'accessing - versions' }
 SDProject >> versionAt: aString [ 
 	^ self 
 		versionAt: aString 
@@ -73,7 +73,7 @@ SDProject >> versionAt: aString [
 		
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'accessing - versions' }
 SDProject >> versionAt: aString ifAbsent: aBlock [
 	^ self versions 
 		detect: [ :each | each string = aString ]
@@ -81,14 +81,14 @@ SDProject >> versionAt: aString ifAbsent: aBlock [
 		
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'accessing - versions' }
 SDProject >> versionAt: aString ifAbsentPut: aBlock [
 	^ self versions
 		at: aString 
 		ifAbsentPut: aBlock
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'accessing - versions' }
 SDProject >> versions [
 	^ store versionsOfProject: self
 ]

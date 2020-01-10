@@ -44,6 +44,27 @@ SDVersion >> = aVersion [
 	^ string = aVersion string
 ]
 
+{ #category : #'accessing - exceptions' }
+SDVersion >> exceptions [
+	^ self store exceptionsOfVersion: self
+]
+
+{ #category : #'accessing - exceptions' }
+SDVersion >> exceptionsAt: aString [ 
+	^ self 
+		exceptionsAt: aString 
+		ifAbsent: [ NotFound signal: 'no exception ', aString asString, ' found' ]
+		
+]
+
+{ #category : #'accessing - exceptions' }
+SDVersion >> exceptionsAt: aString ifAbsent: aBlock [
+	^ self exceptions 
+		detect: [ :each | each string = aString ]
+		ifNone: aBlock
+		
+]
+
 { #category : #comparing }
 SDVersion >> hash [
 	^ string hash
@@ -72,8 +93,7 @@ SDVersion >> projectName [
 
 { #category : #removing }
 SDVersion >> remove [
-	self snapshots 
-		do: [ :snapshot | self store removeSnapshot: snapshot ].
+
 	self store removeVersion: self
 ]
 
@@ -82,7 +102,7 @@ SDVersion >> snapshots [
 	^ self store snapshotsWithVersion: self
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SDVersion >> store [
 	^ project store
 ]

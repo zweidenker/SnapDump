@@ -9,6 +9,20 @@ SDHTTPStore class >> storeName [
 	^ #http
 ]
 
+{ #category : #'services - getting' }
+SDHTTPStore >> exceptionsOfVersion: aVersion [ 
+	| response |
+	response := self client
+		url: uri / #projects / aVersion projectName urlEncoded / #versions / aVersion string / #exceptions;
+		get;
+		response.
+	response isSuccess 
+		ifTrue: [  
+			^ ((NeoJSONReader on: response contents readStream) nextListAs: SDException) do: [ :e |
+				e version: aVersion ] ]
+		ifFalse: [ NotFound signal: ('Version' , aVersion printString , ' for project ', aVersion projectName printString, ' not found') ]
+]
+
 { #category : #'as yet unclassified' }
 SDHTTPStore >> freeSlotsForException: anException [ 
 	
@@ -99,6 +113,21 @@ SDHTTPStore >> snapshotWithId: aString project: aProjectName version: aVersionNa
 		get
 ]
 
+{ #category : #'services - getting' }
+SDHTTPStore >> snapshotsOfException: anException [ 
+	| response |
+	
+	response := self client
+		url: uri / #projects / anException projectName / #versions / anException versionString / #exceptions / anException id / #snapshots;
+		get;
+		response.
+	response isSuccess 
+		ifTrue: [  
+	^ ((NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot) do: [ :s |
+			s exception: anException ] ]
+		ifFalse: [ NotFound signal ]
+]
+
 { #category : #'as yet unclassified' }
 SDHTTPStore >> snapshotsWithException: anException [ 
 	| response |
@@ -128,7 +157,7 @@ SDHTTPStore >> snapshotsWithProject: projectName version: versionString [
 		ifFalse: [ NotFound signal ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'services - getting' }
 SDHTTPStore >> snapshotsWithVersion: aVersion [ 
 	| response vs |
 	vs := ZnResourceMetaUtils encodePercent: aVersion string safeSet: #urlPathSafeSet encoder: ZnCharacterEncoder utf8.
@@ -143,7 +172,7 @@ SDHTTPStore >> snapshotsWithVersion: aVersion [
 		ifFalse: [ NotFound signal ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'services - getting' }
 SDHTTPStore >> versionsOfProject: aProject [ 
 	| response |
 	response := self client

@@ -36,7 +36,12 @@ SDFilesystemStore >> buildProjectFrom: aFileReference [
 { #category : #services }
 SDFilesystemStore >> buildSnapshot: snapshotId exception: exceptionId project: projectName version: versionName [
 	.
-	^ (self buildSnapshot: snapshotId project: projectName version: versionName) exceptionId: exceptionId; yourself
+	^ SDFileSnapshot new
+		snapshotId: snapshotId;
+		projectName: projectName;
+		versionString: versionName;
+		exceptionId: exceptionId;
+		yourself
 ]
 
 { #category : #services }
@@ -80,7 +85,17 @@ SDFilesystemStore >> exceptionAt: anExceptionId project: aProjectName version: a
 		exception: anExceptionId.
 	file exists
 		ifFalse: [ ^ nil ].
-	self buildExceptionFrom: file
+	^ self buildExceptionFrom: file
+]
+
+{ #category : #'service - getting' }
+SDFilesystemStore >> exceptionsOfVersion: aVersion [ 
+	| file |
+	file := (self snapshotPathForProject:  aVersion projectName version: aVersion string). 
+	file exists ifFalse: [ ^ #() ].
+	^ file children collect: [ :eachDirectory |
+		(SDException id: eachDirectory basename) version: aVersion; initializeExceptionProperties; yourself
+		 ].
 ]
 
 { #category : #accessing }
@@ -163,8 +178,12 @@ SDFilesystemStore >> projects [
 
 { #category : #'services - removing' }
 SDFilesystemStore >> removeProject: aProject [ 
-	"projects are derived from snapshots. Nothing to do"
-	^ aProject 
+	"not yet implemented. 
+	This feature does not seem to be actually used yet.
+	If we want to make it work, thta would be the place to make sure all children versions, exceptions and snapshots are cleaned"
+	| file |
+	file := (self snapshotPathForProject: aProject name ).
+	file deleteAll.
 ]
 
 { #category : #'services - removing' }
@@ -179,7 +198,14 @@ SDFilesystemStore >> removeSnapshot: snapshot [
 
 { #category : #'services - removing' }
 SDFilesystemStore >> removeVersion: aVersion [ 
-	"version are created from snapshots. So nothing to do"
+	"not yet implemented. 
+	This feature does not seem to be actually used yet.
+	If we want to make it work, thta would be the place to make sure all children exceptions and snapshots are cleaned"
+	| file projectDirectory |
+	file := (self snapshotPathForProject: aVersion projectName version:  aVersion string ).
+	file deleteAll.
+	projectDirectory := file parent.
+	projectDirectory hasChildren ifFalse: [ projectDirectory delete ].
 ]
 
 { #category : #testing }
@@ -294,6 +320,17 @@ SDFilesystemStore >> snapshotWithId: anIdString project: aProjectName version: a
 		yourself
 ]
 
+{ #category : #'service - getting' }
+SDFilesystemStore >> snapshotsOfException: anException [
+
+	^ (self
+		snapshotFilesForProject: anException projectName
+		version: anException versionString
+		exception: anException id)
+		collect: [ :eachFile | 
+			(SDFileSnapshot fromFile: eachFile)  ]
+]
+
 { #category : #services }
 SDFilesystemStore >> snapshotsWithException: anException [
 
@@ -305,7 +342,7 @@ SDFilesystemStore >> snapshotsWithException: anException [
 			(SDFileSnapshot fromFile: eachFile)  ]
 ]
 
-{ #category : #services }
+{ #category : #'service - getting' }
 SDFilesystemStore >> snapshotsWithVersion: aVersion [
 
 	^ (self
@@ -326,7 +363,7 @@ SDFilesystemStore >> storeRaw: snapshot contents: aByteArray [
 
 ]
 
-{ #category : #accessing }
+{ #category : #'service - getting' }
 SDFilesystemStore >> versionsOfProject: aProject [ 
 	| file |
 	file := (self snapshotPathForProject:  aProject name). 

@@ -5,11 +5,11 @@ SDVersion >> gtInspectorSignaturesIn: composite [
 	<gtInspectorPresentationOrder: 100>
 	composite table
 		title: [ 'Version' ];
-		display: [ self snapshots ];
+		display: [ self exceptions ];
 		beMultiple;
 		column: 'DateAndTime' evaluated: [ :each | each timestamp rounded asString ];
-		column: 'Selector' evaluated: [ :each | each methodSignature asString ];
-		column: 'Exception' evaluated: [ :each | each exceptionClass asString ];
+		column: 'Selector' evaluated: [ :each | each signalerSignature asString ];
+		column: 'Exception' evaluated: [ :each | each exceptionClassName asString ];
 		addAction: (GLMGenericAction new
 				action: [ :table | self remove. table update ]; 
 				iconName: #glamorousCancel;

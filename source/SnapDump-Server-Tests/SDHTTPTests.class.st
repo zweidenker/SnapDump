@@ -206,13 +206,13 @@ SDHTTPTests >> testSnapshotList [
 	| response list |
 	self createSimpleSnapshot.
 	response := ZnClient new
-		url: self apiUri / #projects / #TestProject / #versions / '0.1' / #snapshots;
+		url: self apiUri / #projects / #TestProject / #versions / '0.1' / #exceptions / self dummyExceptionId / #snapshots;
 		get;
 		response.
 	self assert: response isSuccess equals: true.
 	list := (NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot .
 	self assert: list size equals: 1.
-	self assert: (list first errorSignature) equals: 'TestProject_0.1_Object_printString_ContextWithoutException'
+	self assert: (list first initializeException; errorSignature) equals: 'TestProject_0.1_Object: ContextWithoutException>>#printString'
 	
 ]
 

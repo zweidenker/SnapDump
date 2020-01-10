@@ -27,7 +27,7 @@ SDHandler >> defaultStoreClass [
 	^ SDBasicHTTPStore 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #services }
 SDHandler >> handleException: exception [
 	Transcript show: 'SnapDump: exception to report: ', exception description asString.
 	^ [ self handleSnapshot: exception asSnapshot ]
@@ -42,16 +42,21 @@ SDHandler >> handleException: exception [
 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #services }
 SDHandler >> handleSnapshot: snapshot [
-	self store isSetUp 
-		ifTrue: [
-			Transcript show: 'SnapDump: store is set up'.
-			self store storeSnapshot: (snapshot 
-				projectName: project;
-				versionString: version ) ]
-		ifFalse: [ Transcript show: 'tried to store snapshot but store is not set up'; cr ].
-	^ snapshot 
+	self store isSetUp
+		ifTrue: [ Transcript show: 'SnapDump: store is set up'.
+			self store
+				storeSnapshot:
+					(snapshot
+						versionString: version;
+						projectName: project;
+						initializeVersion;
+						yourself) ]
+		ifFalse: [ Transcript
+				show: 'tried to store snapshot but store is not set up';
+				cr ].
+	^ snapshot
 ]
 
 { #category : #accessing }
@@ -64,7 +69,7 @@ SDHandler >> project: anObject [
 	project := anObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SDHandler >> projectName: projectName versionString: versionString [
 	self project: projectName.
 	self version: versionString

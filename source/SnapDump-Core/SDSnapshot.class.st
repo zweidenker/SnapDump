@@ -17,7 +17,8 @@ Class {
 		'snapshotId',
 		'exceptionId',
 		'versionString',
-		'projectName'
+		'projectName',
+		'exception'
 	],
 	#category : #'SnapDump-Core'
 }
@@ -95,8 +96,7 @@ SDSnapshot >> encodeMetaOn: aSerializer [
 
 { #category : #signatures }
 SDSnapshot >> errorSignature [
-	^ String streamContents: [ :stream |
-		self errorSignatureOn: stream  ]
+	^ self exception fullSignature
 ]
 
 { #category : #signatures }
@@ -115,6 +115,19 @@ SDSnapshot >> errorSignatureOn: stream [
 ]
 
 { #category : #accessing }
+SDSnapshot >> exception [ 
+	
+	^ exception 
+]
+
+{ #category : #accessing }
+SDSnapshot >> exception: aSDException [
+	
+	exception := aSDException. 
+
+]
+
+{ #category : #accessing }
 SDSnapshot >> exceptionClass [
 	^ exceptionClass
 ]
@@ -126,8 +139,7 @@ SDSnapshot >> exceptionClass: aString [
 
 { #category : #accessing }
 SDSnapshot >> exceptionId [ 
-	^ exceptionId ifNil: [ 
-		exceptionId := self buildExceptionId ]
+	^ exceptionId 
 ]
 
 { #category : #accessing }
@@ -161,6 +173,34 @@ SDSnapshot >> initialize [
 	timestamp := DateAndTime now
 ]
 
+{ #category : #initialization }
+SDSnapshot >> initializeException [
+		
+	exception := SDException new 
+		id:  exceptionId;
+		exceptionSignalerSelector: selector;
+		exceptionSignalerClassName: exceptionClass;
+		exceptionClassName: className;
+		yourself.
+	self initializeVersion
+		 
+]
+
+{ #category : #initialization }
+SDSnapshot >> initializeExceptionProperties [
+
+	exceptionClass := self exception exceptionClassName.
+	selector := self exception exceptionSignalerSelector.
+	className := self exception exceptionSignalerClassName. 
+
+]
+
+{ #category : #initialization }
+SDSnapshot >> initializeVersion [
+	self version: self newVersion
+		 
+]
+
 { #category : #private }
 SDSnapshot >> metaFields [
 	^ self basicMetaFields asOrderedCollection
@@ -173,6 +213,16 @@ SDSnapshot >> methodSignature [
 			<< className 
 			<< '>>#'
 			<< selector ]
+]
+
+{ #category : #initialization }
+SDSnapshot >> newVersion [
+
+	| newProject newVersion |
+	newProject := (SDProject name: projectName).
+	newVersion := (SDVersion string: versionString) project: newProject.
+	^ newVersion 
+		 
 ]
 
 { #category : #actions }
@@ -203,7 +253,7 @@ SDSnapshot >> operatingSystemVersion: aString [
 
 { #category : #accessing }
 SDSnapshot >> project [
-	^ project
+	^ self exception project
 ]
 
 { #category : #accessing }
@@ -252,7 +302,7 @@ SDSnapshot >> snapshotId: aString [
 { #category : #signatures }
 SDSnapshot >> snapshotSignature [
 	^ String streamContents: [ :stream |
-		self errorSignatureOn: stream.
+		self exception fullSignatureOn: stream.
 		stream 
 			<< '_'
 			<< timestamp printString ]
@@ -260,7 +310,7 @@ SDSnapshot >> snapshotSignature [
 
 { #category : #accessing }
 SDSnapshot >> store [
-	^ version store
+	^ self version store
 ]
 
 { #category : #accessing }
@@ -294,14 +344,17 @@ SDSnapshot >> validate [
 
 { #category : #accessing }
 SDSnapshot >> version [
-	^ version
+	
+	^ self exception version
 ]
 
 { #category : #accessing }
 SDSnapshot >> version: aVersion [
-	version := aVersion.
-	versionString := aVersion string.
-	project := aVersion project
+	
+	self exception version: aVersion.
+	self versionString: aVersion string.
+	self projectName: aVersion project name.
+	self exceptionId: self exception id.
 ]
 
 { #category : #accessing }
