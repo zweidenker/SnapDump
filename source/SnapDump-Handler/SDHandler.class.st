@@ -13,7 +13,7 @@ SDHandler class >> type [
 	^ #handler
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #setup }
 SDHandler >> applyConfiguration: aConfig [
 	super applyConfiguration: aConfig.
 	self 
@@ -51,7 +51,6 @@ SDHandler >> handleSnapshot: snapshot [
 					(snapshot
 						versionString: version;
 						projectName: project;
-						initializeVersion;
 						yourself) ]
 		ifFalse: [ Transcript
 				show: 'tried to store snapshot but store is not set up';

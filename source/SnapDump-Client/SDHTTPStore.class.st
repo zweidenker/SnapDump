@@ -23,13 +23,13 @@ SDHTTPStore >> exceptionsOfVersion: aVersion [
 		ifFalse: [ NotFound signal: ('Version' , aVersion printString , ' for project ', aVersion projectName printString, ' not found') ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'services - getting' }
 SDHTTPStore >> freeSlotsForException: anException [ 
 	
 		^ self freeSlotsForExceptionId: anException id project: anException projectName version: anException versionString
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'services - getting' }
 SDHTTPStore >> freeSlotsForExceptionId: anExceptionId project: aProjectName version: aVersionString [
 	| response |
 	
@@ -43,12 +43,20 @@ SDHTTPStore >> freeSlotsForExceptionId: anExceptionId project: aProjectName vers
 		ifFalse: [ NotFound signal ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'services - testing' }
+SDHTTPStore >> hasSnapshot: snapshot [
+	^ (self client
+		url: (self urlForSnapshot: snapshot);
+		head;
+		response) status = 200
+]
+
+{ #category : #accessing }
 SDHTTPStore >> projectNamed: aString [
 	^ self projectNamed: aString ifAbsent: [ NotFound signal: 'no project found' ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SDHTTPStore >> projectNamed: aString ifAbsent: aBlock [
 	| response |
 	response := self client
@@ -62,7 +70,7 @@ SDHTTPStore >> projectNamed: aString ifAbsent: aBlock [
 		ifFalse: aBlock
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SDHTTPStore >> projectNamed: aString ifAbsentPut: aBlock [
 	| response |
 	response := self client
@@ -76,7 +84,7 @@ SDHTTPStore >> projectNamed: aString ifAbsentPut: aBlock [
 		ifFalse: aBlock
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SDHTTPStore >> projects [
 	| response |
 	response := self client
@@ -87,7 +95,7 @@ SDHTTPStore >> projects [
 			p store: self ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'services - removing' }
 SDHTTPStore >> removeSnapshot: aSnapshot [ 
 	| response |
 	response := self client
@@ -98,18 +106,18 @@ SDHTTPStore >> removeSnapshot: aSnapshot [
 		ifFalse: [ NotFound signal ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'services - testing' }
+SDHTTPStore >> shouldReportSnapshot: snapshot [
+	^ (self hasSnapshot: snapshot) not
+		and: [ (self
+				freeSlotsForException: snapshot exception) > 0 ]
+]
+
+{ #category : #accessing }
 SDHTTPStore >> snapshotDumpFor: aSnapshot [ 
 	^ self client
 		headerAt: 'Accept' put: 'application/X-SnapDump-Fuel';
 		url: (self urlForSnapshot: aSnapshot);
-		get
-]
-
-{ #category : #'as yet unclassified' }
-SDHTTPStore >> snapshotWithId: aString project: aProjectName version: aVersionName exceptionId: anExceptionId [
-	^ self client
-		url: (self urlForSnapshot: aString project: aProjectName version: aVersionName exception: anExceptionId) / #snap;
 		get
 ]
 
@@ -125,50 +133,6 @@ SDHTTPStore >> snapshotsOfException: anException [
 		ifTrue: [  
 	^ ((NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot) do: [ :s |
 			s exception: anException ] ]
-		ifFalse: [ NotFound signal ]
-]
-
-{ #category : #'as yet unclassified' }
-SDHTTPStore >> snapshotsWithException: anException [ 
-	| response |
-	
-	response := self client
-		url: uri / #projects / anException projectName / #versions / anException versionString / #exceptions / anException / #snapshots;
-		get;
-		response.
-	response isSuccess 
-		ifTrue: [  
-	^ ((NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot) do: [ :s |
-			s exception: anException ] ]
-		ifFalse: [ NotFound signal ]
-]
-
-{ #category : #'as yet unclassified' }
-SDHTTPStore >> snapshotsWithProject: projectName version: versionString [
-	| response  |
-	
-	response := self client
-		url: uri / #projects / projectName urlEncoded / #versions / versionString urlEncoded  / #snapshots;
-		get;
-		response.
-	response isSuccess 
-		ifTrue: [  
-	^ ((NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot) ]
-		ifFalse: [ NotFound signal ]
-]
-
-{ #category : #'services - getting' }
-SDHTTPStore >> snapshotsWithVersion: aVersion [ 
-	| response vs |
-	vs := ZnResourceMetaUtils encodePercent: aVersion string safeSet: #urlPathSafeSet encoder: ZnCharacterEncoder utf8.
-	response := self client
-		url: uri / #projects / aVersion project name / #versions / vs / #snapshots;
-		get;
-		response.
-	response isSuccess 
-		ifTrue: [  
-	^ ((NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot) do: [ :s |
-			s version: aVersion ] ]
 		ifFalse: [ NotFound signal ]
 ]
 

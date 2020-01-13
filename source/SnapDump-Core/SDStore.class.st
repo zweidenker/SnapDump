@@ -40,6 +40,8 @@ SDStore >> shouldReportSnapshot: aSnapshot [
 
 { #category : #services }
 SDStore >> storeSnapshot: snapshot [
+
+	snapshot prepareExport.
 	Transcript show: 'SnapDump: checking if error needs to be reported'.
 	(self shouldReportSnapshot: snapshot)
 		ifTrue: [ 

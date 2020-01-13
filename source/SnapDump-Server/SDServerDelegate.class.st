@@ -9,12 +9,10 @@ Class {
 
 { #category : #'error handling' }
 SDServerDelegate >> serverError: request exception: exception [
-	| project version |
-	project := (SDProject name: 'SnapDump').
-	version := (SDVersion string: (SDServer version ifNil: [ 'None' ]))
-		project: project.
+	
 	[ self store storeSnapshot: (exception asSnapshot
-		version: version;
+		projectName: 'SnapDump';
+		versionString: (SDServer version ifNil: [ 'None' ]);
 		yourself ) ]
 		on: Error do: [ :err | "nothing we can do here" ]	.
 	^ super serverError: request exception: exception

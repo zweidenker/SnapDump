@@ -38,6 +38,6 @@ SDClient >> snapshotWithId: aString project: aProjectString version: aVersionStr
 		project: aProjectString
 		version: aVersionString)
 		initializeMetaFromFile;
-		initializeException;
+		restoreModel;
 		yourself
 ]

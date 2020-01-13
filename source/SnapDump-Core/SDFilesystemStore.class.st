@@ -45,16 +45,6 @@ SDFilesystemStore >> buildSnapshot: snapshotId exception: exceptionId project: p
 ]
 
 { #category : #services }
-SDFilesystemStore >> buildSnapshot: snapshotId project: projectName version: versionName [
-	.
-	^ SDFileSnapshot new
-		snapshotId: snapshotId;
-		projectName: projectName;
-		versionString: versionName;
-		yourself
-]
-
-{ #category : #services }
 SDFilesystemStore >> buildVersionFrom: aFileReference [ 
 	.
 	^ SDVersion new
@@ -98,7 +88,7 @@ SDFilesystemStore >> exceptionsOfVersion: aVersion [
 		 ].
 ]
 
-{ #category : #accessing }
+{ #category : #'service - getting' }
 SDFilesystemStore >> freeSlotsForException: anException [
 
 	| snapshotSize |
@@ -208,7 +198,7 @@ SDFilesystemStore >> removeVersion: aVersion [
 	projectDirectory hasChildren ifFalse: [ projectDirectory delete ].
 ]
 
-{ #category : #testing }
+{ #category : #'services - testing' }
 SDFilesystemStore >> shouldReportSnapshot: snapshot [
 	^ (self
 		hasSnapshot: snapshot) not
@@ -327,27 +317,6 @@ SDFilesystemStore >> snapshotsOfException: anException [
 		snapshotFilesForProject: anException projectName
 		version: anException versionString
 		exception: anException id)
-		collect: [ :eachFile | 
-			(SDFileSnapshot fromFile: eachFile)  ]
-]
-
-{ #category : #services }
-SDFilesystemStore >> snapshotsWithException: anException [
-
-	^ (self
-		snapshotFilesForProject: anException projectName
-		version: anException versionString
-		exception: anException id)
-		collect: [ :eachFile | 
-			(SDFileSnapshot fromFile: eachFile)  ]
-]
-
-{ #category : #'service - getting' }
-SDFilesystemStore >> snapshotsWithVersion: aVersion [
-
-	^ (self
-		snapshotFilesForProject: aVersion project name
-		version: aVersion string)
 		collect: [ :eachFile | 
 			(SDFileSnapshot fromFile: eachFile)  ]
 ]

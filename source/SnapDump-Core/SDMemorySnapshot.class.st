@@ -20,14 +20,6 @@ SDMemorySnapshot >> context [
 	^ context
 ]
 
-{ #category : #accessing }
-SDMemorySnapshot >> exception: exception [
-	self 
-		setContext: exception signalerContext 
-		exceptionClassName: exception class name
-
-]
-
 { #category : #initialization }
 SDMemorySnapshot >> initialize [ 
 	super initialize.	
@@ -62,7 +54,7 @@ SDMemorySnapshot >> setContext: aContext exceptionClassName: exceptionClassName 
 			(SDException new
 				initializeFromClassName: exceptionClassName method: method;
 				yourself).
-	self initializeExceptionProperties.
+	
 ]
 
 { #category : #initialization }

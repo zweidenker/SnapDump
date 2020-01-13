@@ -49,16 +49,6 @@ SDBasicHTTPStore >> printOn: aStream [
 	aStream << uri asString
 ]
 
-{ #category : #testing }
-SDBasicHTTPStore >> shouldReportSnapshot: snapshot [
-	^ ((self client
-		url: (self urlForSnapshot: snapshot);
-		head;
-		response) status = 200) not and: [ 
-			(self freeSlotsForExceptionId: snapshot exceptionId project: snapshot projectName version: snapshot versionString) > 0
-		 ]
-]
-
 { #category : #accessing }
 SDBasicHTTPStore >> uri: anUri [
 	uri := anUri asZnUrl 

@@ -97,11 +97,6 @@ SDVersion >> remove [
 	self store removeVersion: self
 ]
 
-{ #category : #'as yet unclassified' }
-SDVersion >> snapshots [
-	^ self store snapshotsWithVersion: self
-]
-
 { #category : #accessing }
 SDVersion >> store [
 	^ project store

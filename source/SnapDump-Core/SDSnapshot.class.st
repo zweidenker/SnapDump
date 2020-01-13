@@ -3,8 +3,6 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'timestamp',
-		'project',
-		'version',
 		'className',
 		'selector',
 		'exceptionClass',
@@ -56,12 +54,6 @@ SDSnapshot >> basicMetaFields [
 ]
 
 { #category : #private }
-SDSnapshot >> buildExceptionId [
-	^ (SHA256 hashMessage: self errorSignature) hex
-
-]
-
-{ #category : #private }
 SDSnapshot >> buildSnapshotId [
 	^ (SHA256 hashMessage: self snapshotSignature) hex
 
@@ -70,11 +62,6 @@ SDSnapshot >> buildSnapshotId [
 { #category : #accessing }
 SDSnapshot >> className [
 	^ className
-]
-
-{ #category : #accessing }
-SDSnapshot >> className: aString [ 
-	className := aString
 ]
 
 { #category : #accessing }
@@ -94,24 +81,18 @@ SDSnapshot >> encodeMetaOn: aSerializer [
 		aSerializer at: field putAdditionalObject: (self perform: field asSymbol) ]
 ]
 
-{ #category : #signatures }
-SDSnapshot >> errorSignature [
-	^ self exception fullSignature
+{ #category : #initialization }
+SDSnapshot >> ensureVersionModel [
+
+	"Make sure the version model is built from my local properties "
+	self exception version: self newVersion.
+
+		 
 ]
 
 { #category : #signatures }
-SDSnapshot >> errorSignatureOn: stream [
-
-	^  stream 
-			<< self projectName asString 
-			<< '_'
-			<< self versionString asString 
-			<< '_'
-			<< className 
-			<< '_'
-			<< selector 
-			<< '_'
-			<< exceptionClass 
+SDSnapshot >> errorSignature [
+	^ self exception fullSignature
 ]
 
 { #category : #accessing }
@@ -133,11 +114,6 @@ SDSnapshot >> exceptionClass [
 ]
 
 { #category : #accessing }
-SDSnapshot >> exceptionClass: aString [ 
-	exceptionClass := aString
-]
-
-{ #category : #accessing }
 SDSnapshot >> exceptionId [ 
 	^ exceptionId 
 ]
@@ -145,6 +121,17 @@ SDSnapshot >> exceptionId [
 { #category : #accessing }
 SDSnapshot >> exceptionId: aString [
 	exceptionId := aString
+]
+
+{ #category : #initialization }
+SDSnapshot >> exportExceptionModel [
+
+	"absorb the exception model properties so that they can be serialized with the snap file "
+	exceptionClass := self exception exceptionClassName.
+	selector := self exception exceptionSignalerSelector.
+	className := self exception exceptionSignalerClassName. 
+	exceptionId := self exception id.
+
 ]
 
 { #category : #accessing }
@@ -173,46 +160,9 @@ SDSnapshot >> initialize [
 	timestamp := DateAndTime now
 ]
 
-{ #category : #initialization }
-SDSnapshot >> initializeException [
-		
-	exception := SDException new 
-		id:  exceptionId;
-		exceptionSignalerSelector: selector;
-		exceptionSignalerClassName: exceptionClass;
-		exceptionClassName: className;
-		yourself.
-	self initializeVersion
-		 
-]
-
-{ #category : #initialization }
-SDSnapshot >> initializeExceptionProperties [
-
-	exceptionClass := self exception exceptionClassName.
-	selector := self exception exceptionSignalerSelector.
-	className := self exception exceptionSignalerClassName. 
-
-]
-
-{ #category : #initialization }
-SDSnapshot >> initializeVersion [
-	self version: self newVersion
-		 
-]
-
 { #category : #private }
 SDSnapshot >> metaFields [
 	^ self basicMetaFields asOrderedCollection
-]
-
-{ #category : #signatures }
-SDSnapshot >> methodSignature [
-	^ String streamContents: [ :stream |
-		stream 
-			<< className 
-			<< '>>#'
-			<< selector ]
 ]
 
 { #category : #initialization }
@@ -251,15 +201,16 @@ SDSnapshot >> operatingSystemVersion: aString [
 	operatingSystemVersion := aString
 ]
 
-{ #category : #accessing }
-SDSnapshot >> project [
-	^ self exception project
+{ #category : #initialization }
+SDSnapshot >> prepareExport [
+
+	self ensureVersionModel.
+	self exportExceptionModel.  
 ]
 
 { #category : #accessing }
-SDSnapshot >> project: aProject [
-	project := aProject.
-	projectName :=  aProject name
+SDSnapshot >> project [
+	^ self exception project
 ]
 
 { #category : #accessing }
@@ -276,6 +227,21 @@ SDSnapshot >> projectName: aString [
 { #category : #actions }
 SDSnapshot >> remove [
 	^ self store removeSnapshot: self 
+]
+
+{ #category : #initialization }
+SDSnapshot >> restoreModel [
+		
+	"Restore the model from my local 'flat' properties.
+	Usefull when building / restoring snapshot object from file "
+	exception := SDException new 
+		id:  exceptionId;
+		exceptionSignalerSelector: selector;
+		exceptionSignalerClassName: exceptionClass;
+		exceptionClassName: className;
+		yourself.
+	self ensureVersionModel
+		 
 ]
 
 { #category : #accessing }
@@ -346,15 +312,6 @@ SDSnapshot >> validate [
 SDSnapshot >> version [
 	
 	^ self exception version
-]
-
-{ #category : #accessing }
-SDSnapshot >> version: aVersion [
-	
-	self exception version: aVersion.
-	self versionString: aVersion string.
-	self projectName: aVersion project name.
-	self exceptionId: self exception id.
 ]
 
 { #category : #accessing }

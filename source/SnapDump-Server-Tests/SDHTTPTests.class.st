@@ -80,6 +80,9 @@ SDHTTPTests >> testInternalServerError [
 		response.
 	self assert: response isError.
 	self deny: response code = 404.
+	
+	"there should  have been a snapshot generated on server side.
+	this snapshot is expected to be consecutive to the parsing error"
 	self assert: rootPath hasDirectories.
 	snapshot := SDFileSnapshot fromFile: rootPath allFiles anyOne.
 	self assert: snapshot className equals: 'NeoJSONReader'
@@ -212,7 +215,7 @@ SDHTTPTests >> testSnapshotList [
 	self assert: response isSuccess equals: true.
 	list := (NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot .
 	self assert: list size equals: 1.
-	self assert: (list first initializeException; errorSignature) equals: 'TestProject_0.1_Object: ContextWithoutException>>#printString'
+	self assert: (list first restoreModel; errorSignature) equals: 'TestProject_0.1_Object: ContextWithoutException>>#printString'
 	
 ]
 
