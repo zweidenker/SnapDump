@@ -7,6 +7,11 @@ Class {
 	#category : #'SnapDump-Server-REST'
 }
 
+{ #category : #testing }
+SDOpenAPICall class >> isAbstract [
+	^ self == SDOpenAPICall 
+]
+
 { #category : #accessing }
 SDOpenAPICall >> exceptionAt: anExceptionId project: aProjectName  version: aVersionString [
 	^ (self store exceptionAt: anExceptionId project: aProjectName version: aVersionString) ifNil: [ 

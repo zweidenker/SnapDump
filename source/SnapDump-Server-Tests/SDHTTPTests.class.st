@@ -220,6 +220,19 @@ SDHTTPTests >> testSnapshotList [
 ]
 
 { #category : #tests }
+SDHTTPTests >> testSpec [
+	| response |
+	response := ZnClient new
+		url: self apiUri / #spec;
+		get;
+		response.
+	self assert: response isSuccess equals: true.
+	self assert: (response entity string includesSubstring: 'SnapDump API')
+
+	
+]
+
+{ #category : #tests }
 SDHTTPTests >> testVersion [
 	| response version |
 	self createSimpleSnapshot.
