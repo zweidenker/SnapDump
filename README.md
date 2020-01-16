@@ -6,11 +6,11 @@ SnapDump is a software for pharo to create and manage runtime snapshots. When de
 Quick start
 -----------
 
-SnapDump is available as docker application for easy deployment. To keep the snapshots on server restart we need to create a volume where snapshots can be stored. You do this by invoking 
+SnapDump is available as docker application for easy deployment. To keep the snapshots on server restart we need to create a volume where snapshots can be stored. You do this by invoking:
 
     $ docker volume create SnapDump
 
-SnapDump uses internally the port 5555 for the server. This can be mapped to a local port on the host by specifying on the docker commandline. To start the server with that port and the former created volume invoke
+SnapDump uses internally the port 5555 for the server. This can be mapped to a local port on the host by specifying on the docker commandline. To start the server with that port and the former created volume invoke:
 
     $ docker run -p 8888:5555 -v SnapDump:/snapshots zweidenker/snap-dump
 
@@ -19,14 +19,34 @@ Download a pharo image and install the SnapDump client
     $ curl get.pharo.org/64/70+vm | bash
     $ ./pharo-ui Pharo.image
 
-To install SnapDump open a playground and execute
+To install SnapDump open a playground and execute:
 
     Metacello new
 	    repository: 'github://zweidenker/SnapDump';
 	    baseline: #SnapDump;
 	    load
 
-To configure and open the UI client execute
+Server side
+-----------
+Now how to fill up your SnapDump store with Exception snapshots ?
+To configure Snapdump on the server execute:
+
+    (SnapDump hackUIManager; beHandler)
+        uri: http://localhost:8888/api;
+		projectName: 'projectname1' versionString: '1.2' ].
+
+This could be executed on your Pharo image at server start.
+
+Then report an Exception like:
+
+    Smalltalk  
+        at: #SnapDump
+        ifPresent: [ :reporter | reporter handleException: (Error signal: 'My first SnapDump snapshot') ].
+
+Client side
+-----------
+On the client side you want to see the Exceptions previously reported on your running server.
+To configure and open the UI client execute:
 
     "configure the SnapDump client to access the docker container"
     SnapDump uri: 'http://localhost:8888/api'.
@@ -35,7 +55,7 @@ To configure and open the UI client execute
     "open the ui"
     SnapDump ui
 
- You should see this
+ You should see this:
 
  ![SnapDump UI](https://raw.githubusercontent.com/zweidenker/SnapDump/master/images/ui.png)
 
