@@ -211,11 +211,6 @@ SDFilesystemStore >> snapshotFileNameFor: snapshotId [
 	^ snapshotId , '.snap'
 ]
 
-{ #category : #accessing }
-SDFilesystemStore >> snapshotFiles [
-	^ path allChildrenMatching: '*.snap'
-]
-
 { #category : #'services - files' }
 SDFilesystemStore >> snapshotFilesForProject: aProjectName version: aVersionName [
 
