@@ -9,9 +9,12 @@ SDStore class >> withName: aString [
 	^ self subclasses detect: [ :each | each storeName = aString ]
 ]
 
-{ #category : #testing }
-SDStore >> hasSnapshotNamed: aString [
-	self subclassResponsibility 
+{ #category : #accessing }
+SDStore >> defaultSnapshotOccurrencesLimit [
+
+	^ 10
+	
+	
 ]
 
 { #category : #testing }
@@ -19,10 +22,10 @@ SDStore >> isSetUp [
 	self subclassResponsibility 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #services }
 SDStore >> removeSnapshot: aSnapshot [ 
 	
-	^ self removeSnapshotWithId: aSnapshot id.
+	^ self subclassResponsibility 
 
 ]
 
@@ -30,14 +33,21 @@ SDStore >> removeSnapshot: aSnapshot [
 SDStore >> reset [
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #testing }
+SDStore >> shouldReportSnapshot: aSnapshot [
+	self subclassResponsibility 
+]
+
+{ #category : #services }
 SDStore >> storeSnapshot: snapshot [
+
+	snapshot prepareExport.
 	Transcript show: 'SnapDump: checking if error needs to be reported'.
-	(self hasSnapshotNamed: snapshot id)
-		ifFalse: [ 
+	(self shouldReportSnapshot: snapshot)
+		ifTrue: [ 
 			Transcript show: 'SnapDump: error is being uploaded'.
 			self writeSnapshot: snapshot.
-			self reset ]
+	]
 ]
 
 { #category : #writing }

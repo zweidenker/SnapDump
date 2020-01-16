@@ -2,10 +2,37 @@ Class {
 	#name : #SDSnapshotCall,
 	#superclass : #SDOpenAPICall,
 	#instVars : [
-		'snapshotId'
+		'snapshotId',
+		'projectName',
+		'exceptionId',
+		'versionString'
 	],
 	#category : #'SnapDump-Server-REST'
 }
+
+{ #category : #accessing }
+SDSnapshotCall class >> parameterExceptionId [
+	<openApiParameter: #( common )>
+	^ OAParameter new
+		name: 'exceptionId';
+		in: #path;
+		beString;
+		required: true;
+		description: 'Identify a given exception within the context of this server. Several snapshots can be reported for a same exceptionId'
+
+]
+
+{ #category : #accessing }
+SDSnapshotCall class >> parameterProjectName [
+	<openApiParameter: #( common )>
+	^ OAParameter new
+		name: 'projectName';
+		in: #path;
+		beString;
+		required: true;
+		description: 'Name of the project to which a snapshot belongs to'
+
+]
 
 { #category : #accessing }
 SDSnapshotCall class >> parameterSnapshotId [
@@ -15,18 +42,30 @@ SDSnapshotCall class >> parameterSnapshotId [
 		in: #path;
 		beString;
 		required: true;
-		description: 'Snapshot with unique id'
+		description: 'Snapshot identifier'
+
+]
+
+{ #category : #accessing }
+SDSnapshotCall class >> parameterVersionString [
+	<openApiParameter: #( common )>
+	^ OAParameter new
+		name: 'versionString';
+		in: #path;
+		beString;
+		required: true;
+		description: 'Version of the project to which a snapshot belongs to'
 
 ]
 
 { #category : #accessing }
 SDSnapshotCall class >> path [
-	^ '/snapshots/{snapshotId}'
+	^ '/projects/{projectName}/versions/{versionString}/exceptions/{exceptionId}/snapshots/{snapshotId}'
 ]
 
 { #category : #'submorphs-add/remove' }
 SDSnapshotCall >> delete [
-	[self store removeSnapshotWithId: snapshotId]
+	[self store removeSnapshot: self snapshot]
 		on: FileDoesNotExistException 
 		do: [ :err | ^ response := ZnResponse notFound: request uri ] .
 	response := ZnResponse ok: (ZnStringEntity text: 'OK') 
@@ -53,16 +92,23 @@ SDSnapshotCall >> get [
 
 { #category : #accessing }
 SDSnapshotCall >> head [
-	response := (self store hasSnapshotNamed: snapshotId)
-		ifTrue: [ ZnResponse ok: (ZnStringEntity text: 'OK') ]
-		ifFalse: [ ZnResponse notFound: request uri ]
+
+	[ self snapshot ]
+		on: NotFound
+		do: [ :ex | 
+		 ^ ZnResponse notFound: request uri ].
+	ZnResponse ok: (ZnStringEntity text: 'OK')
 ]
 
 { #category : #public }
 SDSnapshotCall >> put [
-| snapshot |
-	[snapshot := self store buildSnapshotFrom: request contents readStream.
-	snapshot sanitize.
+| snapshot dict |
+
+	[
+	snapshot := self store buildSnapshot: snapshotId exception: exceptionId project: projectName version: versionString.
+	"still need to read the meta data to get all variables initialized before being written on disk "
+	dict := SDFileSnapshot readMetaFrom: request contents readStream.
+	snapshot initializeMeta: dict.
 	snapshot validate]
 	on: ZnCharacterEncodingError  
 	do: [:err | 
@@ -75,5 +121,11 @@ SDSnapshotCall >> put [
 
 { #category : #public }
 SDSnapshotCall >> snapshot [
-	^ self snapshotWithId: snapshotId 
+	[  
+	^ self store
+		snapshotWithId: snapshotId
+		project: projectName
+		version: versionString ]
+		on: NotFound
+		do: [ :err | ZnRespond signalWith: (ZnResponse notFound: request url) ]
 ]

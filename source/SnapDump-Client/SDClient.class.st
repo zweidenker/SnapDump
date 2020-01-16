@@ -30,6 +30,14 @@ SDClient >> projects [
 ]
 
 { #category : #searching }
-SDClient >> snapshotWithId: aString [ 
-	^ self store snapshotWithId: aString 
+SDClient >> snapshotWithId: aString project: aProjectString version: aVersionString [
+
+
+	^ (self store
+		snapshotWithId: aString
+		project: aProjectString
+		version: aVersionString)
+		initializeMetaFromFile;
+		restoreModel;
+		yourself
 ]

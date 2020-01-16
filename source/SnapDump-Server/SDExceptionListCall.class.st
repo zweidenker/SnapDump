@@ -1,5 +1,5 @@
 Class {
-	#name : #SDVersionSnapshotListCall,
+	#name : #SDExceptionListCall,
 	#superclass : #SDOpenAPICall,
 	#instVars : [
 		'projectName',
@@ -9,7 +9,7 @@ Class {
 }
 
 { #category : #accessing }
-SDVersionSnapshotListCall class >> parameterProjectName [
+SDExceptionListCall class >> parameterProjectName [
 	<openApiParameter: #( common )>
 	^ OAParameter new
 		name: 'projectName';
@@ -21,26 +21,25 @@ SDVersionSnapshotListCall class >> parameterProjectName [
 ]
 
 { #category : #accessing }
-SDVersionSnapshotListCall class >> parameterVersionString [
+SDExceptionListCall class >> parameterVersiontString [
 	<openApiParameter: #( common )>
 	^ OAParameter new
 		name: 'versionString';
 		in: #path;
 		beString;
 		required: true;
-		description: 'Version identitfier'
+		description: 'Name of the version'
 
 ]
 
 { #category : #accessing }
-SDVersionSnapshotListCall class >> path [
-	^ '/projects/{projectName}/versions/{versionString}/snapshots'
+SDExceptionListCall class >> path [
+	^ '/projects/{projectName}/versions/{versionString}/exceptions'
 ]
 
 { #category : #accessing }
-SDVersionSnapshotListCall >> get [
-	self jsonResponse: (self 
-		projectNamed: (ZnResourceMetaUtils decodePercent: projectName)
-		versionAt: (ZnResourceMetaUtils decodePercent: versionString)) snapshots
+SDExceptionListCall >> get [
+
+	self jsonResponse: ((self projectNamed: projectName) versionAt: versionString) exceptions 
 	
 ]

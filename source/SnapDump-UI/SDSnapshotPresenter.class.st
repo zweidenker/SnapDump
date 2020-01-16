@@ -29,7 +29,7 @@ SDSnapshotPresenter >> initializeWidgets [
 						name: 'Open Snapshot';
 						description: 'Open Snapshot';
 						icon: (self iconNamed: #openIcon);
-						action: [ snapshot openDebugger ] ].
+						action: [ snapshot ifNotNil: [snapshot openDebugger] ] ].
 			group
 				addItem: [ :item | 
 					item

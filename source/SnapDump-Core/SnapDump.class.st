@@ -76,7 +76,7 @@ SnapDump class >> withType: aSymbol [
 	^ self allSubclasses detect: [ :each | each type = aSymbol ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #initialization }
 SnapDump >> applyConfiguration: aConfig [
 	store := (SDStore withName: aConfig store) new.
 	store applyConfiguration: aConfig
@@ -98,7 +98,7 @@ SnapDump >> store: anObject [
 	store := anObject 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #initialization }
 SnapDump >> uri: aUri username: aUsername password: aPassword [
 	^ self store 
 			uri: aUri asZnUrl;

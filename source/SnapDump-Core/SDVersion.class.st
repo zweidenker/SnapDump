@@ -9,6 +9,12 @@ Class {
 }
 
 { #category : #accessing }
+SDVersion class >> defaultVersionString [
+
+	^ 'unknown'
+]
+
+{ #category : #accessing }
 SDVersion class >> neoJsonMapping: mapper [
 	mapper for: self do: [ :mapping |
 		mapping mapInstVars: #(string) ]
@@ -38,6 +44,27 @@ SDVersion >> = aVersion [
 	^ string = aVersion string
 ]
 
+{ #category : #'accessing - exceptions' }
+SDVersion >> exceptions [
+	^ self store exceptionsOfVersion: self
+]
+
+{ #category : #'accessing - exceptions' }
+SDVersion >> exceptionsAt: aString [ 
+	^ self 
+		exceptionsAt: aString 
+		ifAbsent: [ NotFound signal: 'no exception ', aString asString, ' found' ]
+		
+]
+
+{ #category : #'accessing - exceptions' }
+SDVersion >> exceptionsAt: aString ifAbsent: aBlock [
+	^ self exceptions 
+		detect: [ :each | each string = aString ]
+		ifNone: aBlock
+		
+]
+
 { #category : #comparing }
 SDVersion >> hash [
 	^ string hash
@@ -58,26 +85,26 @@ SDVersion >> project: anObject [
 	project := anObject
 ]
 
+{ #category : #accessing }
+SDVersion >> projectName [ 
+
+	^ project name
+]
+
 { #category : #removing }
 SDVersion >> remove [
-	self snapshots 
-		do: [ :snapshot | self store removeSnapshot: snapshot ].
+
 	self store removeVersion: self
 ]
 
-{ #category : #'as yet unclassified' }
-SDVersion >> snapshots [
-	^ self store snapshotsWithVersion: self
-]
-
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SDVersion >> store [
 	^ project store
 ]
 
 { #category : #accessing }
 SDVersion >> string [
-	^ string
+	^ string 
 ]
 
 { #category : #accessing }

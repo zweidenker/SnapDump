@@ -53,6 +53,12 @@ SDFileSnapshot >> initializeMeta: dictionary [
 		self instVarNamed: field put: (dictionary at: field) ]
 ]
 
+{ #category : #'as yet unclassified' }
+SDFileSnapshot >> initializeMetaFromFile [
+
+	self initializeMeta: (self class readMetaFrom: file asFileReference binaryReadStream)
+]
+
 { #category : #actions }
 SDFileSnapshot >> openDebugger [ 
 	FLMaterializer materializeFromByteArray: self contents
@@ -61,17 +67,6 @@ SDFileSnapshot >> openDebugger [
 { #category : #'instance creation' }
 SDFileSnapshot >> readFrom: aStream [
 	^ self setFuelHeader: (FLMaterializer new materializeHeaderFrom: aStream)
-]
-
-{ #category : #'as yet unclassified' }
-SDFileSnapshot >> sanitize [
-	"prevent project or version to be nil. If there is an error reported without
-	those fields it is better to store it with a default name so it can be seen
-	that the setup is wrong"
-	(project isNil or: [ project name isEmpty ]) ifTrue: [ 
-		project := SDProject name: 'unknown' ].
-	(version isNil or: [ version string isEmpty ]) ifTrue: [ 
-		version := (SDVersion string: 'unknown') project: project ]
 ]
 
 { #category : #'as yet unclassified' }
