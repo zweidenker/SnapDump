@@ -6,7 +6,7 @@ Class {
 
 { #category : #accessing }
 SDSnapshotListCall class >> path [
-	^ #( '/snapshots' )
+	^ '/snapshots'
 ]
 
 { #category : #accessing }
