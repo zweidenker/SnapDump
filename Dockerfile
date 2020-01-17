@@ -15,8 +15,6 @@ RUN mv /opt/Pharo.changes /opt/SnapDump.changes
 COPY start.st /opt/
 COPY source /opt/source
 
-RUN ls -l /opt
-
 ARG CACHEBUST=1
 RUN \
     /opt/pharo /opt/SnapDump.image eval --save "Metacello new repository: 'filetree:///opt/source'; baseline: #SnapDump; load: #('server')" && \
