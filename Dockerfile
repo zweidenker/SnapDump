@@ -18,6 +18,7 @@ COPY source /opt/source
 ARG CACHEBUST=1
 RUN \
     /opt/pharo /opt/SnapDump.image eval --save "Metacello new repository: 'filetree:///opt/source'; baseline: #SnapDump; load: #('server')" && \
+    /opt/pharo /opt/SnapDump.image eval --save "LGitLibrary class compile: 'startUp: isImageStarting'" && \
     rm -rf /opt/pharo-local /opt/source
 
 RUN \
