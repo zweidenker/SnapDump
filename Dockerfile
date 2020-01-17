@@ -13,6 +13,7 @@ RUN mv /opt/Pharo.image /opt/SnapDump.image
 RUN mv /opt/Pharo.changes /opt/SnapDump.changes
 
 COPY start.st /opt/
+COPY source /opt/source
 
 ARG CACHEBUST=1
 RUN \

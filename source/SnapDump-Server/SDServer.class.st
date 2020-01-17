@@ -27,6 +27,13 @@ SDServer class >> port: aNumber path: aFileReference [
 		yourself
 ]
 
+{ #category : #accessing }
+SDServer class >> repositoryDescription [
+	| snapDumpRepo |
+	snapDumpRepo := IceRepository registry detect: [ :each | each name = 'SnapDump' ].
+	^ snapDumpRepo head description
+]
+
 { #category : #'as yet unclassified' }
 SDServer class >> startOnPort: aNumber path: aFileReference [
 	^ self instance 
