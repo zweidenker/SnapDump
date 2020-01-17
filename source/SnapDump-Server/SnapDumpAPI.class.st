@@ -16,7 +16,7 @@ SnapDumpAPI class >> rootCallClass [
 SnapDumpAPI >> info [
 	^ OAInfo new 
 		description: 'SnapDump API';
-		version: '0.7';
+		version: SDServer repositoryDescription;
 		title: 'SnapDump API';
 		contact: (OAContact new
 			name: 'Norbert Hartl';
