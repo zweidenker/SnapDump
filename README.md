@@ -37,11 +37,14 @@ To configure Snapdump on the server execute:
 
 This could be executed on your Pharo image at server start.
 
-Then report an Exception like:
+Then use #SnapDump>>handleException: to report an Exception in the likes of:
 
-    Smalltalk  
-        at: #SnapDump
-        ifPresent: [ :reporter | reporter handleException: (Error signal: 'My first SnapDump snapshot') ].
+    [Error signal: 'My first SnapDump snapshot']
+        on: Error
+        do: [ :error |
+            Smalltalk  
+            at: #SnapDump
+            ifPresent: [ :reporter | reporter handleException: error ] ] 
 
 Client side
 -----------
