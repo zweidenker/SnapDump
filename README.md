@@ -14,7 +14,9 @@ SnapDump uses internally the port 5555 for the server. This can be mapped to a l
 
     $ docker run -p 8888:5555 -v SnapDump:/snapshots zweidenker/snap-dump
 
-Download a pharo image and install the SnapDump client
+Now our SnapDump store is up and running, we would like to first: report exceptions to SnapDump from our server side Pharo image, and second: retrieve our reported exceptions on our development image.
+
+To download a pharo image from command line you can use:
 
     $ curl get.pharo.org/64/70+vm | bash
     $ ./pharo-ui Pharo.image
@@ -26,18 +28,17 @@ To install SnapDump open a playground and execute:
 	    baseline: #SnapDump;
 	    load
 
-Server side
+On the server image
 -----------
-Now how to fill up your SnapDump store with Exception snapshots ?
-To configure Snapdump on the server execute:
+To configure Snapdump on the server image execute:
 
     (SnapDump hackUIManager; beHandler)
         uri: http://localhost:8888/api;
 		projectName: 'projectname1' versionString: '1.2' ].
 
-This could be executed on your Pharo image at server start.
+This could be executed at server start.
 
-Then use #SnapDump>>handleException: to report an Exception in the likes of:
+Then to fill up our SnapDump store by reporting an Exception use #SnapDump>>handleException: in the likes of:
 
     [Error signal: 'My first SnapDump snapshot']
         on: Error
@@ -46,9 +47,9 @@ Then use #SnapDump>>handleException: to report an Exception in the likes of:
             at: #SnapDump
             ifPresent: [ :reporter | reporter handleException: error ] ] 
 
-Client side
+On the developer image
 -----------
-On the client side you want to see the Exceptions previously reported on your running server.
+On the developer image you want to see the exceptions previously reported.
 To configure and open the UI client execute:
 
     "configure the SnapDump client to access the docker container"
