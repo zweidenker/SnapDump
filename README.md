@@ -6,9 +6,9 @@ SnapDump is a software for pharo to create and manage runtime snapshots. When de
 Quick start
 -----------
 
-SnapDump is available as docker application for easy deployment. Let's pull the stable version:
+SnapDump is available as docker application for easy deployment. Let's pull the last stable version:
 
-    $ docker pull zweidenker/snap-dump:0.5.1
+    $ docker pull zweidenker/snap-dump:0.5.2
 
 To keep the snapshots on server restart we need to create a volume where snapshots can be stored. You do this by invoking:
 
@@ -16,7 +16,7 @@ To keep the snapshots on server restart we need to create a volume where snapsho
 
 SnapDump uses internally the port 5555 for the server. This can be mapped to a local port on the host by specifying on the docker commandline. To start the server with that port and the former created volume invoke:
 
-    $ docker run -p 8888:5555 -v SnapDump:/snapshots zweidenker/snap-dump:0.5.1
+    $ docker run -p 8888:5555 -v SnapDump:/snapshots zweidenker/snap-dump:0.5.2
 
 Now our SnapDump store is up and running, we would like to first: report exceptions to SnapDump from our server side Pharo image, and second: retrieve our reported exceptions on our development image.
 
@@ -28,7 +28,7 @@ To download a pharo image from command line you can use:
 To install SnapDump open a playground and execute:
 
     Metacello new
-	    repository: 'github://zweidenker/SnapDump:0.5.1';
+	    repository: 'github://zweidenker/SnapDump:0.5.2';
 	    baseline: #SnapDump;
 	    load
 
@@ -49,7 +49,7 @@ Then to fill up our SnapDump store by reporting an Exception use #SnapDump>>hand
         do: [ :error |
             Smalltalk  
             at: #SnapDump
-            ifPresent: [ :reporter | reporter handleException: error ] ] 
+            ifPresent: [ :reporter | reporter handleException: error ] ]
 
 On the developer image
 -----------
