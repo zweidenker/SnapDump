@@ -17,7 +17,7 @@ COPY start.st /opt/
 ARG CACHEBUST=1
 RUN \
     /opt/pharo /opt/SnapDump.image eval --save "Metacello new repository: 'github://zweidenker/SnapDump/source'; baseline: #SnapDump; load: #('server')" && \
-    /opt/pharo /opt/SnapDump.image eval --save "LGitLibrary class compile: 'startUp: isImageStarting'" && \
+    /opt/pharo /opt/SnapDump.image eval --save "SnapDump prepareForDeployment" && \
     rm -rf /opt/pharo-local
 
 RUN \
