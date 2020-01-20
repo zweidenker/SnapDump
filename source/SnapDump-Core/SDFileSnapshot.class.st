@@ -47,6 +47,12 @@ SDFileSnapshot >> fileSize [
 	^ file size
 ]
 
+{ #category : #actions }
+SDFileSnapshot >> fuelBytes [
+
+	^ self contents
+]
+
 { #category : #'as yet unclassified' }
 SDFileSnapshot >> initializeMeta: dictionary [
 	self basicMetaFields do: [ :field |
@@ -57,11 +63,6 @@ SDFileSnapshot >> initializeMeta: dictionary [
 SDFileSnapshot >> initializeMetaFromFile [
 
 	self initializeMeta: (self class readMetaFrom: file asFileReference binaryReadStream)
-]
-
-{ #category : #actions }
-SDFileSnapshot >> openDebugger [ 
-	FLMaterializer materializeFromByteArray: self contents
 ]
 
 { #category : #'instance creation' }
