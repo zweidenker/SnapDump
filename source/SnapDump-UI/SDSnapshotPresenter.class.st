@@ -37,7 +37,16 @@ SDSnapshotPresenter >> initializeWidgets [
 						description: 'Remove Snapshot';
 						icon: (self iconNamed: #smallWarningIcon);
 						action: [ self removeSnapshot
-							  ] ] ].
+							  ] ]. 
+					
+			group
+				addItem: [ :item | 
+					item
+						name: 'Stack trace';
+						description: 'View stack trace';
+						icon: (self iconNamed: #transcript);
+						action: [ snapshot ifNotNil: [snapshot openStackTrace] ] ].		
+					].
 	menu applyTo: self.
 	meta := self newMultiColumnList 
 		displayBlock: [ :key | { key . (Text fromString: (snapshot perform: key) printString) }  ]

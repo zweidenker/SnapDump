@@ -32,7 +32,7 @@ SnapDumpUI class >> defaultSpec [
 SnapDumpUI class >> example [ 
 
 	|port server|
-	port := 9995.
+	port := 9993.
 	server := (Smalltalk at: #SDServer) port: port path: './sd-ui-example' asFileReference.
 	"server start."
 	

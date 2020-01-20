@@ -192,7 +192,7 @@ SDHTTPTests >> testSnapshotGet [
 
 { #category : #tests }
 SDHTTPTests >> testSnapshotGetById [
-	| response snapshot |
+	| response |
 	self createSimpleSnapshot.
 	response := ZnClient new
 		url: self dummySnapshotUrlWithoutProject ;
@@ -202,6 +202,27 @@ SDHTTPTests >> testSnapshotGetById [
 	self assert: response isError.
 	self assert: response code = 404.
 	
+]
+
+{ #category : #tests }
+SDHTTPTests >> testSnapshotGetStackTrace [
+	| response snapshot stackTrace |
+	self createSimpleSnapshot.
+	response := ZnClient new
+		url: self dummySnapshotUrl ;
+		get;
+		response.
+	self assert: response isSuccess.
+	snapshot := (NeoJSONReader on: response contents readStream) nextAs: SDSnapshot .
+	self assert: snapshot snapshotId equals: self dummySnapshotId.
+	stackTrace :=  self store snapshotStackFor: snapshot.
+	self assert: (stackTrace includesSubstring: 'ByteString(Object)>>printStringLimitedTo:
+	Receiver: ''TestString''
+	Arguments and temporary variables: 
+		limit: 	nil
+	Receiver''s instance variables:'
+
+	)
 ]
 
 { #category : #tests }

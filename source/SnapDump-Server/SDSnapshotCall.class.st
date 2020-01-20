@@ -73,21 +73,19 @@ SDSnapshotCall >> delete [
 
 { #category : #public }
 SDSnapshotCall >> get [
-	| fuelFile json |
+	| snapshot json |
 	json := true.
-	fuelFile := self snapshot.
+	snapshot := self snapshot.
 	request headers 
 		at: 'Accept'
 		ifPresent: [ :header | 
 			(header = 'application/X-SnapDump-Fuel')
-				ifTrue: [ json := false ] ].
-	json 
-		ifTrue: [ 
-			self jsonResponse: fuelFile ]
-		ifFalse: [ 
-			response := ZnResponse ok: ((ZnStreamingEntity 
-				type: ZnMimeType applicationOctetStream length: fuelFile fileSize)
-				stream: fuelFile contentStream ) ] 
+				ifTrue: [ ^ self respondFuel: snapshot].
+			 (header = 'application/X-SnapDump-Stack')
+				ifTrue: [ ^ self respondStack: snapshot].].
+	
+	self jsonResponse: snapshot 
+		
 ]
 
 { #category : #accessing }
@@ -117,6 +115,26 @@ SDSnapshotCall >> put [
 			entity: (ZnStringEntity text: err description) ].
 	self store storeRaw: snapshot contents: request contents.
 	response := ZnResponse ok: (ZnStringEntity text: 'OK')
+]
+
+{ #category : #public }
+SDSnapshotCall >> respondFuel: aFileSnapshot [
+	response := ZnResponse
+		ok:
+			((ZnStreamingEntity
+				type: ZnMimeType applicationOctetStream
+				length: aFileSnapshot fileSize)
+				stream: aFileSnapshot contentStream)
+]
+
+{ #category : #public }
+SDSnapshotCall >> respondStack: aFileSnapshot [
+	response := ZnResponse
+		ok:
+			((ZnStreamingEntity
+				type: ZnMimeType applicationOctetStream
+				length: aFileSnapshot fileSize)
+				stream: aFileSnapshot stackTraceStream )
 ]
 
 { #category : #public }

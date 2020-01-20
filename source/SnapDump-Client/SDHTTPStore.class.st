@@ -121,6 +121,15 @@ SDHTTPStore >> snapshotDumpFor: aSnapshot [
 		get
 ]
 
+{ #category : #accessing }
+SDHTTPStore >> snapshotStackFor: aSnapshot [ 
+
+	^ (self client
+		headerAt: 'Accept' put: 'application/X-SnapDump-Stack';
+		url: (self urlForSnapshot: aSnapshot);
+		get) utf8Decoded
+]
+
 { #category : #'services - getting' }
 SDHTTPStore >> snapshotsOfException: anException [ 
 	| response |

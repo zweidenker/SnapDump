@@ -48,13 +48,15 @@ SDMemorySnapshot >> serializeContext: aContext on: stream [
 SDMemorySnapshot >> setContext: aContext exceptionClassName: exceptionClassName [
 	| method |
 	context := aContext.
+	self
+		stackTrace:
+			(String streamContents: [ :stream | context errorReportOn: stream ]).
 	method := context sender method.
 	self
 		exception:
 			(SDException new
 				initializeFromClassName: exceptionClassName method: method;
-				yourself).
-	
+				yourself)
 ]
 
 { #category : #initialization }
@@ -71,5 +73,8 @@ SDMemorySnapshot >> writeTo: stream [
 	stream nextPut: self class metaSeparator.
 	self 
 		serializeContext: context 
-		on: stream 
+		on: stream.
+	stream nextPut: self class metaSeparator.
+	stream nextPutAll: (self stackTrace) utf8Encoded 
+		 
 ]
