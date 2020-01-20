@@ -51,7 +51,7 @@ SDBasicHTTPStore >> printOn: aStream [
 
 { #category : #accessing }
 SDBasicHTTPStore >> uri: anUri [
-	uri := anUri asZnUrl 
+	uri := anUri asZnUrl / SDSnapshot apiVersion
 ]
 
 { #category : #accessing }

@@ -79,7 +79,7 @@ SDServer >> port: aNumber [
 { #category : #accessing }
 SDServer >> serverDelegate [
 	^ ZnPrefixMappingDelegate new 
-		map: 'api' to: self apiHandler;
+		map: ('api/' , SDSnapshot apiVersion) to: self apiHandler;
 		map: 'health' to: ZnTestRunnerDelegate new.
 
 ]
