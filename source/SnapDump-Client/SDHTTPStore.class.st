@@ -116,7 +116,7 @@ SDHTTPStore >> shouldReportSnapshot: snapshot [
 { #category : #accessing }
 SDHTTPStore >> snapshotDumpFor: aSnapshot [ 
 	^ self client
-		headerAt: 'Accept' put: 'application/X-SnapDump-Fuel';
+		headerAt: 'Accept' put: SDStore mimeTypeFuel;
 		url: (self urlForSnapshot: aSnapshot);
 		get
 ]
@@ -125,7 +125,7 @@ SDHTTPStore >> snapshotDumpFor: aSnapshot [
 SDHTTPStore >> snapshotStackFor: aSnapshot [ 
 
 	^ (self client
-		headerAt: 'Accept' put: 'application/X-SnapDump-Stack';
+		headerAt: 'Accept' put: SDStore mimeTypeStack;
 		url: (self urlForSnapshot: aSnapshot);
 		get) utf8Decoded
 ]

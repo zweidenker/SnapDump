@@ -79,9 +79,9 @@ SDSnapshotCall >> get [
 	request headers 
 		at: 'Accept'
 		ifPresent: [ :header | 
-			(header = 'application/X-SnapDump-Fuel')
+			(header = SDStore mimeTypeFuel)
 				ifTrue: [ ^ self respondFuel: snapshot].
-			 (header = 'application/X-SnapDump-Stack')
+			 (header = SDStore mimeTypeStack)
 				ifTrue: [ ^ self respondStack: snapshot].].
 	
 	self jsonResponse: snapshot 
