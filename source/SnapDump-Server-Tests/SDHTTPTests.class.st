@@ -217,10 +217,7 @@ SDHTTPTests >> testSnapshotGetStackTrace [
 	self assert: snapshot snapshotId equals: self dummySnapshotId.
 	stackTrace :=  self store snapshotStackFor: snapshot.
 	self assert: (stackTrace includesSubstring: 'ByteString(Object)>>printStringLimitedTo:
-	Receiver: ''TestString''
-	Arguments and temporary variables: 
-		limit: 	nil
-	Receiver''s instance variables:'
+	Receiver: ''TestString'''
 
 	)
 ]
