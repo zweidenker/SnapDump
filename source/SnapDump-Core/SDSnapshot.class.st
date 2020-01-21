@@ -134,6 +134,11 @@ SDSnapshot >> exportExceptionModel [
 
 ]
 
+{ #category : #actions }
+SDSnapshot >> fuelBytes [
+	^ self store snapshotDumpFor: self
+]
+
 { #category : #accessing }
 SDSnapshot >> imageBuild [
 	^ imageBuild
@@ -177,8 +182,13 @@ SDSnapshot >> newVersion [
 
 { #category : #actions }
 SDSnapshot >> openDebugger [
-	FLMaterializer materializeFromByteArray: (
-		self store snapshotDumpFor: self )
+	| context |
+	context := FLMaterializer materializeFromByteArray: self fuelBytes.
+	UIManager default
+		debugProcess: Processor activeProcess 
+		context: context 
+		label: 'External stack' 
+		fullView: true
 ]
 
 { #category : #accessing }
