@@ -4,6 +4,18 @@ Class {
 	#category : #'SnapDump-Core'
 }
 
+{ #category : #accessing }
+SDStore class >> mimeTypeFuel [
+
+	^ 'application/X-SnapDump-Fuel'
+]
+
+{ #category : #accessing }
+SDStore class >> mimeTypeStack [
+
+	^ 'application/X-SnapDump-Stack'
+]
+
 { #category : #lookup }
 SDStore class >> withName: aString [
 	^ self subclasses detect: [ :each | each storeName = aString ]

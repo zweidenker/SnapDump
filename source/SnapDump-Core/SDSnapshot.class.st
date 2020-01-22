@@ -16,7 +16,8 @@ Class {
 		'exceptionId',
 		'versionString',
 		'projectName',
-		'exception'
+		'exception',
+		'stackTrace'
 	],
 	#category : #'SnapDump-Core'
 }
@@ -50,7 +51,7 @@ SDSnapshot >> asSnapshot [
 
 { #category : #private }
 SDSnapshot >> basicMetaFields [
-	^ #(projectName versionString snapshotId exceptionId timestamp className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild)
+	^ #(projectName versionString  exceptionId timestamp className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild)
 ]
 
 { #category : #private }
@@ -73,12 +74,6 @@ SDSnapshot >> dateAndTimeString [
 { #category : #accessing }
 SDSnapshot >> dateString [ 
 	^ timestamp asDate printFormat: #(1 2 3 $. 1 1)
-]
-
-{ #category : #private }
-SDSnapshot >> encodeMetaOn: aSerializer [
-	self metaFields do: [ :field |
-		aSerializer at: field putAdditionalObject: (self perform: field asSymbol) ]
 ]
 
 { #category : #initialization }
@@ -282,6 +277,18 @@ SDSnapshot >> snapshotSignature [
 		stream 
 			<< '_'
 			<< timestamp printString ]
+]
+
+{ #category : #accessing }
+SDSnapshot >> stackTrace [
+
+	^ stackTrace
+]
+
+{ #category : #accessing }
+SDSnapshot >> stackTrace: aString [
+
+	stackTrace := aString
 ]
 
 { #category : #accessing }

@@ -20,3 +20,9 @@ SDSnapshot >> gtInspectorSnapshotIn: composite [
 			shouldShowTitle: true)
 
 ]
+
+{ #category : #'*SnapDump-UI' }
+SDSnapshot >> openStackTrace [
+	UIManager default edit: (
+		self store snapshotStackFor: self )
+]
