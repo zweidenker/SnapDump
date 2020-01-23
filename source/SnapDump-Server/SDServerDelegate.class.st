@@ -7,6 +7,12 @@ Class {
 	#category : #'SnapDump-Server-REST'
 }
 
+{ #category : #accessing }
+SDServerDelegate >> handlerRequest: aRequest [
+
+	^ super handleRequest: aRequest
+]
+
 { #category : #'error handling' }
 SDServerDelegate >> serverError: request exception: exception [
 	

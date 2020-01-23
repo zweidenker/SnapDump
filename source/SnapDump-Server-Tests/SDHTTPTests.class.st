@@ -9,16 +9,6 @@ Class {
 }
 
 { #category : #accessing }
-SDHTTPTests >> apiHandler [		
-	^ ZnPrefixMappingDelegate new 
-		map: 'api' 
-		to: (SDServerDelegate new
-			store: self filesystemStore;
-			uriSpace: (OpenAPIUriSpace new
-				rootClass: SDOpenAPICall))
-]
-
-{ #category : #accessing }
 SDHTTPTests >> apiUri [
 	^ ('http://', self selfIP, ':', self randomPort asString, '/api') asZnUrl 
 ]
@@ -51,10 +41,9 @@ SDHTTPTests >> selfIP [
 { #category : #running }
 SDHTTPTests >> setUp [ 
 	super setUp.
-	server := (ZnServer on: self randomPort)
-		delegate: self apiHandler;
-		debugMode: true;
-		start.
+	server := SDServer port: self randomPort path: rootPath.
+	server debugMode: true.
+	server start.
 	"SnapDump current stub store willReturn: store."
 ]
 
@@ -72,7 +61,7 @@ SDHTTPTests >> tearDown [
 { #category : #tests }
 SDHTTPTests >> testInternalServerError [
 	| response snapshot |
-	server debugMode: false.
+	server znServer debugMode: false.
 	response := ZnClient new
 		url: self dummySnapshotUrl;
 		entity: (ZnByteArrayEntity bytes: '{bogus ;json' asByteArray);
