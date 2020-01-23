@@ -22,6 +22,18 @@ Class {
 	#category : #'SnapDump-Core'
 }
 
+{ #category : #accessing }
+SDSnapshot class >> apiVersion [
+
+	"A version description that is used by all parts (handler, server, client) to ensure consistent API calls 
+	(for example, avoid pushing snaphots to an incompatible version of snapdump server).
+	We use the class side of SDSnapshot as it is accessible from all kind of images (handler, server, client).
+	This description is expected to be updated each time 'breaking' changes are introduced on server side.
+	It will be used as an URL prefix"
+	
+	^ 'v2'
+]
+
 { #category : #'as yet unclassified' }
 SDSnapshot class >> exception: anException [
 	^ self new exception: anException

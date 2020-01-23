@@ -9,28 +9,24 @@ Class {
 }
 
 { #category : #accessing }
-SDHTTPTests >> apiHandler [		
-	^ ZnPrefixMappingDelegate new 
-		map: 'api' 
-		to: (SDServerDelegate new
-			store: self filesystemStore;
-			uriSpace: (OpenAPIUriSpace new
-				rootClass: SDOpenAPICall))
-]
-
-{ #category : #accessing }
 SDHTTPTests >> apiUri [
 	^ ('http://', self selfIP, ':', self randomPort asString, '/api') asZnUrl 
 ]
 
+{ #category : #accessing }
+SDHTTPTests >> apiVersionedUri [
+
+	^ self apiUri / SDSnapshot apiVersion
+]
+
 { #category : #tests }
 SDHTTPTests >> dummySnapshotUrl [
-	^ (self apiUri /#projects / self projectNameForTests / #versions / self versionStringForTests / #exceptions / self dummyExceptionId / #snapshots / self dummySnapshotId)
+	^ (self apiVersionedUri /#projects / self projectNameForTests / #versions / self versionStringForTests / #exceptions / self dummyExceptionId / #snapshots / self dummySnapshotId)
 ]
 
 { #category : #tests }
 SDHTTPTests >> dummySnapshotUrlWithoutProject [
-	^ self apiUri 
+	^ self apiVersionedUri 
 		/ #snapshots / self dummySnapshotId
 		
 	" #projects / self projectNameForTests / #versions
@@ -51,10 +47,9 @@ SDHTTPTests >> selfIP [
 { #category : #running }
 SDHTTPTests >> setUp [ 
 	super setUp.
-	server := (ZnServer on: self randomPort)
-		delegate: self apiHandler;
-		debugMode: true;
-		start.
+	server := SDServer port: self randomPort path: rootPath.
+	server debugMode: true.
+	server start.
 	"SnapDump current stub store willReturn: store."
 ]
 
@@ -72,7 +67,7 @@ SDHTTPTests >> tearDown [
 { #category : #tests }
 SDHTTPTests >> testInternalServerError [
 	| response snapshot |
-	server debugMode: false.
+	server znServer debugMode: false.
 	response := ZnClient new
 		url: self dummySnapshotUrl;
 		entity: (ZnByteArrayEntity bytes: '{bogus ;json' asByteArray);
@@ -93,7 +88,7 @@ SDHTTPTests >> testProject [
 	| response project |
 	self createSimpleSnapshot.
 	response := ZnClient new
-		url: self apiUri / #projects / #TestProject;
+		url: self apiVersionedUri / #projects / #TestProject;
 		get;
 		response.
 	self assert: response isSuccess.
@@ -107,7 +102,7 @@ SDHTTPTests >> testProjectList [
 	| response list |
 	self createSimpleSnapshot.
 	response := ZnClient new
-		url: self apiUri / #projects;
+		url: self apiVersionedUri / #projects;
 		get;
 		response.
 	self assert: response isSuccess equals: true.
@@ -121,7 +116,7 @@ SDHTTPTests >> testProjectList [
 SDHTTPTests >> testProjectListEmpty [
 	| response list |
 	response := ZnClient new
-		url: self apiUri / #projects;
+		url: self apiVersionedUri / #projects;
 		get;
 		response.
 	self assert: response isSuccess equals: true.
@@ -133,7 +128,7 @@ SDHTTPTests >> testProjectListEmpty [
 SDHTTPTests >> testProjectNotFound [
 	| response |
 	response := ZnClient new
-		url: self apiUri / #projects / 'NoneExisting';
+		url: self apiVersionedUri / #projects / 'NoneExisting';
 		get;
 		response.
 	self assert: response status = 404.
@@ -144,7 +139,7 @@ SDHTTPTests >> testProjectNotFound [
 SDHTTPTests >> testProjectRemove [
 	| response |
 	response := ZnClient new
-		url: self apiUri / #projects / 'NoneExisting';
+		url: self apiVersionedUri / #projects / 'NoneExisting';
 		delete;
 		response.
 	self assert: response status = 405.
@@ -227,7 +222,7 @@ SDHTTPTests >> testSnapshotList [
 	| response list |
 	self createSimpleSnapshot.
 	response := ZnClient new
-		url: self apiUri / #projects / #TestProject / #versions / '0.1' / #exceptions / self dummyExceptionId / #snapshots;
+		url: self apiVersionedUri / #projects / #TestProject / #versions / '0.1' / #exceptions / self dummyExceptionId / #snapshots;
 		get;
 		response.
 	self assert: response isSuccess equals: true.
@@ -241,7 +236,7 @@ SDHTTPTests >> testSnapshotList [
 SDHTTPTests >> testSpec [
 	| response |
 	response := ZnClient new
-		url: self apiUri / #spec;
+		url: self apiVersionedUri / #spec;
 		get;
 		response.
 	self assert: response isSuccess equals: true.
@@ -255,7 +250,7 @@ SDHTTPTests >> testVersion [
 	| response version |
 	self createSimpleSnapshot.
 	response := ZnClient new
-		url: self apiUri / #projects / #TestProject / #versions / #'0.1';
+		url: self apiVersionedUri / #projects / #TestProject / #versions / #'0.1';
 		get;
 		response.
 	self assert: response isSuccess equals: true.
@@ -269,7 +264,7 @@ SDHTTPTests >> testVersionList [
 	| response list |
 	self createSimpleSnapshot.
 	response := ZnClient new
-		url: self apiUri / #projects / #TestProject / #versions ;
+		url: self apiVersionedUri / #projects / #TestProject / #versions ;
 		get;
 		response.
 	self assert: response isSuccess equals: true.

@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'port',
 		'server',
-		'path'
+		'path',
+		'debugMode'
 	],
 	#classInstVars : [
 		'instance',
@@ -60,6 +61,18 @@ SDServer >> apiHandler [
 ]
 
 { #category : #accessing }
+SDServer >> debugMode [
+
+	^ debugMode ifNil: [ false ]
+]
+
+{ #category : #accessing }
+SDServer >> debugMode: aBoolean [
+
+	debugMode := aBoolean
+]
+
+{ #category : #accessing }
 SDServer >> path: anObject [
 	path := anObject
 ]
@@ -71,10 +84,13 @@ SDServer >> port: aNumber [
 
 { #category : #accessing }
 SDServer >> serverDelegate [
-	^ ZnPrefixMappingDelegate new 
-		map: 'api' to: self apiHandler;
-		map: 'health' to: ZnTestRunnerDelegate new.
-
+	^ ZnPrefixMappingDelegate new
+		map: 'api'
+			to:
+			(ZnPrefixMappingDelegate new
+				map: SDSnapshot apiVersion
+				to: self apiHandler);
+		map: 'health' to: ZnTestRunnerDelegate new
 ]
 
 { #category : #accessing }
@@ -82,10 +98,18 @@ SDServer >> start [
 				
 	server := (ZnServer on: port)
 		delegate: self serverDelegate;
+		debugMode: self debugMode;
 		start.
 ]
 
 { #category : #accessing }
 SDServer >> stop [ 
 	server stop
+]
+
+{ #category : #'accessing - tests' }
+SDServer >> znServer [
+	"for test purposes"
+	
+	^ server
 ]
