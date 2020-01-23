@@ -1,4 +1,4 @@
-| apiHandler healthHandler metricsHandler prefixHandler server dockerTag |
+| apiHandler healthHandler metricsHandler prefixHandler server |
 Author fullName: 'docker'.
 
 ZnLogEvent logToTranscript.
