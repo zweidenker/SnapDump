@@ -21,20 +21,13 @@ SDFileSnapshot class >> readFrom: aStream [
 
 { #category : #'as yet unclassified' }
 SDFileSnapshot class >> readMetaFrom: stream [ 
-	^ NeoJSONReader fromString: (stream upTo: self metaSeparator) utf8Decoded 
+	^ (SDSnapshotReader on: stream) readMeta
 
 ]
 
 { #category : #'as yet unclassified' }
 SDFileSnapshot >> contentStream [
 	^ file binaryReadStream
-		upTo: self class metaSeparator;
-		yourself
-]
-
-{ #category : #'as yet unclassified' }
-SDFileSnapshot >> contents [
-	^ self contentStream contents 
 ]
 
 { #category : #accessing }
@@ -50,7 +43,11 @@ SDFileSnapshot >> fileSize [
 { #category : #actions }
 SDFileSnapshot >> fuelBytes [
 
-	^ self contents
+	| stream reader size |
+	stream := self contentStream.
+	reader := (SDSnapshotReader on: stream).
+	size := reader upToType: SDSnapshotWriter typeContext.
+	^ stream next: size.
 ]
 
 { #category : #'as yet unclassified' }
@@ -81,23 +78,9 @@ SDFileSnapshot >> setFuelHeader: aFLHeader [
 ]
 
 { #category : #'as yet unclassified' }
-SDFileSnapshot >> stackTraceStream [
-	^ file binaryReadStream
-		upTo: self class metaSeparator;
-		upTo: self class metaSeparator;
-		yourself
-]
-
-{ #category : #'as yet unclassified' }
 SDFileSnapshot >> storeRaw: aByteArray [
-	"write file with new json header in case the fields have been changed"
-	| snapshotParts |
-	snapshotParts := (aByteArray splitOn: self class metaSeparator).
+
 	file binaryWriteStream 
-		nextPutAll: (NeoJSONWriter toString: self) utf8Encoded;  
-		nextPut: self class metaSeparator;
-		nextPutAll: snapshotParts second;
-		nextPut: self class metaSeparator;
-		nextPutAll: snapshotParts third;
+		nextPutAll: aByteArray;
 		close
 ]

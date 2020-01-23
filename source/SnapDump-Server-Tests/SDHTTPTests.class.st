@@ -80,7 +80,7 @@ SDHTTPTests >> testInternalServerError [
 	this snapshot is expected to be consecutive to the parsing error"
 	self assert: rootPath hasDirectories.
 	snapshot := SDFileSnapshot fromFile: rootPath allFiles anyOne.
-	self assert: snapshot className equals: 'NeoJSONReader'
+	self assert: snapshot className equals: 'PositionableStream'
 ]
 
 { #category : #tests }
@@ -197,6 +197,22 @@ SDHTTPTests >> testSnapshotGetById [
 	self assert: response isError.
 	self assert: response code = 404.
 	
+]
+
+{ #category : #tests }
+SDHTTPTests >> testSnapshotGetContext [
+	| response snapshot context |
+	self createSimpleSnapshot.
+	response := ZnClient new
+		url: self dummySnapshotUrl ;
+		get;
+		response.
+	self assert: response isSuccess.
+	snapshot := (NeoJSONReader on: response contents readStream) nextAs: SDSnapshot .
+	self assert: snapshot snapshotId equals: self dummySnapshotId.
+	context :=  FLMaterializer materializeFromByteArray: (self store snapshotDumpFor: snapshot).
+	self assert: (context isKindOf: Context).
+	self assert: context receiver = 'TestString'
 ]
 
 { #category : #tests }

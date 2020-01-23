@@ -363,8 +363,3 @@ SDSnapshot >> vmVersion [
 SDSnapshot >> vmVersion: aString [ 
 	vmVersion := aString
 ]
-
-{ #category : #writing }
-SDSnapshot >> writeMetaOn: stream [
-	stream nextPutAll: (NeoJSONWriter toString: self) utf8Encoded 
-]

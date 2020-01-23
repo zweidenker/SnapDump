@@ -19,8 +19,7 @@ SDTLReader class >> on: aBinaryReadStream [
 SDTLReader >> readType: aTypeId [
 
 	| size |
-	self upToType: aTypeId.
-	size := (self stream next: 4) asInteger.
+	size := self upToType: aTypeId.
 	^ self stream next:  size
 ]
 
@@ -38,12 +37,15 @@ SDTLReader >> stream: aBinaryReadStream [
 
 { #category : #api }
 SDTLReader >> upToType: aTypeId [
+	"position stream to the beginning of the requested type data.
+	answers data size"
 
 	| currentType size |
 	currentType := self stream next.
 	[(currentType = aTypeId) or: [self stream atEnd]] whileFalse: [ 
 			size := (self stream next: 4) asInteger.
 			self stream skip: size.
-			self stream next.
+			currentType := self stream next.
 	 ].
+	^ (self stream next: 4) asInteger.
 ]

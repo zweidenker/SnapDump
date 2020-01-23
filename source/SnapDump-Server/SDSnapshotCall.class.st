@@ -118,23 +118,30 @@ SDSnapshotCall >> put [
 ]
 
 { #category : #public }
-SDSnapshotCall >> respondFuel: aFileSnapshot [
+SDSnapshotCall >> respond: aFileSnapshot type: aTypeId [
+
+	| stream reader size |
+	stream := aFileSnapshot contentStream.
+	reader := (SDSnapshotReader on: stream).
+	size := reader upToType: aTypeId.
 	response := ZnResponse
 		ok:
 			((ZnStreamingEntity
 				type: ZnMimeType applicationOctetStream
-				length: aFileSnapshot fileSize)
-				stream: aFileSnapshot contentStream)
+				length: size)
+				stream: stream )
+]
+
+{ #category : #public }
+SDSnapshotCall >> respondFuel: aFileSnapshot [
+
+		self respond: aFileSnapshot type: SDSnapshotWriter typeContext
 ]
 
 { #category : #public }
 SDSnapshotCall >> respondStack: aFileSnapshot [
-	response := ZnResponse
-		ok:
-			((ZnStreamingEntity
-				type: ZnMimeType applicationOctetStream
-				length: aFileSnapshot fileSize)
-				stream: aFileSnapshot stackTraceStream )
+
+	self respond: aFileSnapshot type: SDSnapshotWriter typeStack
 ]
 
 { #category : #public }

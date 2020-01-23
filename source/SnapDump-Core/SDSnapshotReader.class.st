@@ -21,3 +21,15 @@ SDSnapshotReader >> readStack [
 
 	^ (self readType: SDSnapshotWriter typeStack) utf8Decoded
 ]
+
+{ #category : #api }
+SDSnapshotReader >> upToContext [
+
+	^  self upToType: SDSnapshotWriter typeContext
+]
+
+{ #category : #api }
+SDSnapshotReader >> upToStack [
+
+	^  self upToType: SDSnapshotWriter typeStack
+]

@@ -31,16 +31,6 @@ SDMemorySnapshot >> initialize [
 	imageBuild := Smalltalk lastUpdateString asString
 ]
 
-{ #category : #'as yet unclassified' }
-SDMemorySnapshot >> serializeContext: aContext on: stream [
-	| serializer |
-	
-	serializer := FLSerializer newDefault.
-	serializer
-		serialize: aContext
-		on: stream
-]
-
 { #category : #initialization }
 SDMemorySnapshot >> setContext: aContext exceptionClassName: exceptionClassName [
 	| method |
@@ -66,12 +56,7 @@ SDMemorySnapshot >> smalltalkException: anException [
 
 { #category : #writing }
 SDMemorySnapshot >> writeTo: stream [
-	self writeMetaOn: stream.
-	stream nextPut: self class metaSeparator.
-	self 
-		serializeContext: context 
-		on: stream.
-	stream nextPut: self class metaSeparator.
-	stream nextPutAll: (self stackTrace) utf8Encoded 
+	
+	(SDSnapshotWriter on: stream) writeSnapshot: self
 		 
 ]
