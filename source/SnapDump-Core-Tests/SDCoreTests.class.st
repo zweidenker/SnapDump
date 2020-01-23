@@ -155,3 +155,28 @@ SDCoreTests >> testSnapshot [
 	snapshot := self getDummySnapshotFromClient.
 	self assert: snapshot className equals: 'Object'
 ]
+
+{ #category : #tests }
+SDCoreTests >> testWriteAndRead [
+	| snapshot file writeStream readStream meta context stack |
+	snapshot := self createSimpleSnapshot.
+	[ file := 'snapshot-writer-test.snap' asFileReference.
+	writeStream := file binaryWriteStream..
+	(SDSnapshotWriter on: writeStream) writeSnapshot: snapshot.
+	writeStream close.
+	readStream := file binaryReadStream.
+	meta := (SDSnapshotReader on: readStream) readMeta.
+	self assert: (meta at: #versionString) = self versionStringForTests. 
+	self assert: (meta at: #projectName) = self projectNameForTests. 
+	context := (SDSnapshotReader on: readStream) readContext.
+	self assert: (context isKindOf: Context). 
+	self assert: context receiver= 'TestString'.
+	stack := (SDSnapshotReader on: readStream) readStack.
+	self assert: (stack  includesSubstring: 'ByteString(Object)>>printStringLimitedTo:'). 
+	self assert: (stack trim endsWith: 'ByteString(Object)>>asString').
+
+	 ]
+		ensure: [ writeStream close.
+			readStream close.
+			file ensureDelete ]
+]
