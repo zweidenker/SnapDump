@@ -13,6 +13,6 @@ SDServerVersionCall class >> path [
 SDServerVersionCall >> get [	
 	response := ZnResponse ok: (
 		ZnEntity 
-			with: SDServer repositoryDescription
+			with: SDServer version
 			type: ZnMimeType applicationJson setCharSetUTF8)
 ]

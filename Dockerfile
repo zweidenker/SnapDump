@@ -19,6 +19,7 @@ ARG CACHEBUST=1
 RUN \
     /opt/pharo /opt/SnapDump.image eval --save "Metacello new repository: 'filetree:///opt/source'; baseline: #SnapDump; load: #('server')" && \
     /opt/pharo /opt/SnapDump.image eval --save "SnapDump prepareForDeployment" && \
+    /opt/pharo /opt/SnapDump.image eval --save "SDServer version: '$DOCKER_TAG'" && \
     rm -rf /opt/pharo-local
 
 RUN \
