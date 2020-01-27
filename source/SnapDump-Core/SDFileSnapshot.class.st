@@ -90,14 +90,8 @@ SDFileSnapshot >> stackTraceStream [
 
 { #category : #'as yet unclassified' }
 SDFileSnapshot >> storeRaw: aByteArray [
-	"write file with new json header in case the fields have been changed"
-	| snapshotParts |
-	snapshotParts := (aByteArray splitOn: self class metaSeparator).
+
 	file binaryWriteStream 
-		nextPutAll: (NeoJSONWriter toString: self) utf8Encoded;  
-		nextPut: self class metaSeparator;
-		nextPutAll: snapshotParts second;
-		nextPut: self class metaSeparator;
-		nextPutAll: snapshotParts third;
+		nextPutAll: aByteArray;  
 		close
 ]
