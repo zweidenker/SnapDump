@@ -200,9 +200,7 @@ SDFilesystemStore >> removeVersion: aVersion [
 
 { #category : #'services - testing' }
 SDFilesystemStore >> shouldReportSnapshot: snapshot [
-	^ (self
-		hasSnapshot: snapshot) not
-		and: [ (self freeSlotsForSnapshot: snapshot) > 0]
+	^  (self freeSlotsForSnapshot: snapshot) > 0
 ]
 
 { #category : #'services - files' }

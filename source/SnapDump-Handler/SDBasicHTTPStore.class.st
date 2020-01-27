@@ -49,14 +49,6 @@ SDBasicHTTPStore >> freeSlotsForExceptionId: anExceptionId project: aProjectName
 		ifFalse: [ NotFound signal ]
 ]
 
-{ #category : #'services - testing' }
-SDBasicHTTPStore >> hasSnapshot: snapshot [
-	^ (self client
-		url: (self urlForSnapshot: snapshot);
-		head;
-		response) status = 200
-]
-
 { #category : #testing }
 SDBasicHTTPStore >> isSetUp [
 	^ uri notNil
@@ -79,9 +71,7 @@ SDBasicHTTPStore >> printOn: aStream [
 
 { #category : #'services - testing' }
 SDBasicHTTPStore >> shouldReportSnapshot: snapshot [
-	^ (self hasSnapshot: snapshot) not
-		and: [ (self
-				freeSlotsForException: snapshot exception) > 0 ]
+	^ (self freeSlotsForException: snapshot exception) > 0
 ]
 
 { #category : #accessing }
