@@ -31,6 +31,16 @@ SDMemorySnapshot >> initialize [
 	imageBuild := Smalltalk lastUpdateString asString
 ]
 
+{ #category : #'as yet unclassified' }
+SDMemorySnapshot >> serializeContextOn: stream [
+	| serializer |
+	
+	serializer := FLSerializer newDefault.
+	serializer
+		serialize: context
+		on: stream
+]
+
 { #category : #initialization }
 SDMemorySnapshot >> setContext: aContext exceptionClassName: exceptionClassName [
 	| method |

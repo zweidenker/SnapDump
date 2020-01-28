@@ -29,6 +29,34 @@ SDBasicHTTPStore >> client [
 		setBasicAuthenticationUsername: username password: password 
 ]
 
+{ #category : #'services - getting' }
+SDBasicHTTPStore >> freeSlotsForException: anException [ 
+	
+		^ self freeSlotsForExceptionId: anException id project: anException projectName version: anException versionString
+]
+
+{ #category : #'services - getting' }
+SDBasicHTTPStore >> freeSlotsForExceptionId: anExceptionId project: aProjectName version: aVersionString [
+	| response |
+	
+	response := self client
+		url: uri / #projects / aProjectName / #versions / aVersionString / #exceptions / anExceptionId / #freeslots;
+		get;
+		response.
+	response isSuccess 
+		ifTrue: [  
+	^ ((NeoJSONReader on: response contents readStream) next)  ]
+		ifFalse: [ NotFound signal ]
+]
+
+{ #category : #'services - testing' }
+SDBasicHTTPStore >> hasSnapshot: snapshot [
+	^ (self client
+		url: (self urlForSnapshot: snapshot);
+		head;
+		response) status = 200
+]
+
 { #category : #testing }
 SDBasicHTTPStore >> isSetUp [
 	^ uri notNil
@@ -47,6 +75,13 @@ SDBasicHTTPStore >> parametersFor: snapshot [
 { #category : #printing }
 SDBasicHTTPStore >> printOn: aStream [
 	aStream << uri asString
+]
+
+{ #category : #'services - testing' }
+SDBasicHTTPStore >> shouldReportSnapshot: snapshot [
+	^ (self hasSnapshot: snapshot) not
+		and: [ (self
+				freeSlotsForException: snapshot exception) > 0 ]
 ]
 
 { #category : #accessing }
@@ -78,7 +113,7 @@ SDBasicHTTPStore >> username: aUsername password: aPassword [
 SDBasicHTTPStore >> writeSnapshot: snapshot [
 	| writeStream response |
 	writeStream := ByteArray new writeStream.
-	snapshot writeTo: writeStream .
+	(SDSnapshotFileWriter on: writeStream) writeSnapshot: snapshot.
 	response := self client
 		url: (self urlForSnapshot: snapshot);
 		entity: (ZnByteArrayEntity bytes: writeStream contents);

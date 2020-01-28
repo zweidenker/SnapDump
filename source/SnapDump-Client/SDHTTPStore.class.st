@@ -23,34 +23,6 @@ SDHTTPStore >> exceptionsOfVersion: aVersion [
 		ifFalse: [ NotFound signal: ('Version' , aVersion printString , ' for project ', aVersion projectName printString, ' not found') ]
 ]
 
-{ #category : #'services - getting' }
-SDHTTPStore >> freeSlotsForException: anException [ 
-	
-		^ self freeSlotsForExceptionId: anException id project: anException projectName version: anException versionString
-]
-
-{ #category : #'services - getting' }
-SDHTTPStore >> freeSlotsForExceptionId: anExceptionId project: aProjectName version: aVersionString [
-	| response |
-	
-	response := self client
-		url: uri / #projects / aProjectName / #versions / aVersionString / #exceptions / anExceptionId / #freeslots;
-		get;
-		response.
-	response isSuccess 
-		ifTrue: [  
-	^ ((NeoJSONReader on: response contents readStream) next)  ]
-		ifFalse: [ NotFound signal ]
-]
-
-{ #category : #'services - testing' }
-SDHTTPStore >> hasSnapshot: snapshot [
-	^ (self client
-		url: (self urlForSnapshot: snapshot);
-		head;
-		response) status = 200
-]
-
 { #category : #accessing }
 SDHTTPStore >> projectNamed: aString [
 	^ self projectNamed: aString ifAbsent: [ NotFound signal: 'no project found' ]
@@ -106,13 +78,6 @@ SDHTTPStore >> removeSnapshot: aSnapshot [
 		ifFalse: [ NotFound signal ]
 ]
 
-{ #category : #'services - testing' }
-SDHTTPStore >> shouldReportSnapshot: snapshot [
-	^ (self hasSnapshot: snapshot) not
-		and: [ (self
-				freeSlotsForException: snapshot exception) > 0 ]
-]
-
 { #category : #accessing }
 SDHTTPStore >> snapshotDumpFor: aSnapshot [ 
 	^ self client
@@ -124,10 +89,10 @@ SDHTTPStore >> snapshotDumpFor: aSnapshot [
 { #category : #accessing }
 SDHTTPStore >> snapshotStackFor: aSnapshot [ 
 
-	^ (self client
+	^ self client
 		headerAt: 'Accept' put: SDStore mimeTypeStack;
 		url: (self urlForSnapshot: aSnapshot);
-		get) utf8Decoded
+		get
 ]
 
 { #category : #'services - getting' }

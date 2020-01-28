@@ -100,20 +100,27 @@ SDSnapshotCall >> head [
 
 { #category : #public }
 SDSnapshotCall >> put [
-| snapshot dict |
-
+	| file |
+	
 	[
-	snapshot := self store buildSnapshot: snapshotId exception: exceptionId project: projectName version: versionString.
-	"still need to read the meta data to get all variables initialized before being written on disk "
-	dict := SDFileSnapshot readMetaFrom: request contents readStream.
-	snapshot initializeMeta: dict.
-	snapshot validate]
-	on: ZnCharacterEncodingError  
-	do: [:err | 
-		^ response := ZnResponse 
-			badRequest: request 
-			entity: (ZnStringEntity text: err description) ].
-	self store storeRaw: snapshot contents: request contents.
+	"try to read header in ordert to find bogus data"
+	(SDSnapshotFileReader on: request contents readStream) 
+		initializeFromMeta]
+		on: ZnCharacterEncodingError  
+		do: [:err | 
+			^ response := ZnResponse 
+				badRequest: request 
+				entity: (ZnStringEntity text: err description) ].
+			
+	file := self store 
+		snapshotPathForProject: projectName
+		version: versionString 
+		exception: exceptionId 
+		snapshot: snapshotId.
+	
+	"just write request entity to file as it might be big"
+	(SDSnapshotFileWriter file: file) 
+		writeRaw: request contents. 
 	response := ZnResponse ok: (ZnStringEntity text: 'OK')
 ]
 
@@ -140,8 +147,8 @@ SDSnapshotCall >> respondFuel: aFileSnapshot [
 
 { #category : #public }
 SDSnapshotCall >> respondStack: aFileSnapshot [
-
-	self respond: aFileSnapshot type: SDSnapshotWriter typeStack
+	response := ZnResponse
+		ok: aFileSnapshot newReader stackTraceEntity
 ]
 
 { #category : #public }

@@ -37,7 +37,6 @@ SDClient >> snapshotWithId: aString project: aProjectString version: aVersionStr
 		snapshotWithId: aString
 		project: aProjectString
 		version: aVersionString)
-		initializeMetaFromFile;
 		restoreModel;
 		yourself
 ]
