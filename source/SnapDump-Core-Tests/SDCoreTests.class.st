@@ -94,6 +94,41 @@ SDCoreTests >> testProjectVersions [
 ]
 
 { #category : #tests }
+SDCoreTests >> testReadSnapshotFuelDump [
+
+	|  snapshot context entity |
+	self createSimpleSnapshot.
+	snapshot := self getDummySnapshotFromClient.	
+	entity := snapshot newReader fuelDumpEntity.
+	
+	context := FLMaterializer materializeFromByteArray: entity contents.
+	self assert: context methodClass equals: Object
+]
+
+{ #category : #tests }
+SDCoreTests >> testReadSnapshotMeta [
+
+	|  snapshot |
+	self createSimpleSnapshot.
+	snapshot := self getDummySnapshotFromClient.
+	self assert: snapshot project name = 'TestProject'
+]
+
+{ #category : #tests }
+SDCoreTests >> testReadSnapshotStackTrace [
+
+	|  snapshot string entity |
+	self createSimpleSnapshot.
+	snapshot := self getDummySnapshotFromClient.
+	self assert: snapshot project name = 'TestProject'.
+	
+	entity := snapshot newReader stackTraceEntity.
+	
+	string := entity contents utf8Decoded.
+	self assert: (string beginsWith: '28 January')	
+]
+
+{ #category : #tests }
 SDCoreTests >> testRemoveProjectVersion [
 
 	| version project |

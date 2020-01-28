@@ -113,7 +113,7 @@ SDBasicHTTPStore >> username: aUsername password: aPassword [
 SDBasicHTTPStore >> writeSnapshot: snapshot [
 	| writeStream response |
 	writeStream := ByteArray new writeStream.
-	snapshot writeTo: writeStream .
+	(SDSnapshotFileWriter on: writeStream) writeSnapshot: snapshot.
 	response := self client
 		url: (self urlForSnapshot: snapshot);
 		entity: (ZnByteArrayEntity bytes: writeStream contents);

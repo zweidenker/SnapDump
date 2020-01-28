@@ -89,10 +89,10 @@ SDHTTPStore >> snapshotDumpFor: aSnapshot [
 { #category : #accessing }
 SDHTTPStore >> snapshotStackFor: aSnapshot [ 
 
-	^ (self client
+	^ self client
 		headerAt: 'Accept' put: SDStore mimeTypeStack;
 		url: (self urlForSnapshot: aSnapshot);
-		get) utf8Decoded
+		get
 ]
 
 { #category : #'services - getting' }

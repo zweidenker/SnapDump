@@ -79,7 +79,7 @@ SDHTTPTests >> testInternalServerError [
 	"there should  have been a snapshot generated on server side.
 	this snapshot is expected to be consecutive to the parsing error"
 	self assert: rootPath hasDirectories.
-	snapshot := SDFileSnapshot fromFile: rootPath allFiles anyOne.
+	snapshot := (SDSnapshotFileReader file: rootPath allFiles anyOne) snapshot.
 	self assert: snapshot className equals: 'NeoJSONReader'
 ]
 

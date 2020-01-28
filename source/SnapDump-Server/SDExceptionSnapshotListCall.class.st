@@ -51,7 +51,8 @@ SDExceptionSnapshotListCall class >> path [
 ]
 
 { #category : #accessing }
-SDExceptionSnapshotListCall >> get [
+SDExceptionSnapshotListCall >> get [ 
+
 	self jsonResponse: (self exceptionAt: exceptionId project: projectName 
 	  version: versionString ) snapshots
 	
