@@ -96,12 +96,13 @@ SDCoreTests >> testProjectVersions [
 { #category : #tests }
 SDCoreTests >> testReadSnapshotFuelDump [
 
-	|  snapshot context entity |
+	|  snapshot context fuel |
 	self createSimpleSnapshot.
 	snapshot := self getDummySnapshotFromClient.	
-	entity := snapshot newReader fuelDumpEntity.
+	fuel := snapshot newReader fuelDumpStreamDo: [ :stream :length |
+		stream upToEnd ].
 	
-	context := FLMaterializer materializeFromByteArray: entity contents.
+	context := FLMaterializer materializeFromByteArray: fuel.
 	self assert: context methodClass equals: Object
 ]
 
@@ -117,14 +118,15 @@ SDCoreTests >> testReadSnapshotMeta [
 { #category : #tests }
 SDCoreTests >> testReadSnapshotStackTrace [
 
-	|  snapshot string entity |
+	|  snapshot string stack |
 	self createSimpleSnapshot.
 	snapshot := self getDummySnapshotFromClient.
 	self assert: snapshot project name = 'TestProject'.
 	
-	entity := snapshot newReader stackTraceEntity.
+	stack := snapshot newReader stackTraceStreamDo: [ :stream :length |
+		stream upToEnd ].
 	
-	string := entity contents utf8Decoded.
+	string := stack utf8Decoded.
 	self assert: (string includesSubstring: 'ByteString(Object)>>printStringLimitedTo:')	
 ]
 
