@@ -22,9 +22,21 @@ SDSnapshotFileReader class >> on: aStream [
 ]
 
 { #category : #accessing }
+SDSnapshotFileReader >> context [
+	^ FLMaterializer materializeFromByteArray: self fuelDump
+]
+
+{ #category : #accessing }
 SDSnapshotFileReader >> file: aFileReference [ 
 	
 	snapshot file: aFileReference 
+]
+
+{ #category : #enumerating }
+SDSnapshotFileReader >> fuelDump [
+
+	^ self fuelDumpStreamDo: [ :str :lenght |
+		str upToEnd ]
 ]
 
 { #category : #enumerating }
@@ -43,13 +55,10 @@ SDSnapshotFileReader >> fuelDumpStreamDo: aBlock [
 
 { #category : #accessing }
 SDSnapshotFileReader >> initializeFromMeta [
-	| length string |
-	
-	length := self readLength.
-	string := (self read: length) utf8Decoded.
-	string ifEmpty: [ 
-		SDSnapshotFileFormatError signal: 'meta-data section is empty' ].
-	snapshot := NeoJSONReader fromString: string as: SDFileSnapshot
+
+	snapshot := NeoJSONReader 
+		fromString: self metaDataString
+		as: SDFileSnapshot
 ]
 
 { #category : #accessing }
@@ -66,6 +75,34 @@ SDSnapshotFileReader >> initializeStream: aStream [
 	(version = self formatVersion) ifFalse: [ 
 		SDSnapshotFileVersionError signal: 'Cannot read version ', version asString, ' with reader version ', self formatVersion asString ].
 	
+]
+
+{ #category : #enumerating }
+SDSnapshotFileReader >> metaDataDictionary [
+
+	^ NeoJSONReader fromString: self metaDataString 
+]
+
+{ #category : #enumerating }
+SDSnapshotFileReader >> metaDataStreamDo: aBlock [
+
+	| length |
+	length := self readLength.
+	"construct a new limited stream to prevent somethig to read out of bounds"
+	^ aBlock 
+		value: (ZnLimitedReadStream on: stream limit: length)
+		value: length
+]
+
+{ #category : #enumerating }
+SDSnapshotFileReader >> metaDataString [
+
+	| string |
+	string := (self metaDataStreamDo: [ :str :length |
+		str upToEnd ]) utf8Decoded.
+	string ifEmpty: [ 
+		SDSnapshotFileFormatError signal: 'meta-data section is empty' ].
+	^ string
 ]
 
 { #category : #'stream - reading' }
@@ -106,6 +143,14 @@ SDSnapshotFileReader >> snapshot [
 	snapshot ifNil: [ 
 		self initializeFromMeta ].
 	^ snapshot
+]
+
+{ #category : #enumerating }
+SDSnapshotFileReader >> stackTrace [
+
+	^ (self stackTraceStreamDo: [ :str :length |
+		str upToEnd ]) utf8Decoded 
+
 ]
 
 { #category : #enumerating }

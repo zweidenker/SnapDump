@@ -195,25 +195,22 @@ SDCoreTests >> testSnapshot [
 
 { #category : #tests }
 SDCoreTests >> testWriteAndRead [
-	| snapshot file writeStream readStream meta context stack |
+	| snapshot file   meta context stack |
 	snapshot := self createSimpleSnapshot.
-	[ file := 'snapshot-writer-test.snap' asFileReference.
-	writeStream := file binaryWriteStream..
-	(SDSnapshotWriter on: writeStream) writeSnapshot: snapshot.
-	writeStream close.
-	readStream := file binaryReadStream.
-	meta := (SDSnapshotReader on: readStream) readMeta.
-	self assert: (meta at: #versionString) = self versionStringForTests. 
-	self assert: (meta at: #projectName) = self projectNameForTests. 
-	context := (SDSnapshotReader on: readStream) readContext.
+	file := 'snapshot-writer-test.snap' asFileReference.
+	[ 
+	(SDSnapshotFileWriter file: file) writeSnapshot: snapshot.
+	
+	meta := (SDSnapshotFileReader file: file) metaDataDictionary.
+	self assert: (meta at: #versionString) equals: self versionStringForTests. 
+	self assert: (meta at: #projectName) equals: self projectNameForTests. 
+	
+	context := (SDSnapshotFileReader file: file) context.
 	self assert: (context isKindOf: Context). 
-	self assert: context receiver= 'TestString'.
-	stack := (SDSnapshotReader on: readStream) readStack.
+	self assert: context receiver equals: 'TestString'.
+	
+	stack := (SDSnapshotFileReader file: file) stackTrace.
 	self assert: (stack  includesSubstring: 'ByteString(Object)>>printStringLimitedTo:'). 
-	self assert: (stack trim endsWith: 'ByteString(Object)>>asString').
-
-	 ]
-		ensure: [ writeStream close.
-			readStream close.
-			file ensureDelete ]
+	self assert: (stack trim endsWith: 'ByteString(Object)>>asString') ]
+		ensure: [ file ensureDelete ]
 ]

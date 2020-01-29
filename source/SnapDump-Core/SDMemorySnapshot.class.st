@@ -63,10 +63,3 @@ SDMemorySnapshot >> smalltalkException: anException [
 		exceptionClassName: anException class name
 
 ]
-
-{ #category : #writing }
-SDMemorySnapshot >> writeTo: stream [
-	
-	(SDSnapshotWriter on: stream) writeSnapshot: self
-		 
-]
