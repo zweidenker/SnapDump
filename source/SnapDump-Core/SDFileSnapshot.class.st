@@ -23,14 +23,6 @@ SDFileSnapshot >> newReader [
 ]
 
 { #category : #'as yet unclassified' }
-SDFileSnapshot >> readerForStackTrace [
-	
-	^ self newReader
-		skipSection;
-		yourself
-]
-
-{ #category : #'as yet unclassified' }
 SDFileSnapshot >> storeRaw: aByteArray [
 
 	file binaryWriteStream 
