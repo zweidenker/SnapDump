@@ -1,7 +1,7 @@
 Class {
 	#name : #SDSnapshotReader,
 	#superclass : #SDTLReader,
-	#category : #'SnapDump-Core'
+	#category : #'SnapDump-Core-Base'
 }
 
 { #category : #api }

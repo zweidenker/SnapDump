@@ -80,7 +80,7 @@ SDHTTPTests >> testInternalServerError [
 	this snapshot is expected to be consecutive to the parsing error"
 	self assert: rootPath hasDirectories.
 	snapshot := (SDSnapshotFileReader file: rootPath allFiles anyOne) snapshot.
-	self assert: snapshot className equals: 'NeoJSONReader'
+	self assert: snapshot className equals: 'SDSnapshotFileReader'
 ]
 
 { #category : #tests }
@@ -244,7 +244,7 @@ SDHTTPTests >> testSnapshotList [
 	self assert: response isSuccess equals: true.
 	list := (NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot .
 	self assert: list size equals: 1.
-	self assert: (list first restoreModel; errorSignature) equals: 'TestProject_0.1_Object: ContextWithoutException>>#printString'
+	self assert: (list first restoreModel; errorSignature) equals: 'TestProject_0.1_Object: ContextWithoutException>>#printStringLimitedTo:'
 	
 ]
 

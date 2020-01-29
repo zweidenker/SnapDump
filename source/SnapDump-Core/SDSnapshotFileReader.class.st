@@ -6,7 +6,7 @@ Class {
 		'position',
 		'version'
 	],
-	#category : #'SnapDump-Core'
+	#category : #'SnapDump-Core-Base'
 }
 
 { #category : #'instance creation' }
@@ -68,10 +68,10 @@ SDSnapshotFileReader >> initializeStream: aStream [
 	position := 1.
 	formatSignature := (self read: 4) asString.
 	(formatSignature = self formatSignature) ifFalse: [ 
-		Error signal: 'This is not a snapshot file' ].
+		SDSnapshotFileFormatError signal: 'This is not a snapshot file: wrong signature' ].
 	version := (self read: 1) asInteger.
 	(version = self formatVersion) ifFalse: [ 
-		Error signal: 'Cannot read version ', version asString, ' with reader version ', self formatVersion asString ].
+		SDSnapshotFileVersionError signal: 'Cannot read version ', version asString, ' with reader version ', self formatVersion asString ].
 	
 ]
 
@@ -105,6 +105,10 @@ SDSnapshotFileReader >> skipSection [
 
 { #category : #accessing }
 SDSnapshotFileReader >> snapshot [
+	"if the accessor is used we assume that someone needs a snapshot so initializing
+	with content should be nice"
+	snapshot ifNil: [ 
+		self initializeFromMeta ].
 	^ snapshot
 ]
 

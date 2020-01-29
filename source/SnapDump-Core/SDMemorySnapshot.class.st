@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'context'
 	],
-	#category : #'SnapDump-Core'
+	#category : #'SnapDump-Core-Model'
 }
 
 { #category : #'instance-creation' }
@@ -48,7 +48,7 @@ SDMemorySnapshot >> setContext: aContext exceptionClassName: exceptionClassName 
 	self
 		stackTrace:
 			(String streamContents: [ :stream | context errorReportOn: stream ]).
-	method := context sender method.
+	method := context method.
 	self
 		exception:
 			(SDException new

@@ -7,7 +7,7 @@ Class {
 		'projects',
 		'versions'
 	],
-	#category : #'SnapDump-Core'
+	#category : #'SnapDump-Core-Base'
 }
 
 { #category : #accessing }
@@ -345,7 +345,7 @@ SDFilesystemStore >> writeSnapshot: snapshot [
 	"stream := file fileSystem  binaryWriteStreamOn: file path."
 	"[ snapshot writeTo: stream ]
 		ensure: [ stream close ]"
-	(SDSnapshotFileWriter on: file) writeSnapshot: snapshot 
+	(SDSnapshotFileWriter file: file) writeSnapshot: snapshot 
 	
 	
 ]

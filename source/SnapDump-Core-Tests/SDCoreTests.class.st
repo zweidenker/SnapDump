@@ -125,7 +125,7 @@ SDCoreTests >> testReadSnapshotStackTrace [
 	entity := snapshot newReader stackTraceEntity.
 	
 	string := entity contents utf8Decoded.
-	self assert: (string beginsWith: '28 January')	
+	self assert: (string includesSubstring: 'ByteString(Object)>>printStringLimitedTo:')	
 ]
 
 { #category : #tests }

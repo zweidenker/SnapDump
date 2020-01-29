@@ -5,7 +5,7 @@ Class {
 		'string',
 		'project'
 	],
-	#category : #'SnapDump-Core'
+	#category : #'SnapDump-Core-Model'
 }
 
 { #category : #accessing }

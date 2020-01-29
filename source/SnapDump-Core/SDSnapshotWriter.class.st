@@ -1,7 +1,7 @@
 Class {
 	#name : #SDSnapshotWriter,
 	#superclass : #SDTLVWriter,
-	#category : #'SnapDump-Core'
+	#category : #'SnapDump-Core-Base'
 }
 
 { #category : #accessing }

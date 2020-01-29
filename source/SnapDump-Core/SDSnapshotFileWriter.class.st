@@ -1,7 +1,7 @@
 Class {
 	#name : #SDSnapshotFileWriter,
 	#superclass : #SDFileFormat,
-	#category : #'SnapDump-Core'
+	#category : #'SnapDump-Core-Base'
 }
 
 { #category : #'instance creation' }

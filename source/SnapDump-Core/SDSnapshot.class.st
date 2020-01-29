@@ -19,7 +19,7 @@ Class {
 		'exception',
 		'stackTrace'
 	],
-	#category : #'SnapDump-Core'
+	#category : #'SnapDump-Core-Model'
 }
 
 { #category : #accessing }

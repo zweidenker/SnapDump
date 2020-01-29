@@ -101,16 +101,15 @@ SDSnapshotCall >> head [
 { #category : #public }
 SDSnapshotCall >> put [
 	| file |
-	
-	[
+	"["
 	"try to read header in ordert to find bogus data"
 	(SDSnapshotFileReader on: request contents readStream) 
-		initializeFromMeta]
+		initializeFromMeta"]
 		on: ZnCharacterEncodingError  
 		do: [:err | 
 			^ response := ZnResponse 
 				badRequest: request 
-				entity: (ZnStringEntity text: err description) ].
+				entity: (ZnStringEntity text: err description) ]".
 			
 	file := self store 
 		snapshotPathForProject: projectName
@@ -125,28 +124,15 @@ SDSnapshotCall >> put [
 ]
 
 { #category : #public }
-SDSnapshotCall >> respond: aFileSnapshot type: aTypeId [
-
-	| stream reader size |
-	stream := aFileSnapshot contentStream.
-	reader := (SDSnapshotReader on: stream).
-	size := reader upToType: aTypeId.
-	response := ZnResponse
-		ok:
-			((ZnStreamingEntity
-				type: ZnMimeType applicationOctetStream
-				length: size)
-				stream: stream )
-]
-
-{ #category : #public }
 SDSnapshotCall >> respondFuel: aFileSnapshot [
-
-		self respond: aFileSnapshot type: SDSnapshotWriter typeContext
+	
+	response := ZnResponse
+		ok: aFileSnapshot newReader fuelDumpEntity 
 ]
 
 { #category : #public }
 SDSnapshotCall >> respondStack: aFileSnapshot [
+
 	response := ZnResponse
 		ok: aFileSnapshot newReader stackTraceEntity
 ]
