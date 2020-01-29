@@ -33,7 +33,7 @@ SDSnapshotFileReader >> fuelDumpEntity [
 	^ self fuelDumpStreamDo: [:str :length |
 		ZnStreamingEntity 
 			readFrom: str 
-			usingType: (ZnMimeType main: 'application' sub: 'X-SnapDump-Fuel') 
+			usingType: (ZnMimeType main: 'application' sub: SDStore mimeTypeFuel) 
 			andLength: length ].
 ]
 
