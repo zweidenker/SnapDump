@@ -342,10 +342,8 @@ SDFilesystemStore >> writeSnapshot: snapshot [
 	| file |
 	file := self snapshotPathFor: snapshot.
 	file parent ensureCreateDirectory.
-	"stream := file fileSystem  binaryWriteStreamOn: file path."
-	"[ snapshot writeTo: stream ]
-		ensure: [ stream close ]"
-	(SDSnapshotFileWriter file: file) writeSnapshot: snapshot 
+	(SDSnapshotFileWriter file: file) 
+		writeSnapshot: snapshot 
 	
 	
 ]

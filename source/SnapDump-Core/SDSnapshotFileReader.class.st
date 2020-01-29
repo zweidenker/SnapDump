@@ -31,9 +31,11 @@ SDSnapshotFileReader >> file: aFileReference [
 SDSnapshotFileReader >> fuelDumpStreamDo: aBlock [
 
 	| length |
+	"fuel dump is third section in the file so we skip two"
 	self skipSection.
 	self skipSection.
 	length := self readLength.
+	"construct a new limited stream to prevent somethig to read out of bounds"
 	^ aBlock 
 		value: (ZnLimitedReadStream on: stream limit: length)
 		value: length.
@@ -45,7 +47,8 @@ SDSnapshotFileReader >> initializeFromMeta [
 	
 	length := self readLength.
 	string := (self read: length) utf8Decoded.
-	string ifEmpty: [ ^ self ].
+	string ifEmpty: [ 
+		SDSnapshotFileFormatError signal: 'meta-data section is empty' ].
 	snapshot := NeoJSONReader fromString: string as: SDFileSnapshot
 ]
 
@@ -75,12 +78,15 @@ SDSnapshotFileReader >> read: anInteger [
 { #category : #'stream - reading' }
 SDSnapshotFileReader >> readLength [
 
+	"all lengths are fixed to 4 bytes giving 32 bit size of a section"
 	^ (self read: 4) asInteger
 ]
 
 { #category : #'stream - reading' }
 SDSnapshotFileReader >> skip: anInteger [ 
 	
+	"skip a number of bytes on a stream. This is a lot faster than reading the bytes to
+	consume"
 	stream skip: anInteger.
 	position := position + anInteger 
 ]
@@ -106,8 +112,10 @@ SDSnapshotFileReader >> snapshot [
 SDSnapshotFileReader >> stackTraceStreamDo: aBlock [
 	
 	| length |
+	"textual stack trace is the second section so we have to skip one section"
 	self skipSection.
 	length := self readLength.
+	"construct a new limited stream to prevent somethig to read out of bounds"
 	^ aBlock 
 		value: (ZnLimitedReadStream on: stream limit: length)
 		value: length.
