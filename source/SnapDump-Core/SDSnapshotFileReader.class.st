@@ -27,16 +27,6 @@ SDSnapshotFileReader >> file: aFileReference [
 	snapshot file: aFileReference 
 ]
 
-{ #category : #accessing }
-SDSnapshotFileReader >> fuelDumpEntity [
-	
-	^ self fuelDumpStreamDo: [:str :length |
-		ZnStreamingEntity 
-			readFrom: str 
-			usingType: (ZnMimeType main: 'application' sub: SDStore mimeTypeFuel) 
-			andLength: length ].
-]
-
 { #category : #enumerating }
 SDSnapshotFileReader >> fuelDumpStreamDo: aBlock [
 
@@ -110,16 +100,6 @@ SDSnapshotFileReader >> snapshot [
 	snapshot ifNil: [ 
 		self initializeFromMeta ].
 	^ snapshot
-]
-
-{ #category : #enumerating }
-SDSnapshotFileReader >> stackTraceEntity [
-
-	^ self stackTraceStreamDo: [:str :length |
-		ZnStreamingEntity 
-			readFrom: str 
-			usingType: ZnMimeType textPlain 
-			andLength: length ].
 ]
 
 { #category : #enumerating }
