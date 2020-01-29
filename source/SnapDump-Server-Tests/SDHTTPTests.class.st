@@ -79,8 +79,8 @@ SDHTTPTests >> testInternalServerError [
 	"there should  have been a snapshot generated on server side.
 	this snapshot is expected to be consecutive to the parsing error"
 	self assert: rootPath hasDirectories.
-	snapshot := SDFileSnapshot fromFile: rootPath allFiles anyOne.
-	self assert: snapshot className equals: 'NeoJSONReader'
+	snapshot := (SDSnapshotFileReader file: rootPath allFiles anyOne) snapshot.
+	self assert: snapshot className equals: 'SDSnapshotFileReader'
 ]
 
 { #category : #tests }
@@ -200,6 +200,22 @@ SDHTTPTests >> testSnapshotGetById [
 ]
 
 { #category : #tests }
+SDHTTPTests >> testSnapshotGetContext [
+	| response snapshot context |
+	self createSimpleSnapshot.
+	response := ZnClient new
+		url: self dummySnapshotUrl ;
+		get;
+		response.
+	self assert: response isSuccess.
+	snapshot := (NeoJSONReader on: response contents readStream) nextAs: SDSnapshot .
+	self assert: snapshot snapshotId equals: self dummySnapshotId.
+	context :=  FLMaterializer materializeFromByteArray: (self store snapshotDumpFor: snapshot).
+	self assert: (context isKindOf: Context).
+	self assert: context receiver = 'TestString'
+]
+
+{ #category : #tests }
 SDHTTPTests >> testSnapshotGetStackTrace [
 	| response snapshot stackTrace |
 	self createSimpleSnapshot.
@@ -228,7 +244,7 @@ SDHTTPTests >> testSnapshotList [
 	self assert: response isSuccess equals: true.
 	list := (NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot .
 	self assert: list size equals: 1.
-	self assert: (list first restoreModel; errorSignature) equals: 'TestProject_0.1_Object: ContextWithoutException>>#printString'
+	self assert: (list first restoreModel; errorSignature) equals: 'TestProject_0.1_Object: ContextWithoutException>>#printStringLimitedTo:'
 	
 ]
 

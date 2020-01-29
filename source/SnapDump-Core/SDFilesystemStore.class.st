@@ -7,7 +7,7 @@ Class {
 		'projects',
 		'versions'
 	],
-	#category : #'SnapDump-Core'
+	#category : #'SnapDump-Core-Base'
 }
 
 { #category : #accessing }
@@ -294,13 +294,11 @@ SDFilesystemStore >> snapshotWithId: anIdString project: aProjectName version: a
 		detect:
 			[ :eachFile | eachFile basename = (self snapshotFileNameFor: anIdString) ]
 		ifNone: [ NotFound signal ].
-	^ (self
-		buildSnapshot: anIdString
-		exception: file parent basename
-		project: aProjectName
-		version: aVersionString)
+		
+	^ (SDSnapshotFileReader file: file)
+		initializeFromMeta;
 		file: file;
-		yourself
+		snapshot
 ]
 
 { #category : #'service - getting' }
@@ -311,7 +309,9 @@ SDFilesystemStore >> snapshotsOfException: anException [
 		version: anException versionString
 		exception: anException id)
 		collect: [ :eachFile | 
-			(SDFileSnapshot fromFile: eachFile)  ]
+			(SDSnapshotFileReader file: eachFile) 
+				initializeFromMeta;
+				snapshot  ]
 ]
 
 { #category : #'services - adding' }
@@ -337,10 +337,11 @@ SDFilesystemStore >> versionsOfProject: aProject [
 
 { #category : #'services - adding' }
 SDFilesystemStore >> writeSnapshot: snapshot [
-	| stream file |
+	| file |
 	file := self snapshotPathFor: snapshot.
 	file parent ensureCreateDirectory.
-	stream := file fileSystem  binaryWriteStreamOn: file path.
-	[ snapshot writeTo: stream ]
-		ensure: [ stream close ]
+	(SDSnapshotFileWriter file: file) 
+		writeSnapshot: snapshot 
+	
+	
 ]

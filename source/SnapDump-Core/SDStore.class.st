@@ -1,7 +1,7 @@
 Class {
 	#name : #SDStore,
 	#superclass : #Object,
-	#category : #'SnapDump-Core'
+	#category : #'SnapDump-Core-Base'
 }
 
 { #category : #accessing }

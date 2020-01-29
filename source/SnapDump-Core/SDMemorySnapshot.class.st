@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'context'
 	],
-	#category : #'SnapDump-Core'
+	#category : #'SnapDump-Core-Model'
 }
 
 { #category : #'instance-creation' }
@@ -32,12 +32,12 @@ SDMemorySnapshot >> initialize [
 ]
 
 { #category : #'as yet unclassified' }
-SDMemorySnapshot >> serializeContext: aContext on: stream [
+SDMemorySnapshot >> serializeContextOn: stream [
 	| serializer |
 	
 	serializer := FLSerializer newDefault.
 	serializer
-		serialize: aContext
+		serialize: context
 		on: stream
 ]
 
@@ -48,7 +48,7 @@ SDMemorySnapshot >> setContext: aContext exceptionClassName: exceptionClassName 
 	self
 		stackTrace:
 			(String streamContents: [ :stream | context errorReportOn: stream ]).
-	method := context sender method.
+	method := context method.
 	self
 		exception:
 			(SDException new
@@ -62,16 +62,4 @@ SDMemorySnapshot >> smalltalkException: anException [
 		setContext: anException signalerContext 
 		exceptionClassName: anException class name
 
-]
-
-{ #category : #writing }
-SDMemorySnapshot >> writeTo: stream [
-	self writeMetaOn: stream.
-	stream nextPut: self class metaSeparator.
-	self 
-		serializeContext: context 
-		on: stream.
-	stream nextPut: self class metaSeparator.
-	stream nextPutAll: (self stackTrace) utf8Encoded 
-		 
 ]

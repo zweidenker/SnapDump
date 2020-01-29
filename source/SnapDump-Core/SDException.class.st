@@ -9,7 +9,7 @@ Class {
 		'exceptionSignalerClassName',
 		'exceptionSignalerSelector'
 	],
-	#category : #'SnapDump-Core'
+	#category : #'SnapDump-Core-Model'
 }
 
 { #category : #'instance-creation' }
@@ -108,8 +108,8 @@ SDException >> initializeExceptionProperties [
 { #category : #initialization }
 SDException >> initializeFromClassName: aName method: aSmalltalkMethod [
 
-	exceptionSignalerClassName := aSmalltalkMethod classBinding key asString.
-	exceptionSignalerSelector :=  (aSmalltalkMethod selector asString copyWithout: $:) .
+	exceptionSignalerClassName := aSmalltalkMethod classBinding value asString.
+	exceptionSignalerSelector :=  aSmalltalkMethod selector asString.
 	exceptionClassName := aName
 ]
 

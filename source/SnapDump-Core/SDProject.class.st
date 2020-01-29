@@ -5,7 +5,7 @@ Class {
 		'name',
 		'store'
 	],
-	#category : #'SnapDump-Core'
+	#category : #'SnapDump-Core-Model'
 }
 
 { #category : #accessing }

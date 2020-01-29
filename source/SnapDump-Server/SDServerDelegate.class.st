@@ -9,7 +9,7 @@ Class {
 
 { #category : #'error handling' }
 SDServerDelegate >> serverError: request exception: exception [
-	
+
 	[ self store storeSnapshot: (exception asSnapshot
 		projectName: 'SnapDump';
 		versionString: SDServer version;

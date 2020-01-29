@@ -80,7 +80,7 @@ SDTests >> projectNameForTests [
 { #category : #running }
 SDTests >> setUp [
 	| store |
-	rootPath := FileSystem memory / #snaps.
+	rootPath := #snaps asFileReference ensureCreateDirectory.
 	store := self store.
 	handler := SDHandler new store: store.
 	client := SDClient new store: store.
@@ -102,6 +102,12 @@ SDTests >> snapshotMock [
 { #category : #accessing }
 SDTests >> store [
 	self subclassResponsibility 
+]
+
+{ #category : #running }
+SDTests >> tearDown [
+
+	rootPath ensureDeleteAll
 ]
 
 { #category : #running }

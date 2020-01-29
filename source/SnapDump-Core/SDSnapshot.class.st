@@ -19,7 +19,7 @@ Class {
 		'exception',
 		'stackTrace'
 	],
-	#category : #'SnapDump-Core'
+	#category : #'SnapDump-Core-Model'
 }
 
 { #category : #accessing }
@@ -362,9 +362,4 @@ SDSnapshot >> vmVersion [
 { #category : #accessing }
 SDSnapshot >> vmVersion: aString [ 
 	vmVersion := aString
-]
-
-{ #category : #writing }
-SDSnapshot >> writeMetaOn: stream [
-	stream nextPutAll: (NeoJSONWriter toString: self) utf8Encoded 
 ]

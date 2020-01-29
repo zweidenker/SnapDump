@@ -94,6 +94,43 @@ SDCoreTests >> testProjectVersions [
 ]
 
 { #category : #tests }
+SDCoreTests >> testReadSnapshotFuelDump [
+
+	|  snapshot context fuel |
+	self createSimpleSnapshot.
+	snapshot := self getDummySnapshotFromClient.	
+	fuel := snapshot newReader fuelDumpStreamDo: [ :stream :length |
+		stream upToEnd ].
+	
+	context := FLMaterializer materializeFromByteArray: fuel.
+	self assert: context methodClass equals: Object
+]
+
+{ #category : #tests }
+SDCoreTests >> testReadSnapshotMeta [
+
+	|  snapshot |
+	self createSimpleSnapshot.
+	snapshot := self getDummySnapshotFromClient.
+	self assert: snapshot project name = 'TestProject'
+]
+
+{ #category : #tests }
+SDCoreTests >> testReadSnapshotStackTrace [
+
+	|  snapshot string stack |
+	self createSimpleSnapshot.
+	snapshot := self getDummySnapshotFromClient.
+	self assert: snapshot project name = 'TestProject'.
+	
+	stack := snapshot newReader stackTraceStreamDo: [ :stream :length |
+		stream upToEnd ].
+	
+	string := stack utf8Decoded.
+	self assert: (string includesSubstring: 'ByteString(Object)>>printStringLimitedTo:')	
+]
+
+{ #category : #tests }
 SDCoreTests >> testRemoveProjectVersion [
 
 	| version project |
@@ -154,4 +191,26 @@ SDCoreTests >> testSnapshot [
 	self createSimpleSnapshot.
 	snapshot := self getDummySnapshotFromClient.
 	self assert: snapshot className equals: 'Object'
+]
+
+{ #category : #tests }
+SDCoreTests >> testWriteAndRead [
+	| snapshot file   meta context stack |
+	snapshot := self createSimpleSnapshot.
+	file := 'snapshot-writer-test.snap' asFileReference.
+	[ 
+	(SDSnapshotFileWriter file: file) writeSnapshot: snapshot.
+	
+	meta := (SDSnapshotFileReader file: file) metaDataDictionary.
+	self assert: (meta at: #versionString) equals: self versionStringForTests. 
+	self assert: (meta at: #projectName) equals: self projectNameForTests. 
+	
+	context := (SDSnapshotFileReader file: file) context.
+	self assert: (context isKindOf: Context). 
+	self assert: context receiver equals: 'TestString'.
+	
+	stack := (SDSnapshotFileReader file: file) stackTrace.
+	self assert: (stack  includesSubstring: 'ByteString(Object)>>printStringLimitedTo:'). 
+	self assert: (stack trim endsWith: 'ByteString(Object)>>asString') ]
+		ensure: [ file ensureDelete ]
 ]
