@@ -53,12 +53,10 @@ This could be executed systematically when the image is deployed and starts.
 
 Then to report an exception to our SnapDump server, use #SnapDump>>handleException: in the likes of:
 
-    [Error signal: 'My first SnapDump snapshot']
-        on: Error
-        do: [ :error |
-            Smalltalk  
-            at: #SnapDump
-            ifPresent: [ :reporter | reporter handleException: error ] ]
+```smalltalk
+SnapDump handleException: SDSnapshot dummyContext
+```
+
 
 On the SnapDump client image
 ----------------------------
