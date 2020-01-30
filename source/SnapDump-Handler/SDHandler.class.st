@@ -8,6 +8,22 @@ Class {
 	#category : #'SnapDump-Handler'
 }
 
+{ #category : #'as yet unclassified' }
+SDHandler class >> fillExamples [
+	| handler |
+	handler := SDHandler new
+		store: SnapDump current store.
+
+1 to: 2 do: [:x| | snapshot |
+	1 to: 2 do: [ :y |
+		1 to: 2 do: [ :z |  
+	handler 
+		projectName: ('projectname', x asString) 
+		versionString: '1.', y asString.
+	snapshot := SDSnapshot dummyContextSnapshot.
+	handler handleSnapshot: snapshot ] ] ]
+]
+
 { #category : #accessing }
 SDHandler class >> type [
 	^ #handler

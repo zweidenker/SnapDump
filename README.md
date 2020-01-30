@@ -15,7 +15,7 @@ Quick start
 -----------
 SnapDump is available as docker application for easy deployment. Let's pull a stable version of the SnapDump server (check DockerHub to be up to date):
 
-    $ docker pull zweidenker/snap-dump:0.7
+    $ docker pull zweidenker/snap-dump:0.7.3
 
 To keep the snapshots on server restart we need to create a volume where snapshots can be stored. You do this by invoking:
 
@@ -23,7 +23,7 @@ To keep the snapshots on server restart we need to create a volume where snapsho
 
 SnapDump uses internally the port 5555 for the server. This can be mapped to a local port on the host by specifying on the docker commandline. To start the server with that port and the former created volume invoke:
 
-    $ docker run -p 8888:5555 -v SnapDump:/snapshots zweidenker/snap-dump:0.7
+    $ docker run -p 8888:5555 -v SnapDump:/snapshots zweidenker/snap-dump:0.7.3
 
 Now our SnapDump server is up and running, we would like to first: report exceptions from a SnapDump handler image , and second: retrieve our reported exceptions on a SnapDump client image.
 
@@ -37,7 +37,7 @@ To download a pharo image from command line you can use:
 To install SnapDump open a playground and execute:
 
     Metacello new
-	    repository: 'github://zweidenker/SnapDump:0.7';
+	    repository: 'github://zweidenker/SnapDump:0.7.3';
 	    baseline: #SnapDump;
 	    load
 
@@ -47,18 +47,17 @@ To configure Snapdump on the handler image execute:
 
     SnapDump hackUIManager; beHandler.
     SnapDump uri: 'http://localhost:8888/api'.
-    SnapDump current projectName: 'projectname1' versionString: '0.7'.
+    SnapDump current projectName: 'projectname1' versionString: '0.7.3'.
 
 This could be executed systematically when the image is deployed and starts.
 
 Then to report an exception to our SnapDump server, use #SnapDump>>handleException: in the likes of:
 
-    [Error signal: 'My first SnapDump snapshot']
-        on: Error
-        do: [ :error |
-            Smalltalk  
-            at: #SnapDump
-            ifPresent: [ :reporter | reporter handleException: error ] ]
+```smalltalk
+SnapDump handleException: SDSnapshot dummyContext
+```
+Here we are using a tiny sample context object for the purpose of testing SnapDump.
+Usually, one would catch a concrete Error object and report it using #handleException:
 
 On the SnapDump client image
 ----------------------------
