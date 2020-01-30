@@ -56,7 +56,8 @@ Then to report an exception to our SnapDump server, use #SnapDump>>handleExcepti
 ```smalltalk
 SnapDump handleException: SDSnapshot dummyContext
 ```
-
+Here we are using a tiny sample context object for the purpose of testing SnapDump.
+Usually, one would catch a concrete Error object and report it using #handleException:
 
 On the SnapDump client image
 ----------------------------
