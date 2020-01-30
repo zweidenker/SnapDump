@@ -35,7 +35,7 @@ SDSnapshot class >> apiVersion [
 ]
 
 { #category : #accessing }
-SDSnapshot class >> dummyContextSnapshot [
+SDSnapshot class >> dummyContext [
 	| context |
 	context := (Context newForMethod: Object >> #printStringLimitedTo:).
 	context
@@ -54,7 +54,13 @@ SDSnapshot class >> dummyContextSnapshot [
 					method: Object >> #asString 
 					receiver:  'TestString' 
 					sender: nil)).
-	^ context asSnapshot
+	^ context 
+]
+
+{ #category : #accessing }
+SDSnapshot class >> dummyContextSnapshot [
+
+	^ self dummyContext asSnapshot
 ]
 
 { #category : #'as yet unclassified' }
