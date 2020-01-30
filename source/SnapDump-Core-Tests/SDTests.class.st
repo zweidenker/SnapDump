@@ -16,33 +16,10 @@ SDTests >> createSimpleSnapshot [
 ]
 
 { #category : #'as yet unclassified' }
-SDTests >> dummyContext [
-	| context |
-	context := (Context newForMethod: Object >> #printStringLimitedTo:).
-	context
-		initializeWith: 23 
-		stackPtr: 1 
-		method: Object >> #printStringLimitedTo: 
-		receiver:  'TestString' 
-		sender: ((Context newForMethod: Object >> #printString)
-				initializeWith: 23 
-				stackPtr: 1 
-				method: Object >> #printString 
-				receiver:  'TestString' 
-				sender: ((Context newForMethod: Object >> #asString)
-					initializeWith: 23 
-					stackPtr: 1 
-					method: Object >> #asString 
-					receiver:  'TestString' 
-					sender: nil)).
-	^ context
-]
-
-{ #category : #'as yet unclassified' }
 SDTests >> dummyContextSnapshot [
 	
 	| snapshot |
-	snapshot := self dummyContext asSnapshot.
+	snapshot := SDSnapshot dummyContextSnapshot.
 	snapshot exception instVarNamed: #id  put: self dummyExceptionId.
 	snapshot		
 		instVarNamed: #exceptionId  put: self dummyExceptionId;

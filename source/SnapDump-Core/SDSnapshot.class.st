@@ -34,12 +34,35 @@ SDSnapshot class >> apiVersion [
 	^ 'v2'
 ]
 
+{ #category : #accessing }
+SDSnapshot class >> dummyContextSnapshot [
+	| context |
+	context := (Context newForMethod: Object >> #printStringLimitedTo:).
+	context
+		initializeWith: 23 
+		stackPtr: 1 
+		method: Object >> #printStringLimitedTo: 
+		receiver:  'TestString' 
+		sender: ((Context newForMethod: Object >> #printString)
+				initializeWith: 23 
+				stackPtr: 1 
+				method: Object >> #printString 
+				receiver:  'TestString' 
+				sender: ((Context newForMethod: Object >> #asString)
+					initializeWith: 23 
+					stackPtr: 1 
+					method: Object >> #asString 
+					receiver:  'TestString' 
+					sender: nil)).
+	^ context asSnapshot
+]
+
 { #category : #'as yet unclassified' }
 SDSnapshot class >> exception: anException [
 	^ self new exception: anException
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 SDSnapshot class >> metaSeparator [
 	^ 255
 ]
