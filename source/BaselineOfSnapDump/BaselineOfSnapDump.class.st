@@ -66,5 +66,5 @@ BaselineOfSnapDump >> zinc: spec [
 	spec baseline: 'ZincHTTPComponents' with: [ 
 		spec 
 			loads: #('REST');
-			repository: 'github://zweidenker/zinc/repository']
+			repository: 'github://svenvc/zinc/repository']
 ]
