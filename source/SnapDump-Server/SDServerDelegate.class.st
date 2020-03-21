@@ -9,7 +9,10 @@ Class {
 
 { #category : #'error handling' }
 SDServerDelegate >> serverError: request exception: exception [
-	[ self store
+	Transcript show: (String streamContents: [:stream | exception signalerContext errorReportOn: stream ]); cr.
+	[ 
+	Transcript show: 'trying to store server error'; cr.
+	self store
 		storeSnapshot:
 			(exception asSnapshot
 				projectName: 'SnapDump';
@@ -24,7 +27,8 @@ SDServerDelegate >> serverError: request exception: exception [
 						streamContents: [ :stream | 
 							stream
 								nextPutAll: 'Unable to report server internal error: ';
-								nextPutAll: err description printString ]) ].
+								nextPutAll: err description printString ]);
+				cr ].
 	^ super serverError: request exception: exception
 ]
 
