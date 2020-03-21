@@ -28,6 +28,11 @@ SDServer class >> port: aNumber path: aFileReference [
 		yourself
 ]
 
+{ #category : #initialization }
+SDServer class >> reset [ 
+	instance := nil
+]
+
 { #category : #'as yet unclassified' }
 SDServer class >> startOnPort: aNumber path: aFileReference [
 	^ self instance 
