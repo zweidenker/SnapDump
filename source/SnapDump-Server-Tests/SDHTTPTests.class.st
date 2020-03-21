@@ -47,7 +47,7 @@ SDHTTPTests >> selfIP [
 { #category : #running }
 SDHTTPTests >> setUp [ 
 	super setUp.
-	server := SDServer port: self randomPort path: rootPath.
+	server := SDServer new port: self randomPort; path: rootPath.
 	server debugMode: true.
 	server start.
 	"SnapDump current stub store willReturn: store."
@@ -157,6 +157,18 @@ SDHTTPTests >> testSetup [
 	root := self dummySnapshotRootPath.
 	self assert: root hasFiles.
 	self assert: ((root / mock asSnapshot snapshotId), #snap) exists.
+
+]
+
+{ #category : #tests }
+SDHTTPTests >> testSnapshotDelete [
+	| response |
+	self createSimpleSnapshot.
+	response := ZnClient new
+		url: self dummySnapshotUrl ;
+		delete;
+		response.
+	self assert: response isSuccess.
 
 ]
 
