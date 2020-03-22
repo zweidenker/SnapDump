@@ -129,7 +129,9 @@ SDSnapshot >> errorSignature [
 { #category : #accessing }
 SDSnapshot >> exception [ 
 	
-	^ exception 
+	^ exception ifNil: [ 
+		self restoreModel.
+		exception ]
 ]
 
 { #category : #accessing }

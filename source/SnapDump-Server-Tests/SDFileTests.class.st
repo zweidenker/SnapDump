@@ -32,6 +32,6 @@ SDFileTests >> testSimpleWrite [
 	snapshot := self createSimpleSnapshot.
 	self deny: rootPath hasFiles.
 	self assert: rootPath hasDirectories.
-	root := self dummySnapshotRootPath.
+	root := self dummySnapshotRootPath / snapshot exceptionId.
 	self assert: (root / snapshot snapshotId , #snap) exists
 ]

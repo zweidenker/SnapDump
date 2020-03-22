@@ -4,11 +4,6 @@ Class {
 	#category : #'SnapDump-Core-Tests'
 }
 
-{ #category : #testing }
-SDCoreTests >> expectedFailures [
-	^ #( testSetup )
-]
-
 { #category : #tests }
 SDCoreTests >> getDummySnapshotFromClient [
 	| snap |
@@ -181,7 +176,7 @@ SDCoreTests >> testRemoveVersion [
 
 { #category : #tests }
 SDCoreTests >> testSetup [
-	| mock root |
+	| mock root snapshot |
 	mock := self snapshotMock.
 	self 
 		shouldnt: [ handler handleException: mock ]
@@ -189,7 +184,8 @@ SDCoreTests >> testSetup [
 	"only directories should be contained by the root path"
 	self deny: rootPath hasFiles.
 	self assert: rootPath hasDirectories.
-	root := self dummySnapshotRootPath.
+	snapshot := mock asSnapshot.
+	root := self dummySnapshotRootPath / snapshot exceptionId.
 	self assert: root exists. 
 	self assert: root isDirectory. 
 	self assert: ((root / mock asSnapshot snapshotId), #snap) exists.
