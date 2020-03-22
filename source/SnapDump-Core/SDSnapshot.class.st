@@ -69,11 +69,6 @@ SDSnapshot class >> exception: anException [
 ]
 
 { #category : #accessing }
-SDSnapshot class >> metaSeparator [
-	^ 255
-]
-
-{ #category : #accessing }
 SDSnapshot class >> neoJsonMapping: mapper [
 	mapper for: self do: [ :mapping |
 		mapping mapAccessors: #( projectName versionString ).
@@ -161,7 +156,6 @@ SDSnapshot >> exceptionId: aString [
 
 { #category : #initialization }
 SDSnapshot >> exportExceptionModel [
-
 	"absorb the exception model properties so that they can be serialized with the snap file "
 	exceptionClass := self exception exceptionClassName.
 	selector := self exception exceptionSignalerSelector.

@@ -32,11 +32,9 @@ SDClient >> projects [
 { #category : #searching }
 SDClient >> snapshotWithId: aString project: aProjectString version: aVersionString [
 
-
-	^ (self store
+	^ self store
 		snapshotWithId: aString
 		project: aProjectString
-		version: aVersionString)
-		restoreModel;
-		yourself
+		version: aVersionString
+
 ]

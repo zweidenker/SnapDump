@@ -25,6 +25,11 @@ SDHTTPTests >> dummySnapshotUrl [
 ]
 
 { #category : #tests }
+SDHTTPTests >> dummySnapshotUrl: aSnapshot [
+	^ (self apiVersionedUri /#projects / self projectNameForTests / #versions / self versionStringForTests / #exceptions / self dummyExceptionId / #snapshots / aSnapshot snapshotId)
+]
+
+{ #category : #tests }
 SDHTTPTests >> dummySnapshotUrlWithoutProject [
 	^ self apiVersionedUri 
 		/ #snapshots / self dummySnapshotId
@@ -162,10 +167,10 @@ SDHTTPTests >> testSetup [
 
 { #category : #tests }
 SDHTTPTests >> testSnapshotDelete [
-	| response |
-	self createSimpleSnapshot.
+	| response snapshot |
+	snapshot := self createSimpleSnapshot.
 	response := ZnClient new
-		url: self dummySnapshotUrl ;
+		url: (self dummySnapshotUrl: snapshot) ;
 		delete;
 		response.
 	self assert: response isSuccess.
@@ -213,10 +218,10 @@ SDHTTPTests >> testSnapshotGetById [
 
 { #category : #tests }
 SDHTTPTests >> testSnapshotGetContext [
-	| response snapshot context |
-	self createSimpleSnapshot.
+	| response snapshot context s |
+	s := self createSimpleSnapshot.
 	response := ZnClient new
-		url: self dummySnapshotUrl ;
+		url: (self dummySnapshotUrl: s) ;
 		get;
 		response.
 	self assert: response isSuccess.
@@ -256,7 +261,7 @@ SDHTTPTests >> testSnapshotList [
 	self assert: response isSuccess equals: true.
 	list := (NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot .
 	self assert: list size equals: 1.
-	self assert: (list first restoreModel; errorSignature) equals: 'TestProject_0.1_Object: ContextWithoutException>>#printStringLimitedTo:'
+	self assert: (list first restoreModel; errorSignature) equals: 'TestProject_0.1_ContextWithoutException: Object>>#printStringLimitedTo:'
 	
 ]
 

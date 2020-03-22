@@ -20,10 +20,10 @@ SDTests >> dummyContextSnapshot [
 	
 	| snapshot |
 	snapshot := SDSnapshot dummyContextSnapshot.
-	snapshot exception instVarNamed: #id  put: self dummyExceptionId.
+	"snapshot exception instVarNamed: #id  put: self dummyExceptionId."
 	snapshot		
-		instVarNamed: #exceptionId  put: self dummyExceptionId;
-		instVarNamed: #snapshotId  put: self dummySnapshotId;
+		"instVarNamed: #exceptionId  put: self dummyExceptionId;"
+		"instVarNamed: #snapshotId  put: self dummySnapshotId;"
 		yourself.
 	^ snapshot
 ]
