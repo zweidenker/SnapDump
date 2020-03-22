@@ -283,8 +283,8 @@ SDSnapshot >> restoreModel [
 	exception := SDException new 
 		id:  exceptionId;
 		exceptionSignalerSelector: selector;
-		exceptionSignalerClassName: exceptionClass;
-		exceptionClassName: className;
+		exceptionSignalerClassName: className;
+		exceptionClassName: exceptionClass;
 		yourself.
 	self ensureVersionModel
 		 
