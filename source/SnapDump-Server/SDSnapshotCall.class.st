@@ -100,17 +100,11 @@ SDSnapshotCall >> head [
 
 { #category : #public }
 SDSnapshotCall >> put [
-	| file |
-	"["
+	| file snap |
 	"try to read header in ordert to find bogus data"
-	(SDSnapshotFileReader on: request contents readStream) 
-		initializeFromMeta"]
-		on: ZnCharacterEncodingError  
-		do: [:err | 
-			^ response := ZnResponse 
-				badRequest: request 
-				entity: (ZnStringEntity text: err description) ]".
-			
+	snap := (SDSnapshotFileReader on: request contents readStream) 
+		initializeFromMeta.
+
 	file := self store 
 		snapshotPathForProject: projectName
 		version: versionString 

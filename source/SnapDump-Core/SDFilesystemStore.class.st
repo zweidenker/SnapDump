@@ -17,7 +17,6 @@ SDFilesystemStore class >> storeName [
 
 { #category : #services }
 SDFilesystemStore >> buildExceptionFrom: aFileReference [
-	.
 	^ SDException new
 			id: aFileReference basename;
 			version: (self buildVersionFrom: aFileReference parent);
@@ -26,7 +25,6 @@ SDFilesystemStore >> buildExceptionFrom: aFileReference [
 
 { #category : #services }
 SDFilesystemStore >> buildProjectFrom: aFileReference [ 
-	.
 	^ SDProject new
 			name: aFileReference basename;
 			store: self;
@@ -34,19 +32,7 @@ SDFilesystemStore >> buildProjectFrom: aFileReference [
 ]
 
 { #category : #services }
-SDFilesystemStore >> buildSnapshot: snapshotId exception: exceptionId project: projectName version: versionName [
-	.
-	^ SDFileSnapshot new
-		snapshotId: snapshotId;
-		projectName: projectName;
-		versionString: versionName;
-		exceptionId: exceptionId;
-		yourself
-]
-
-{ #category : #services }
 SDFilesystemStore >> buildVersionFrom: aFileReference [ 
-	.
 	^ SDVersion new
 			string: aFileReference basename;
 			project: (self buildProjectFrom: aFileReference parent);
@@ -287,7 +273,7 @@ SDFilesystemStore >> snapshotPathForProject: aProjectName version: aVersionName 
 
 { #category : #services }
 SDFilesystemStore >> snapshotWithId: anIdString project: aProjectName version: aVersionString [
-	| file |
+	| file snapshot |
 	file := (self
 		snapshotFilesForProject: aProjectName
 		version: aVersionString)
@@ -295,10 +281,13 @@ SDFilesystemStore >> snapshotWithId: anIdString project: aProjectName version: a
 			[ :eachFile | eachFile basename = (self snapshotFileNameFor: anIdString) ]
 		ifNone: [ NotFound signal ].
 		
-	^ (SDSnapshotFileReader file: file)
+	snapshot := (SDSnapshotFileReader file: file)
 		initializeFromMeta;
 		file: file;
-		snapshot
+		snapshot.
+	snapshot restoreModel.
+	snapshot project store: self.
+	^ snapshot
 ]
 
 { #category : #'service - getting' }

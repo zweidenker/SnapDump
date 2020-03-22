@@ -25,6 +25,11 @@ SDHTTPTests >> dummySnapshotUrl [
 ]
 
 { #category : #tests }
+SDHTTPTests >> dummySnapshotUrl: aSnapshot [
+	^ (self apiVersionedUri /#projects / self projectNameForTests / #versions / self versionStringForTests / #exceptions / self dummyExceptionId / #snapshots / aSnapshot snapshotId)
+]
+
+{ #category : #tests }
 SDHTTPTests >> dummySnapshotUrlWithoutProject [
 	^ self apiVersionedUri 
 		/ #snapshots / self dummySnapshotId
@@ -148,13 +153,14 @@ SDHTTPTests >> testProjectRemove [
 
 { #category : #tests }
 SDHTTPTests >> testSetup [
-	| mock root |
+	| mock root snapshot |
 	mock := self snapshotMock.
 	self 
 		shouldnt: [ handler handleException: mock ]
 		raise: Error.
+	snapshot := mock asSnapshot.
 	self assert: rootPath hasDirectories.
-	root := self dummySnapshotRootPath.
+	root := self dummySnapshotRootPath / snapshot exceptionId.
 	self assert: root hasFiles.
 	self assert: ((root / mock asSnapshot snapshotId), #snap) exists.
 
@@ -162,10 +168,10 @@ SDHTTPTests >> testSetup [
 
 { #category : #tests }
 SDHTTPTests >> testSnapshotDelete [
-	| response |
-	self createSimpleSnapshot.
+	| response snapshot |
+	snapshot := self createSimpleSnapshot.
 	response := ZnClient new
-		url: self dummySnapshotUrl ;
+		url: (self dummySnapshotUrl: snapshot) ;
 		delete;
 		response.
 	self assert: response isSuccess.
@@ -185,15 +191,15 @@ SDHTTPTests >> testSnapshotEmptyVersion [
 
 { #category : #tests }
 SDHTTPTests >> testSnapshotGet [
-	| response snapshot |
-	self createSimpleSnapshot.
+	| response snapshot s |
+	s := self createSimpleSnapshot.
 	response := ZnClient new
-		url: self dummySnapshotUrl ;
+		url: (self dummySnapshotUrl: s);
 		get;
 		response.
 	self assert: response isSuccess.
 	snapshot := (NeoJSONReader on: response contents readStream) nextAs: SDSnapshot .
-	self assert: snapshot snapshotId equals: self dummySnapshotId .
+	self assert: snapshot snapshotId equals: s snapshotId .
 	
 ]
 
@@ -213,15 +219,15 @@ SDHTTPTests >> testSnapshotGetById [
 
 { #category : #tests }
 SDHTTPTests >> testSnapshotGetContext [
-	| response snapshot context |
-	self createSimpleSnapshot.
+	| response snapshot context s |
+	s := self createSimpleSnapshot.
 	response := ZnClient new
-		url: self dummySnapshotUrl ;
+		url: (self dummySnapshotUrl: s) ;
 		get;
 		response.
 	self assert: response isSuccess.
 	snapshot := (NeoJSONReader on: response contents readStream) nextAs: SDSnapshot .
-	self assert: snapshot snapshotId equals: self dummySnapshotId.
+	self assert: snapshot snapshotId equals: s snapshotId.
 	context :=  FLMaterializer materializeFromByteArray: (self store snapshotDumpFor: snapshot).
 	self assert: (context isKindOf: Context).
 	self assert: context receiver = 'TestString'
@@ -229,15 +235,15 @@ SDHTTPTests >> testSnapshotGetContext [
 
 { #category : #tests }
 SDHTTPTests >> testSnapshotGetStackTrace [
-	| response snapshot stackTrace |
-	self createSimpleSnapshot.
+	| response snapshot stackTrace s |
+	s := self createSimpleSnapshot.
 	response := ZnClient new
-		url: self dummySnapshotUrl ;
+		url: (self dummySnapshotUrl: s);
 		get;
 		response.
 	self assert: response isSuccess.
 	snapshot := (NeoJSONReader on: response contents readStream) nextAs: SDSnapshot .
-	self assert: snapshot snapshotId equals: self dummySnapshotId.
+	self assert: snapshot snapshotId equals: s snapshotId.
 	stackTrace :=  self store snapshotStackFor: snapshot.
 	self assert: (stackTrace includesSubstring: 'ByteString(Object)>>printStringLimitedTo:
 	Receiver: ''TestString'''
@@ -247,16 +253,16 @@ SDHTTPTests >> testSnapshotGetStackTrace [
 
 { #category : #tests }
 SDHTTPTests >> testSnapshotList [
-	| response list |
-	self createSimpleSnapshot.
+	| response list s |
+	s := self createSimpleSnapshot.
 	response := ZnClient new
-		url: self apiVersionedUri / #projects / #TestProject / #versions / '0.1' / #exceptions / self dummyExceptionId / #snapshots;
+		url: self apiVersionedUri / #projects / #TestProject / #versions / '0.1' / #exceptions / s exceptionId / #snapshots;
 		get;
 		response.
-	self assert: response isSuccess equals: true.
+	self assert: response isSuccess.
 	list := (NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot .
 	self assert: list size equals: 1.
-	self assert: (list first restoreModel; errorSignature) equals: 'TestProject_0.1_Object: ContextWithoutException>>#printStringLimitedTo:'
+	self assert: (list first restoreModel; errorSignature) equals: 'TestProject_0.1_ContextWithoutException: Object>>#printStringLimitedTo:'
 	
 ]
 

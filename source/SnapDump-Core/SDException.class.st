@@ -2,7 +2,6 @@ Class {
 	#name : #SDException,
 	#superclass : #Object,
 	#instVars : [
-		'string',
 		'version',
 		'id',
 		'exceptionClassName',
