@@ -5,7 +5,8 @@ Class {
 		'store'
 	],
 	#classInstVars : [
-		'current'
+		'current',
+		'handler'
 	],
 	#category : #'SnapDump-Core-Base'
 }
@@ -18,7 +19,7 @@ SnapDump class >> applyConfiguration: aConfig [
 
 { #category : #'as yet unclassified' }
 SnapDump class >> beOfType: aSymbol [
-	current := (self withType: aSymbol) new
+	self deprecated: 'beOfType: is unnecessary now. Just remove calls to this method'
 ]
 
 { #category : #'as yet unclassified' }
@@ -31,30 +32,12 @@ SnapDump class >> configuration [
 
 { #category : #accessing }
 SnapDump class >> current [ 
-	^ current ifNil: [ 
-		current := SDHandler new ]
-]
-
-{ #category : #'as yet unclassified' }
-SnapDump class >> hackUIManager [
-	UIManager compile: 'logError: anError
-		SnapDump current handleException: anError.
-		super logError: anError'
-]
-
-{ #category : #public }
-SnapDump class >> handleException: exception [
-	^ self current handleException: exception 
-]
-
-{ #category : #'as yet unclassified' }
-SnapDump class >> handleSnapshot: aSnapshot [ 
-	^ self current handleSnapshot: aSnapshot 
+	^ current 
 ]
 
 { #category : #accessing }
 SnapDump class >> path: aPathString [
-	^ self current 
+	^ self  
 		store: (SDFilesystemStore new path: aPathString asFileReference);
 		yourself 
 ]
@@ -65,15 +48,25 @@ SnapDump class >> reset [
 ]
 
 { #category : #'as yet unclassified' }
-SnapDump class >> uri: aUri username: aUsername password: aPassword [
-	^ self current store 
-			uri: aUri asZnUrl;
-			username: aUsername password: aPassword
+SnapDump class >> setCurrent: anObject [
+	current := anObject 
 ]
 
-{ #category : #'accessing structure variables' }
-SnapDump class >> withType: aSymbol [
-	^ self allSubclasses detect: [ :each | each type = aSymbol ]
+{ #category : #accessing }
+SnapDump class >> store [
+	^ self current store
+]
+
+{ #category : #accessing }
+SnapDump class >> store: aStore [
+	self current store: aStore
+]
+
+{ #category : #'as yet unclassified' }
+SnapDump class >> uri: aUri username: aUsername password: aPassword [
+	^ self store 
+			uri: aUri asZnUrl;
+			username: aUsername password: aPassword
 ]
 
 { #category : #initialization }

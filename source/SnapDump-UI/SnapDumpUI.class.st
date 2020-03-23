@@ -174,7 +174,7 @@ SnapDumpUI >> subMenu [
 
 	^ MenuPresenter new
 		addGroup: [ :group |
-			SnapDump current projects do: [ :project | 
+			client projects do: [ :project | 
 				group addItem: [ :item |
 					item
 						name: project name;
