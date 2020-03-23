@@ -18,24 +18,8 @@ SDTests >> createSimpleSnapshot [
 { #category : #'as yet unclassified' }
 SDTests >> dummyContextSnapshot [
 	
-	| snapshot |
-	snapshot := SDSnapshot dummyContextSnapshot.
-	"snapshot exception instVarNamed: #id  put: self dummyExceptionId."
-	snapshot		
-		"instVarNamed: #exceptionId  put: self dummyExceptionId;"
-		"instVarNamed: #snapshotId  put: self dummySnapshotId;"
-		yourself.
-	^ snapshot
-]
+	^ SDSnapshot dummyContextSnapshot.
 
-{ #category : #tests }
-SDTests >> dummyExceptionId [
-	^ '292310505b9f7c1493d42c91693b6222e09f5ec6cd1e16d18d1b7ec1570d8a03'
-]
-
-{ #category : #tests }
-SDTests >> dummySnapshotId [
-	^ 'a946512aec0333fecaa26fbb58131ffec168e43b8f8e56999603005c94e39c92'
 ]
 
 { #category : #tests }
@@ -68,11 +52,12 @@ SDTests >> setUp [
 
 { #category : #tests }
 SDTests >> snapshotMock [
-	| mock |
+	"| mock |
 	mock := Mock new. 
 	mock stub asSnapshot  
 		willReturn: self dummyContextSnapshot.
-	^ mock
+	^ mock"
+	^ ExceptionMock snapshot: self dummyContextSnapshot 
 
 ]
 
