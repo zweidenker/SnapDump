@@ -5,19 +5,19 @@ Class {
 }
 
 { #category : #tests }
-SDCoreTests >> getDummySnapshotFromClient [
-	| snap |
-	snap := (client
-		snapshotWithId: self dummySnapshotId project: self projectNameForTests version: self versionStringForTests) .
-	^ snap
-]
-
-{ #category : #tests }
 SDCoreTests >> getDummySnapshotFromClient: aString [
 	| snap |
 	snap := (client
 		snapshotWithId: aString project: self projectNameForTests version: self versionStringForTests) .
 	^ snap
+]
+
+{ #category : #tests }
+SDCoreTests >> roundtripSnapshot [
+	|  s |
+	s := self createSimpleSnapshot.
+	^ self getDummySnapshotFromClient: s snapshotId.
+	
 ]
 
 { #category : #accessing }
@@ -103,9 +103,8 @@ SDCoreTests >> testProjectVersions [
 { #category : #tests }
 SDCoreTests >> testReadSnapshotFuelDump [
 
-	|  snapshot context fuel s |
-	s := self createSimpleSnapshot.
-	snapshot := self getDummySnapshotFromClient: s snapshotId.	
+	|  snapshot context fuel |
+	snapshot := self roundtripSnapshot.	
 	fuel := snapshot newReader fuelDumpStreamDo: [ :stream :length |
 		stream upToEnd ].
 	
@@ -116,18 +115,16 @@ SDCoreTests >> testReadSnapshotFuelDump [
 { #category : #tests }
 SDCoreTests >> testReadSnapshotMeta [
 
-	|  snapshot s |
-	s := self createSimpleSnapshot.
-	snapshot := self getDummySnapshotFromClient: s snapshotId.
+	|  snapshot |
+	snapshot := self roundtripSnapshot.
 	self assert: snapshot project name = 'TestProject'
 ]
 
 { #category : #tests }
 SDCoreTests >> testReadSnapshotStackTrace [
 
-	|  snapshot string stack s |
-	s := self createSimpleSnapshot.
-	snapshot := self getDummySnapshotFromClient: s snapshotId.
+	|  snapshot string stack |
+	snapshot := self roundtripSnapshot.
 	self assert: snapshot project name = 'TestProject'.
 	
 	stack := snapshot newReader stackTraceStreamDo: [ :stream :length |
@@ -154,9 +151,8 @@ SDCoreTests >> testRemoveProjectVersion [
 { #category : #tests }
 SDCoreTests >> testRemoveSnapshot [
 
-	|  snapshot s |
-	s := self createSimpleSnapshot.
-	snapshot := self getDummySnapshotFromClient: s snapshotId.
+	|  snapshot |
+	snapshot := self roundtripSnapshot.
 	self assert: snapshot className equals: 'Object'.
 	self 
 		shouldnt: [ snapshot remove ]
@@ -166,9 +162,8 @@ SDCoreTests >> testRemoveSnapshot [
 
 { #category : #tests }
 SDCoreTests >> testRemoveVersion [
-	| snapshot s |
-	s := self createSimpleSnapshot.
-	snapshot := self getDummySnapshotFromClient: s snapshotId.
+	| snapshot |
+	snapshot := self roundtripSnapshot.
 	self assert: snapshot className equals: 'Object'.
 	snapshot version remove.
 	self assert: client projects isEmpty
@@ -195,9 +190,8 @@ SDCoreTests >> testSetup [
 { #category : #tests }
 SDCoreTests >> testSnapshot [
 
-	|  snapshot s |
-	s := self createSimpleSnapshot.
-	snapshot := self getDummySnapshotFromClient: s snapshotId.
+	|  snapshot |
+	snapshot := self roundtripSnapshot.
 	self assert: snapshot className equals: 'Object'
 ]
 
