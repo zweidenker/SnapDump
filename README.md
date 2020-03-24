@@ -45,7 +45,7 @@ On the SnapDump handler image
 -----------------------------
 To configure Snapdump on the handler image execute:
 
-    SnapDump hackUIManager; beHandler.
+    SnapDump hackUIManager.
     SnapDump uri: 'http://localhost:8888/api'.
     SnapDump current projectName: 'projectname1' versionString: '0.7.3'.
 
@@ -65,7 +65,6 @@ On the client image you want to see the exceptions previously reported.
 To configure and open the UI client execute:
 
     "configure the SnapDump client to access the docker container"
-    SnapDump beOfType: #client.
     SnapDump uri: 'http://localhost:8888/api'.
     "open the ui"
     SnapDump ui
