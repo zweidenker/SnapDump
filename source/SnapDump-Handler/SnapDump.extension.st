@@ -6,13 +6,6 @@ SnapDump class >> beHandler [
 ]
 
 { #category : #'*SnapDump-Handler' }
-SnapDump class >> hackUIManager [
-	UIManager compile: 'logError: anError
-		SnapDump current handleException: anError.
-		super logError: anError'
-]
-
-{ #category : #'*SnapDump-Handler' }
 SnapDump class >> handleException: exception [
 	^ self handler handleException: exception 
 ]

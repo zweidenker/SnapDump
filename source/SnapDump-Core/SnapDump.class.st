@@ -35,6 +35,13 @@ SnapDump class >> current [
 	^ current 
 ]
 
+{ #category : #'as yet unclassified' }
+SnapDump class >> hackUIManager [
+	UIManager compile: 'logError: anError
+		SnapDump current handleException: anError.
+		super logError: anError'
+]
+
 { #category : #accessing }
 SnapDump class >> path: aPathString [
 	^ self  
