@@ -1,12 +1,32 @@
 Class {
 	#name : #SDHTTPStore,
-	#superclass : #SDBasicHTTPStore,
-	#category : #'SnapDump-Client'
+	#superclass : #SDStore,
+	#instVars : [
+		'uri',
+		'username',
+		'password'
+	],
+	#category : #'SnapDump-Core-Base'
 }
 
 { #category : #accessing }
 SDHTTPStore class >> storeName [
 	^ #http
+]
+
+{ #category : #initialization }
+SDHTTPStore >> applyConfiguration: aConfig [
+	uri := aConfig uri.
+   username := aConfig username.
+   password := aConfig password.
+
+]
+
+{ #category : #accessing }
+SDHTTPStore >> client [
+	^ ZnClient new
+		beOneShot;
+		setBasicAuthenticationUsername: username password: password 
 ]
 
 { #category : #'services - getting' }
@@ -21,6 +41,46 @@ SDHTTPStore >> exceptionsOfVersion: aVersion [
 			^ ((NeoJSONReader on: response contents readStream) nextListAs: SDException) do: [ :e |
 				e version: aVersion ] ]
 		ifFalse: [ NotFound signal: ('Version' , aVersion printString , ' for project ', aVersion projectName printString, ' not found') ]
+]
+
+{ #category : #'services - getting' }
+SDHTTPStore >> freeSlotsForException: anException [ 
+	
+		^ self freeSlotsForExceptionId: anException id project: anException projectName version: anException versionString
+]
+
+{ #category : #'services - getting' }
+SDHTTPStore >> freeSlotsForExceptionId: anExceptionId project: aProjectName version: aVersionString [
+	| response |
+	
+	response := self client
+		url: uri / #projects / aProjectName / #versions / aVersionString / #exceptions / anExceptionId / #freeslots;
+		get;
+		response.
+	response isSuccess 
+		ifTrue: [  
+	^ ((NeoJSONReader on: response contents readStream) next)  ]
+		ifFalse: [ NotFound signal ]
+]
+
+{ #category : #testing }
+SDHTTPStore >> isSetUp [
+	^ uri notNil
+]
+
+{ #category : #accessing }
+SDHTTPStore >> parametersFor: snapshot [
+
+	^ Dictionary new 
+			at: #projectName put: snapshot projectName;
+			at: #versionName put: snapshot versionString;
+			at: #exceptionId put: snapshot exceptionId;
+			yourself
+]
+
+{ #category : #printing }
+SDHTTPStore >> printOn: aStream [
+	aStream << uri asString
 ]
 
 { #category : #accessing }
@@ -78,6 +138,11 @@ SDHTTPStore >> removeSnapshot: aSnapshot [
 		ifFalse: [ NotFound signal ]
 ]
 
+{ #category : #'services - testing' }
+SDHTTPStore >> shouldReportSnapshot: snapshot [
+	^ (self freeSlotsForException: snapshot exception) > 0
+]
+
 { #category : #accessing }
 SDHTTPStore >> snapshotDumpFor: aSnapshot [ 
 	^ self client
@@ -110,6 +175,31 @@ SDHTTPStore >> snapshotsOfException: anException [
 		ifFalse: [ NotFound signal ]
 ]
 
+{ #category : #accessing }
+SDHTTPStore >> uri: anUri [
+	uri := anUri asZnUrl / SDSnapshot apiVersion
+]
+
+{ #category : #accessing }
+SDHTTPStore >> urlForSnapshot: snapshot [
+
+	^ self urlForSnapshot: snapshot snapshotId  project: snapshot projectName version: snapshot versionString exception:  snapshot exceptionId
+]
+
+{ #category : #accessing }
+SDHTTPStore >> urlForSnapshot: snapshotId project: projectName version: versionName exception: anExceptionId [
+	
+	
+	^  (uri / #projects / projectName urlEncoded / #versions / versionName urlEncoded/ #exceptions/ anExceptionId /  #snapshots / snapshotId)
+	
+]
+
+{ #category : #accessing }
+SDHTTPStore >> username: aUsername password: aPassword [
+	username := aUsername.
+	password := aPassword
+]
+
 { #category : #'services - getting' }
 SDHTTPStore >> versionsOfProject: aProject [ 
 	| response |
@@ -122,4 +212,16 @@ SDHTTPStore >> versionsOfProject: aProject [
 			^ ((NeoJSONReader on: response contents readStream) nextListAs: SDVersion) do: [ :v |
 				v project: aProject ] ]
 		ifFalse: [ NotFound signal: (aProject name , ' project not found') ]
+]
+
+{ #category : #services }
+SDHTTPStore >> writeSnapshot: snapshot [
+	| writeStream response |
+	writeStream := ByteArray new writeStream.
+	(SDSnapshotFileWriter on: writeStream) writeSnapshot: snapshot.
+	response := self client
+		url: (self urlForSnapshot: snapshot);
+		entity: (ZnByteArrayEntity bytes: writeStream contents);
+		put.
+	Transcript show: 'SnapDump: Error reporting gave response: ', response asString. 
 ]

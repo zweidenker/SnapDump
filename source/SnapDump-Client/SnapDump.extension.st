@@ -9,7 +9,5 @@ SnapDump class >> client [
 
 { #category : #'*SnapDump-Client' }
 SnapDump class >> uri: aUri [
-	^ self 
-		store: (SDHTTPStore new uri: aUri asZnUrl);
-		yourself 
+	^ self uri: aUri username: nil  password: nil
 ]

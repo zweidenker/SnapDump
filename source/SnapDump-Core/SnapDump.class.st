@@ -32,7 +32,8 @@ SnapDump class >> configuration [
 
 { #category : #accessing }
 SnapDump class >> current [ 
-	^ current 
+	^ current ifNil: [ 
+		current := self new ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -71,9 +72,11 @@ SnapDump class >> store: aStore [
 
 { #category : #'as yet unclassified' }
 SnapDump class >> uri: aUri username: aUsername password: aPassword [
-	^ self store 
+	^ self 
+		store: (SDHTTPStore new 
 			uri: aUri asZnUrl;
-			username: aUsername password: aPassword
+			username: aUsername password: aPassword);
+		yourself 
 ]
 
 { #category : #initialization }

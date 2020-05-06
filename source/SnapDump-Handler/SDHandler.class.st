@@ -40,7 +40,7 @@ SDHandler >> applyConfiguration: aConfig [
 
 { #category : #accessing }
 SDHandler >> defaultStoreClass [
-	^ SDBasicHTTPStore 
+	^ SDHTTPStore 
 ]
 
 { #category : #services }
