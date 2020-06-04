@@ -24,9 +24,9 @@ SnapDump class >> beOfType: aSymbol [
 
 { #category : #'as yet unclassified' }
 SnapDump class >> configuration [
-	<configurationStep>
+	<cinicStep>
 	^ {  
-		#group -> #SnapDump.
+		#section -> #SnapDump.
 		#action -> [ :config |  self applyConfiguration: config ] }
 ]
 

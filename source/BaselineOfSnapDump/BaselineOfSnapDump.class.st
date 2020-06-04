@@ -37,7 +37,7 @@ BaselineOfSnapDump >> baseline: spec [
 { #category : #baselines }
 BaselineOfSnapDump >> cinic: spec [
 	spec baseline: 'Cinic' with: [ 
-			spec repository: 'github://zweidenker/Cinic:0.1'. ]
+			spec repository: 'github://zweidenker/Cinic:0.3.1'. ]
 ]
 
 { #category : #baselines }
