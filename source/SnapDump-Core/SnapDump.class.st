@@ -27,7 +27,9 @@ SnapDump class >> configuration [
 	<cinicStep>
 	^ {  
 		#section -> #SnapDump.
-		#action -> [ :config |  self applyConfiguration: config ] }
+		#action -> [ :config |  
+			self setCurrent: (self perform: config type asSymbol).
+			self applyConfiguration: config ] }
 ]
 
 { #category : #accessing }
@@ -81,6 +83,7 @@ SnapDump class >> uri: aUri username: aUsername password: aPassword [
 
 { #category : #initialization }
 SnapDump >> applyConfiguration: aConfig [
+
 	store := (SDStore withName: aConfig store) new.
 	store applyConfiguration: aConfig
 ]

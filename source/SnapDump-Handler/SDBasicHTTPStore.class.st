@@ -8,3 +8,9 @@ Class {
 	],
 	#category : #'SnapDump-Handler'
 }
+
+{ #category : #testing }
+SDBasicHTTPStore class >> storeName [ 
+
+	#basicHttp
+]
