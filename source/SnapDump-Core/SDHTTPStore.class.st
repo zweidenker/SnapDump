@@ -16,7 +16,7 @@ SDHTTPStore class >> storeName [
 
 { #category : #initialization }
 SDHTTPStore >> applyConfiguration: aConfig [
-	uri := aConfig uri.
+	self uri: aConfig uri.
    username := aConfig username.
    password := aConfig password.
 
@@ -173,6 +173,12 @@ SDHTTPStore >> snapshotsOfException: anException [
 	^ ((NeoJSONReader on: response contents readStream) nextListAs: SDSnapshot) do: [ :s |
 			s exception: anException ] ]
 		ifFalse: [ NotFound signal ]
+]
+
+{ #category : #accessing }
+SDHTTPStore >> uri [ 
+
+	^ uri
 ]
 
 { #category : #accessing }
