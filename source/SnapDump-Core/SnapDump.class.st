@@ -28,7 +28,7 @@ SnapDump class >> configuration [
 	^ {  
 		#section -> #SnapDump.
 		#action -> [ :config |  
-			self setCurrent: (self perform: config type asSymbol).
+			self setCurrent: (self withType: config type) new.
 			self applyConfiguration: config ] }
 ]
 
@@ -79,6 +79,11 @@ SnapDump class >> uri: aUri username: aUsername password: aPassword [
 			uri: aUri asZnUrl;
 			username: aUsername password: aPassword);
 		yourself 
+]
+
+{ #category : #accessing }
+SnapDump class >> withType: aString [
+	^ self allSubclasses detect: [ :each | each type = aString ]
 ]
 
 { #category : #initialization }
