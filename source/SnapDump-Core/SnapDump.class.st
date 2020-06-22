@@ -13,7 +13,8 @@ Class {
 
 { #category : #'as yet unclassified' }
 SnapDump class >> applyConfiguration: aConfig [
-	self beOfType: aConfig type.
+	
+	self setCurrent: (self withType: aConfig type) new.
 	self current applyConfiguration: aConfig
 ]
 
@@ -28,7 +29,7 @@ SnapDump class >> configuration [
 	^ {  
 		#section -> #SnapDump.
 		#action -> [ :config |  
-			self setCurrent: (self withType: config type) new.
+			
 			self applyConfiguration: config ] }
 ]
 
