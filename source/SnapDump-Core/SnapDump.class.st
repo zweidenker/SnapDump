@@ -13,7 +13,8 @@ Class {
 
 { #category : #'as yet unclassified' }
 SnapDump class >> applyConfiguration: aConfig [
-	self beOfType: aConfig type.
+	
+	self setCurrent: (self withType: aConfig type) new.
 	self current applyConfiguration: aConfig
 ]
 
@@ -27,7 +28,9 @@ SnapDump class >> configuration [
 	<cinicStep>
 	^ {  
 		#section -> #SnapDump.
-		#action -> [ :config |  self applyConfiguration: config ] }
+		#action -> [ :config |  
+			
+			self applyConfiguration: config ] }
 ]
 
 { #category : #accessing }
@@ -79,8 +82,14 @@ SnapDump class >> uri: aUri username: aUsername password: aPassword [
 		yourself 
 ]
 
+{ #category : #accessing }
+SnapDump class >> withType: aString [
+	^ self allSubclasses detect: [ :each | each type = aString ]
+]
+
 { #category : #initialization }
 SnapDump >> applyConfiguration: aConfig [
+
 	store := (SDStore withName: aConfig store) new.
 	store applyConfiguration: aConfig
 ]
