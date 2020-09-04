@@ -73,7 +73,6 @@ SnapDumpUI >> extent [
 
 { #category : #initialization }
 SnapDumpUI >> initializeExceptionButtons [
-	| version |
 	exceptionMenu := MenuPresenter new
 		addGroup: [ :group | 
 			group
@@ -85,11 +84,7 @@ SnapDumpUI >> initializeExceptionButtons [
 						action: [ exceptionList selectedItem
 								ifNotNil: [ :anException | 
 									self removeException: anException.
-									version := versionList selectedItem string.
-									self resetVersionsWith: (projectList selectedItem versions).
-									versionList setSelectedItem: (versionList getList detect: [ :each | each string = version ] ifNone: [ nil ])
-									
-									] ] ] ].
+									self restoreSelectedVersion ] ] ] ].
 	exceptionMenu applyTo: self
 ]
 
@@ -195,6 +190,24 @@ SnapDumpUI >> resetVersionsWith: aCollectionOfVersions [
 	versionList resetSelection.
 	exceptionList items: #().
 	snapshotList items: #()
+]
+
+{ #category : #initialization }
+SnapDumpUI >> restoreSelectedVersion [
+	| version project selectedProject |
+	version := versionList selectedItem string.
+	project := projectList selectedItem name.
+	self resetProjectsWith: self client projects.
+	selectedProject := projectList getList
+		detect: [ :each | each name = project ]
+		ifNone: [ ^ self ].
+	projectList setSelectedItem: selectedProject.
+	self resetVersionsWith: projectList selectedItem versions.
+	versionList
+		setSelectedItem:
+			(versionList getList
+				detect: [ :each | each string = version ]
+				ifNone: [ nil ])
 ]
 
 { #category : #accessing }
