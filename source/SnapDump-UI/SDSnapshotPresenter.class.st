@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'menu',
 		'meta',
-		'snapshot'
+		'snapshot',
+		'exception'
 	],
 	#category : #'SnapDump-UI'
 }
