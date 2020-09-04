@@ -73,6 +73,7 @@ SnapDumpUI >> extent [
 
 { #category : #initialization }
 SnapDumpUI >> initializeExceptionButtons [
+	| version |
 	exceptionMenu := MenuPresenter new
 		addGroup: [ :group | 
 			group
@@ -84,11 +85,11 @@ SnapDumpUI >> initializeExceptionButtons [
 						action: [ exceptionList selectedItem
 								ifNotNil: [ :anException | 
 									self removeException: anException.
-									self
-										resetExceptionsWith:
-											(versionList selectedItem
-												ifNil: [ #() ]
-												ifNotNil: [ :version | version exceptions ]) ] ] ] ].
+									version := versionList selectedItem string.
+									self resetVersionsWith: (projectList selectedItem versions).
+									versionList setSelectedItem: (versionList getList detect: [ :each | each string = version ] ifNone: [ nil ])
+									
+									] ] ] ].
 	exceptionMenu applyTo: self
 ]
 
