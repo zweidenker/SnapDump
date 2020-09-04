@@ -73,7 +73,6 @@ SnapDumpUI >> extent [
 
 { #category : #initialization }
 SnapDumpUI >> initializeExceptionButtons [
-	
 	exceptionMenu := MenuPresenter new
 		addGroup: [ :group | 
 			group
@@ -82,11 +81,15 @@ SnapDumpUI >> initializeExceptionButtons [
 						name: 'Remove Exception';
 						description: 'Open Exception';
 						icon: (self iconNamed: #smallWarningIcon);
-						action: [ 
-							exceptionList selectedItem ifNotNil: [:anException | self removeException: anException ]
-							 ] ].	
-					].
-	exceptionMenu applyTo: self.
+						action: [ exceptionList selectedItem
+								ifNotNil: [ :anException | 
+									self removeException: anException.
+									self
+										resetExceptionsWith:
+											(versionList selectedItem
+												ifNil: [ #() ]
+												ifNotNil: [ :version | version exceptions ]) ] ] ] ].
+	exceptionMenu applyTo: self
 ]
 
 { #category : #initialization }
