@@ -70,7 +70,9 @@ SnapDump class >> store [
 
 { #category : #accessing }
 SnapDump class >> store: aStore [
-	self current store: aStore
+	self current store: aStore.
+	handler ifNotNil: [ 
+		handler store: aStore ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -95,14 +97,10 @@ SnapDump >> applyConfiguration: aConfig [
 ]
 
 { #category : #accessing }
-SnapDump >> defaultStoreClass [
-	self subclassResponsibility 
-]
-
-{ #category : #accessing }
 SnapDump >> store [
 	^ store ifNil: [ 
-		store := self defaultStoreClass new ]
+		Transcript show: 'SnapDump store is not set up. Ignoring exception sends!!!'; cr.
+		^ nil ]
 ]
 
 { #category : #accessing }

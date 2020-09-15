@@ -38,14 +38,12 @@ SDHandler >> applyConfiguration: aConfig [
 
 ]
 
-{ #category : #accessing }
-SDHandler >> defaultStoreClass [
-	^ SDHTTPStore 
-]
-
 { #category : #services }
 SDHandler >> handleException: exception [
-	Transcript show: 'SnapDump: exception to report: ', exception description asString.
+	Transcript show: 'SnapDump: exception to report: ', exception description asString; cr.
+	store ifNil: [ 
+		Transcript show: 'SnapDump store is not set up. Ignoring exception sends!!!'; cr.
+		^ nil ].
 	^ [ self handleSnapshot: exception asSnapshot ]
 		on: Error 
 		do: [ :err | 
