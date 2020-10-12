@@ -63,8 +63,8 @@ SDHandler >> handleSnapshot: snapshot [
 			self store
 				storeSnapshot:
 					(snapshot
-						versionString: version;
-						projectName: project;
+						versionString: self version;
+						projectName: self project;
 						yourself) ]
 		ifFalse: [ Transcript
 				show: 'tried to store snapshot but store is not set up';
@@ -74,7 +74,7 @@ SDHandler >> handleSnapshot: snapshot [
 
 { #category : #accessing }
 SDHandler >> project [
-	^ project
+	^ project ifNil: [ 'NoProject' ]
 ]
 
 { #category : #accessing }
@@ -90,7 +90,7 @@ SDHandler >> projectName: projectName versionString: versionString [
 
 { #category : #accessing }
 SDHandler >> version [
-	^ version
+	^ version ifNil: [ 'noVersion' ]
 ]
 
 { #category : #accessing }
