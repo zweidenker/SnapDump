@@ -48,7 +48,7 @@ SDMemorySnapshot >> setContext: aContext exceptionClassName: exceptionClassName 
 	self
 		stackTrace:
 			(String streamContents: [ :stream | context errorReportOn: stream ]).
-	method := context method.
+	method := context home method.
 	self
 		exception:
 			(SDException new
