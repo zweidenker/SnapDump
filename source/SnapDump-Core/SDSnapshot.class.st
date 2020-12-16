@@ -216,11 +216,20 @@ SDSnapshot >> newVersion [
 SDSnapshot >> openDebugger [
 	| context |
 	context := FLMaterializer materializeFromByteArray: self fuelBytes.
-	UIManager default
-		debugProcess: Processor activeProcess 
-		context: context 
-		label: 'External stack' 
-		fullView: true
+	(UIManager default respondsTo: #debugProcess:context:label:fullView:notification)
+		ifTrue: [  
+			UIManager default 
+				debugProcess: Processor activeProcess 
+				context: context 
+				label: 'External stack' 
+				fullView: true
+				notification: nil ]
+		ifFalse: [ 
+			UIManager default 
+				debugProcess: Processor activeProcess 
+				context: context 
+				label: 'External stack' 
+				fullView: true ]
 ]
 
 { #category : #accessing }
