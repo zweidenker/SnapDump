@@ -8,7 +8,8 @@ Class {
 		'snapshot',
 		'snapDump',
 		'client',
-		'exceptionList'
+		'exceptionList',
+		'exceptionMenu'
 	],
 	#category : #'SnapDump-UI'
 }
@@ -22,7 +23,12 @@ SnapDumpUI class >> defaultSpec [
 			row 
 				newColumn: [ :c | c add: #projectList ] left: 0 right: 0.9;
 				newColumn: [ :c | c add: #versionList ] left: 0.1 right: 0.825;
-				newColumn: [ :c | c add: #exceptionList ] left: 0.175 right: 0.50;
+				newColumn: [ :c | c add: #exceptionMenu height: 30 ; add: #exceptionList "height: 0.9" ] left: 0.175 right: 0.50;
+				"newColumn: [ :c | 
+					c
+						newRow: [ :r | r add: #exceptionMenu ]  ;
+						newRow: [ :r | r add: #exceptionList ]. 
+						] left: 0.175 right: 0.50;"
 				newColumn: [ :c | c add: #snapshotList ] left: 0.58 right: 0.30;
 				newColumn: [ :c | c add: #snapshot ] left: 0.6 right: 0 ];
 		yourself
@@ -55,13 +61,36 @@ SnapDumpUI >> exceptionList [
 	^ exceptionList
 ]
 
+{ #category : #'as yet unclassified' }
+SnapDumpUI >> exceptionMenu [
+	^ exceptionMenu
+]
+
 { #category : #api }
 SnapDumpUI >> extent [ 
 	^ 1000@400
 ]
 
 { #category : #initialization }
+SnapDumpUI >> initializeExceptionButtons [
+	exceptionMenu := MenuPresenter new
+		addGroup: [ :group | 
+			group
+				addItem: [ :item | 
+					item
+						name: 'Remove Exception';
+						description: 'Open Exception';
+						icon: (self iconNamed: #smallWarningIcon);
+						action: [ exceptionList selectedItem
+								ifNotNil: [ :anException | 
+									self removeException: anException.
+									self restoreSelectedVersion ] ] ] ].
+	exceptionMenu applyTo: self
+]
+
+{ #category : #initialization }
 SnapDumpUI >> initializeExceptionList [
+	
 	exceptionList := self newMultiColumnList
 		displayBlock: [ :anException | 
 			{anException signalerSignature.
@@ -111,6 +140,7 @@ SnapDumpUI >> initializeVersionList [
 SnapDumpUI >> initializeWidgets [
 	snapshot := SDSnapshotPresenter new.
 	self initializeSnapshotList.
+	self initializeExceptionButtons.
 	self initializeExceptionList.
 	self initializeVersionList.
 	self initializeProjectList.
@@ -120,6 +150,14 @@ SnapDumpUI >> initializeWidgets [
 { #category : #'as yet unclassified' }
 SnapDumpUI >> projectList [
 	^ projectList
+]
+
+{ #category : #initialization }
+SnapDumpUI >> removeException: anException [ 
+	
+	anException snapshots do: [ :each | 
+		each remove
+		 ]
 ]
 
 { #category : #initialization }
@@ -152,6 +190,24 @@ SnapDumpUI >> resetVersionsWith: aCollectionOfVersions [
 	versionList resetSelection.
 	exceptionList items: #().
 	snapshotList items: #()
+]
+
+{ #category : #initialization }
+SnapDumpUI >> restoreSelectedVersion [
+	| version project selectedProject |
+	version := versionList selectedItem string.
+	project := projectList selectedItem name.
+	self resetProjectsWith: self client projects.
+	selectedProject := projectList getList
+		detect: [ :each | each name = project ]
+		ifNone: [ ^ self ].
+	projectList setSelectedItem: selectedProject.
+	self resetVersionsWith: projectList selectedItem versions.
+	versionList
+		setSelectedItem:
+			(versionList getList
+				detect: [ :each | each string = version ]
+				ifNone: [ nil ])
 ]
 
 { #category : #accessing }
