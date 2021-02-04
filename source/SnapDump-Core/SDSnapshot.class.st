@@ -216,7 +216,7 @@ SDSnapshot >> newVersion [
 SDSnapshot >> openDebugger [
 	| context |
 	context := FLMaterializer materializeFromByteArray: self fuelBytes.
-	(UIManager default respondsTo: #debugProcess:context:label:fullView:notification)
+	(UIManager default respondsTo: #debugProcess:context:label:fullView:notification:)
 		ifTrue: [  
 			UIManager default 
 				debugProcess: Processor activeProcess 
