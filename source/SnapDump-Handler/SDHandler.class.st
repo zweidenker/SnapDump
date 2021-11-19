@@ -3,7 +3,8 @@ Class {
 	#superclass : #SnapDump,
 	#instVars : [
 		'project',
-		'version'
+		'version',
+		'emergencyHandler'
 	],
 	#category : #'SnapDump-Handler'
 }
@@ -38,6 +39,26 @@ SDHandler >> applyConfiguration: aConfig [
 
 ]
 
+{ #category : #accessing }
+SDHandler >> defaultEmergencyHandler [
+	^ [ :emergency :exception | 
+		Transcript show: 'Error ', emergency description asString, ' happened while report error ', exception description asString.
+		nil ].
+]
+
+{ #category : #accessing }
+SDHandler >> emergencyHandler [
+
+	^ emergencyHandler ifNil: [ 
+		emergencyHandler := self defaultEmergencyHandler ]
+]
+
+{ #category : #accessing }
+SDHandler >> emergencyHandler: anObject [
+
+	emergencyHandler := anObject
+]
+
 { #category : #services }
 SDHandler >> handleException: exception [
 	Transcript show: 'SnapDump: exception to report: ', exception description asString; cr.
@@ -46,13 +67,14 @@ SDHandler >> handleException: exception [
 		^ nil ].
 	^ [ self handleSnapshot: exception asSnapshot ]
 		on: Error 
-		do: [ :err | 
+		do: [ :emergency | 
 			"if we run inside a test case raise the error"
-			CurrentExecutionEnvironment value isTest ifTrue: [ err pass ].
-			"if an error occurrs while reporting an error there is nothing
-			we can do"
-			Transcript show: 'Error ', err description asString, ' happened while report error ', exception description asString.
-			nil]
+			CurrentExecutionEnvironment value isTest ifTrue: [ emergency pass ].
+			"if an error occurrs while reporting an error we call the 
+			emergeny handler with the original exception and "
+			self emergencyHandler
+				value: emergency 
+				value: exception ]
 
 ]
 

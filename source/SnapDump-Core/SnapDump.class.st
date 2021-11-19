@@ -19,11 +19,6 @@ SnapDump class >> applyConfiguration: aConfig [
 ]
 
 { #category : #'as yet unclassified' }
-SnapDump class >> beOfType: aSymbol [
-	self deprecated: 'beOfType: is unnecessary now. Just remove calls to this method'
-]
-
-{ #category : #'as yet unclassified' }
 SnapDump class >> configuration [
 	<cinicStep>
 	^ {  

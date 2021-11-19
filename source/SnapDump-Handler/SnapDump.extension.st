@@ -1,11 +1,6 @@
 Extension { #name : #SnapDump }
 
 { #category : #'*SnapDump-Handler' }
-SnapDump class >> beHandler [
-	self deprecated: 'handlers are always present now. This call is not necessary anymore'
-]
-
-{ #category : #'*SnapDump-Handler' }
 SnapDump class >> handleException: exception [
 	^ self handler handleException: exception 
 ]
