@@ -26,6 +26,19 @@ SDCoreTests >> store [
 ]
 
 { #category : #tests }
+SDCoreTests >> testEmergencyHandler [ 
+
+	| emergency exception |
+	handler emergencyHandler: [ :em :ex |
+		emergency := em.
+		exception := ex.
+		nil ].
+	handler handleException: 1.
+	self assert: emergency class equals: MessageNotUnderstood.
+	self assert: exception equals: 1
+]
+
+{ #category : #tests }
 SDCoreTests >> testProject [
 
 	self createSimpleSnapshot.

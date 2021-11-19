@@ -42,6 +42,9 @@ SDHandler >> applyConfiguration: aConfig [
 { #category : #accessing }
 SDHandler >> defaultEmergencyHandler [
 	^ [ :emergency :exception | 
+		"if we run inside a test case raise the error"
+		CurrentExecutionEnvironment value isTest ifTrue: [ emergency pass ].
+
 		Transcript show: 'Error ', emergency description asString, ' happened while report error ', exception description asString.
 		nil ].
 ]
@@ -61,15 +64,15 @@ SDHandler >> emergencyHandler: anObject [
 
 { #category : #services }
 SDHandler >> handleException: exception [
-	Transcript show: 'SnapDump: exception to report: ', exception description asString; cr.
+	
 	store ifNil: [ 
 		Transcript show: 'SnapDump store is not set up. Ignoring exception sends!!!'; cr.
 		^ nil ].
-	^ [ self handleSnapshot: exception asSnapshot ]
+	^ [ 
+		Transcript show: 'SnapDump: exception to report: ', exception description asString; cr.
+		self handleSnapshot: exception asSnapshot ]
 		on: Error 
 		do: [ :emergency | 
-			"if we run inside a test case raise the error"
-			CurrentExecutionEnvironment value isTest ifTrue: [ emergency pass ].
 			"if an error occurrs while reporting an error we call the 
 			emergeny handler with the original exception and "
 			self emergencyHandler
