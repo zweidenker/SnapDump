@@ -37,7 +37,7 @@ SnapDump class >> current [
 { #category : #'as yet unclassified' }
 SnapDump class >> hackUIManager [
 	UIManager compile: 'logError: anError
-		SnapDump current handleException: anError.
+		SnapDump handleException: anError.
 		super logError: anError'
 ]
 
