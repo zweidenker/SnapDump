@@ -1,6 +1,6 @@
 Class {
 	#name : #SnapDumpUI,
-	#superclass : #ComposablePresenter,
+	#superclass : #SpPresenter,
 	#instVars : [
 		'projectList',
 		'versionList',
@@ -14,23 +14,16 @@ Class {
 	#category : #'SnapDump-UI'
 }
 
-{ #category : #specs }
-SnapDumpUI class >> defaultSpec [
+{ #category : #layout }
+SnapDumpUI class >> defaultLayout [
 	<spec: #default>
 	
-	^ SpecLayout composed
-		newRow: [ :row |
-			row 
-				newColumn: [ :c | c add: #projectList ] left: 0 right: 0.9;
-				newColumn: [ :c | c add: #versionList ] left: 0.1 right: 0.825;
-				newColumn: [ :c | c add: #exceptionMenu height: 30 ; add: #exceptionList "height: 0.9" ] left: 0.175 right: 0.50;
-				"newColumn: [ :c | 
-					c
-						newRow: [ :r | r add: #exceptionMenu ]  ;
-						newRow: [ :r | r add: #exceptionList ]. 
-						] left: 0.175 right: 0.50;"
-				newColumn: [ :c | c add: #snapshotList ] left: 0.58 right: 0.30;
-				newColumn: [ :c | c add: #snapshot ] left: 0.6 right: 0 ];
+	^ SpBoxLayout newLeftToRight 
+		add: #projectList withConstraints: [ :constraints | constraints width: 150 ]"] left: 0 right: 0.9";
+		add: #versionList withConstraints: [ :constraints | constraints width: 150 ]"] left: 0.1 right: 0.825";
+		add: #exceptionList "height: 30 ; add: #exceptionList ] left: 0.175 right: 0.50";
+		add: #snapshotList "] left: 0.58 right: 0.30";
+		add: #snapshot "] left: 0.6 right: 0 ]";
 		yourself
 ]
 
@@ -73,8 +66,9 @@ SnapDumpUI >> extent [
 
 { #category : #initialization }
 SnapDumpUI >> initializeExceptionButtons [
-	exceptionMenu := MenuPresenter new
-		addGroup: [ :group | 
+	exceptionMenu := SpMenuPresenter new
+		addItem: [ :item | item name: #foo ].
+		"addGroup: [ :group | 
 			group
 				addItem: [ :item | 
 					item
@@ -85,18 +79,19 @@ SnapDumpUI >> initializeExceptionButtons [
 								ifNotNil: [ :anException | 
 									self removeException: anException.
 									self restoreSelectedVersion ] ] ] ].
-	exceptionMenu applyTo: self
+	""exceptionMenu applyTo: self"""
+	self contextMenu: exceptionMenu 
 ]
 
 { #category : #initialization }
 SnapDumpUI >> initializeExceptionList [
 	
-	exceptionList := self newMultiColumnList
-		displayBlock: [ :anException | 
+	exceptionList := self newList
+		display: [ :anException | 
 			{anException signalerSignature.
 			anException exceptionClassName} ];
 		sortingBlock: [ :a :b | a snapshots last timestamp < b snapshots last timestamp ];
-		whenSelectedItemChanged: [ :anException | 
+		whenSelectedDo: [ :anException | 
 			self resetSnapshotsWith:  (anException ifNil: [ #() ] ifNotNil: [ anException snapshots ]).
 			]
 ]
@@ -105,30 +100,30 @@ SnapDumpUI >> initializeExceptionList [
 SnapDumpUI >> initializeProjectList [
 	projectList := self newList.
 	projectList
-		allowToSelect: false;
+		"allowToSelect: false;"
 		items: self client projects;
-		displayBlock: [ :m | m name ];
+		display: [ :m | m name ];
 		sortingBlock: [ :a :b | a name < b name ];
-		whenSelectedItemChanged: [ :selection | 
+		whenSelectedDo:  [ :selection | 
 			self resetVersionsWith: (selection ifNil: [ #() ] ifNotNil: [ :aProject | aProject versions ]).
-			 ];
-		allowToSelect: true
+			 ]";
+		allowToSelect: true"
 ]
 
 { #category : #initialization }
 SnapDumpUI >> initializeSnapshotList [
-	snapshotList := self newMultiColumnList
-		displayBlock: [ :s | {s dateAndTimeString} ];
+	snapshotList := self newList
+		display: [ :s | {s dateAndTimeString} ];
 		sortingBlock: [ :a :b | a timestamp < b timestamp ];
-		whenSelectedItemChanged: [ :s | snapshot item: s ]
+		whenSelectedDo: [ :s | snapshot item: s ]
 ]
 
 { #category : #initialization }
 SnapDumpUI >> initializeVersionList [
 	versionList := self newList
-		displayBlock: [ :m | m string ];
+		display: [ :m | m string ];
 		sortingBlock: [ :a :b | a < b ];
-		whenSelectedItemChanged: [ :version | 
+		whenSelectedDo: [ :version | 
 			self resetExceptionsWith: 
 					(version
 						ifNil: [ #() ]
@@ -140,7 +135,7 @@ SnapDumpUI >> initializeVersionList [
 SnapDumpUI >> initializeWidgets [
 	snapshot := SDSnapshotPresenter new.
 	self initializeSnapshotList.
-	self initializeExceptionButtons.
+	"self initializeExceptionButtons."
 	self initializeExceptionList.
 	self initializeVersionList.
 	self initializeProjectList.
@@ -164,7 +159,7 @@ SnapDumpUI >> removeException: anException [
 SnapDumpUI >> resetExceptionsWith: aCollectionOfExceptions [
 
 	exceptionList items: aCollectionOfExceptions.
-	exceptionList resetSelection.
+	exceptionList resetListSelection.
 	snapshotList items: #()
 ]
 
@@ -181,13 +176,13 @@ SnapDumpUI >> resetProjectsWith: aCollectionOfProjects [
 SnapDumpUI >> resetSnapshotsWith: aCollectionOfSnapshots [
 
 	snapshotList items: aCollectionOfSnapshots.
-	snapshotList resetSelection
+	snapshotList resetListSelection
 ]
 
 { #category : #initialization }
 SnapDumpUI >> resetVersionsWith: aCollectionOfVersions [
 	versionList items: aCollectionOfVersions.
-	versionList resetSelection.
+	versionList resetListSelection.
 	exceptionList items: #().
 	snapshotList items: #()
 ]

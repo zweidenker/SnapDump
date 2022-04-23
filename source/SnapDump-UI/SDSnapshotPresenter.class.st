@@ -1,6 +1,6 @@
 Class {
 	#name : #SDSnapshotPresenter,
-	#superclass : #ComposablePresenter,
+	#superclass : #SpPresenter,
 	#instVars : [
 		'menu',
 		'meta',
@@ -9,19 +9,19 @@ Class {
 	#category : #'SnapDump-UI'
 }
 
-{ #category : #specs }
-SDSnapshotPresenter class >> defaultSpec [
+{ #category : #layout }
+SDSnapshotPresenter class >> defaultLayout [
 	<spec: #default>
 	
-	^ SpecLayout composed
-		newRow: [ :c | c add: #menu ] origin: 0@0 corner: 1@0.05;
-		newRow: [ :c | c add: #meta ] origin: 0@0.05 corner: 1@1 ;
+	^ SpBoxLayout newTopToBottom 
+		add: #menu "] origin: 0@0 corner: 1@0.05;";
+		add: #meta "] origin: 0@0.05 corner: 1@1" ;
 		yourself
 ]
 
 { #category : #initialization }
 SDSnapshotPresenter >> initializeWidgets [
-	menu := MenuPresenter new
+	menu := SpMenuPresenter new
 		addGroup: [ :group | 
 			group
 				addItem: [ :item | 
@@ -47,9 +47,9 @@ SDSnapshotPresenter >> initializeWidgets [
 						icon: (self iconNamed: #transcript);
 						action: [ snapshot ifNotNil: [snapshot openStackTrace] ] ].		
 					].
-	menu applyTo: self.
-	meta := self newMultiColumnList 
-		displayBlock: [ :key | { key . (Text fromString: (snapshot perform: key) printString) }  ]
+	"menu applyTo: self."
+	meta := self newList 
+		display: [ :key | { key . (Text fromString: (snapshot perform: key) printString) }  ]
 ]
 
 { #category : #'as yet unclassified' }
