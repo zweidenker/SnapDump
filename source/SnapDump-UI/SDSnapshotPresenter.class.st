@@ -49,7 +49,7 @@ SDSnapshotPresenter >> initializeWidgets [
 					].
 	"menu applyTo: self."
 	meta := self newList 
-		display: [ :key | { key . (Text fromString: (snapshot perform: key) printString) }  ]
+		display: [ :key | key , ': ', (Text fromString: (snapshot perform: key) printString)  ]
 ]
 
 { #category : #'as yet unclassified' }

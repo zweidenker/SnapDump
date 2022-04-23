@@ -9,7 +9,9 @@ Class {
 		'snapDump',
 		'client',
 		'exceptionList',
-		'exceptionMenu'
+		'exceptionMenu',
+		'menuBar',
+		'selectedProject'
 	],
 	#category : #'SnapDump-UI'
 }
@@ -18,13 +20,16 @@ Class {
 SnapDumpUI class >> defaultLayout [
 	<spec: #default>
 	
-	^ SpBoxLayout newLeftToRight 
-		add: #projectList withConstraints: [ :constraints | constraints width: 150 ]"] left: 0 right: 0.9";
-		add: #versionList withConstraints: [ :constraints | constraints width: 150 ]"] left: 0.1 right: 0.825";
-		add: #exceptionList "height: 30 ; add: #exceptionList ] left: 0.175 right: 0.50";
-		add: #snapshotList "] left: 0.58 right: 0.30";
-		add: #snapshot "] left: 0.6 right: 0 ]";
-		yourself
+	^ SpBoxLayout newTopToBottom
+		add: #menuBar;
+		add: (SpBoxLayout newLeftToRight 
+		add: #versionList withConstraints: [ :constraints | constraints width: 150 ];
+		add: (SpBoxLayout newTopToBottom 
+			add: #exceptionMenu withConstraints: [:c | c height: 50 ];
+			add: #exceptionList);
+		add: #snapshotList;
+		add: #snapshot;
+		yourself)
 ]
 
 { #category : #example }
@@ -67,33 +72,49 @@ SnapDumpUI >> extent [
 { #category : #initialization }
 SnapDumpUI >> initializeExceptionButtons [
 	exceptionMenu := SpMenuPresenter new
-		addItem: [ :item | item name: #foo ].
-		"addGroup: [ :group | 
+		autoRefresh: true;
+		addGroup: [ :group | 
 			group
 				addItem: [ :item | 
-					item
+					item 
 						name: 'Remove Exception';
-						description: 'Open Exception';
-						icon: (self iconNamed: #smallWarningIcon);
+						description: 'Remove selecteed exception';
+						"icon: (self iconNamed: #smallWarningIcon) ]"
 						action: [ exceptionList selectedItem
-								ifNotNil: [ :anException | 
-									self removeException: anException.
-									self restoreSelectedVersion ] ] ] ].
-	""exceptionMenu applyTo: self"""
-	self contextMenu: exceptionMenu 
+									ifNotNil: [ :anException | 
+										self removeException: anException.
+										self refreshVersionList ] ] ];
+				addItem: [ :item | 
+					item 
+						name: 'Remove All';
+						description: 'Remove all Exceptions';
+						"icon: (self iconNamed: #smallWarningIcon) ]"
+						action: [ 
+										self removeAllExceptions.
+										self refreshVersionList ] ] ] 
 ]
 
 { #category : #initialization }
 SnapDumpUI >> initializeExceptionList [
 	
 	exceptionList := self newList
-		display: [ :anException | 
-			{anException signalerSignature.
-			anException exceptionClassName} ];
+		display: [ :anException | anException exceptionClassName, ' -> ', anException signalerSignature ];
 		sortingBlock: [ :a :b | a snapshots last timestamp < b snapshots last timestamp ];
 		whenSelectedDo: [ :anException | 
 			self resetSnapshotsWith:  (anException ifNil: [ #() ] ifNotNil: [ anException snapshots ]).
 			]
+]
+
+{ #category : #initialization }
+SnapDumpUI >> initializeMenuBar [
+	menuBar := self newMenuBar
+		addGroup: [ :group | 
+			group
+				addItem: [ :item | 
+					item
+						name: 'Project';
+						subMenu: self subMenu ] ].
+	menuBar addKeybindingsTo: self.
 ]
 
 { #category : #initialization }
@@ -113,7 +134,7 @@ SnapDumpUI >> initializeProjectList [
 { #category : #initialization }
 SnapDumpUI >> initializeSnapshotList [
 	snapshotList := self newList
-		display: [ :s | {s dateAndTimeString} ];
+		display: [ :s | s dateAndTimeString ];
 		sortingBlock: [ :a :b | a timestamp < b timestamp ];
 		whenSelectedDo: [ :s | snapshot item: s ]
 ]
@@ -135,16 +156,28 @@ SnapDumpUI >> initializeVersionList [
 SnapDumpUI >> initializeWidgets [
 	snapshot := SDSnapshotPresenter new.
 	self initializeSnapshotList.
-	"self initializeExceptionButtons."
+	self initializeExceptionButtons.
 	self initializeExceptionList.
 	self initializeVersionList.
 	self initializeProjectList.
+	self initializeMenuBar.
 	snapshot whenChangedDo: [ :s | self updateLists ].
 ]
 
 { #category : #'as yet unclassified' }
 SnapDumpUI >> projectList [
 	^ projectList
+]
+
+{ #category : #initialization }
+SnapDumpUI >> refreshVersionList [
+	self resetVersionsWith: selectedProject versions
+]
+
+{ #category : #initialization }
+SnapDumpUI >> removeAllExceptions [
+	exceptionList items do: [:exception | 
+		exception snapshots do: #remove ]
 ]
 
 { #category : #initialization }
@@ -166,7 +199,7 @@ SnapDumpUI >> resetExceptionsWith: aCollectionOfExceptions [
 { #category : #initialization }
 SnapDumpUI >> resetProjectsWith: aCollectionOfProjects [
 	projectList items: aCollectionOfProjects.
-	versionList resetSelection.
+	versionList resetListSelection.
 	versionList items: #().
 	exceptionList items: #().
 	snapshotList items: #()
@@ -189,20 +222,26 @@ SnapDumpUI >> resetVersionsWith: aCollectionOfVersions [
 
 { #category : #initialization }
 SnapDumpUI >> restoreSelectedVersion [
-	| version project selectedProject |
+"	| version project selectedProject |
 	version := versionList selectedItem string.
 	project := projectList selectedItem name.
 	self resetProjectsWith: self client projects.
-	selectedProject := projectList getList
+	selectedProject := projectList items
 		detect: [ :each | each name = project ]
 		ifNone: [ ^ self ].
-	projectList setSelectedItem: selectedProject.
+	projectList selectItem: selectedProject.
 	self resetVersionsWith: projectList selectedItem versions.
 	versionList
-		setSelectedItem:
-			(versionList getList
+		selectItem:
+			(versionList items
 				detect: [ :each | each string = version ]
-				ifNone: [ nil ])
+				ifNone: [ versionList items first ])."
+]
+
+{ #category : #accessing }
+SnapDumpUI >> selectedProject: aProject [
+	selectedProject := aProject.
+	self resetVersionsWith: selectedProject versions
 ]
 
 { #category : #accessing }
@@ -223,14 +262,15 @@ SnapDumpUI >> snapshotList [
 { #category : #initialization }
 SnapDumpUI >> subMenu [ 
 
-	^ MenuPresenter new
+	^ SpMenuPresenter new
 		addGroup: [ :group |
 			client projects do: [ :project | 
 				group addItem: [ :item |
 					item
 						name: project name;
-						icon: (self iconNamed: #openIcon);
-						action: [ self inform: project name ] ] ] ]
+						action: [ 
+							self selectedProject: project ] ] ] ]
+			
 ]
 
 { #category : #api }
