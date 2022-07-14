@@ -21,14 +21,12 @@ SnapDumpUI class >> defaultLayout [
 	<spec: #default>
 	
 	^ SpBoxLayout newTopToBottom
-		add: #menuBar;
+		add: #menuBar expand: false;
 		add: (SpBoxLayout newLeftToRight 
-		add: #versionList withConstraints: [ :constraints | constraints width: 150 ];
-		add: (SpBoxLayout newTopToBottom 
-			add: #exceptionMenu withConstraints: [:c | c height: 50 ];
-			add: #exceptionList);
-		add: #snapshotList;
-		add: #snapshot;
+			add: #versionList withConstraints: [ :constraints | constraints width: 150 ];
+			add: #exceptionList;
+			add: #snapshotList;
+			add: #snapshot;
 		yourself)
 ]
 
@@ -113,7 +111,31 @@ SnapDumpUI >> initializeMenuBar [
 				addItem: [ :item | 
 					item
 						name: 'Project';
-						subMenu: self subMenu ] ].
+						subMenu: self subMenu ] ];
+		addGroup: [ :group | 
+			group
+				addItem: [ :item | 
+					item
+						name: 'Remove';
+						action: [ self removeException: exceptionList selectedItem ] ];
+				addItem: [ :item |
+					item 
+						name: 'Remove All';
+						action: [ self removeAllExceptions ] ] ];
+		addGroup: [ :group | 
+			group
+				addItem: [ :item | 
+					item
+						name: 'Open snapshot';
+						action: [ snapshotList selectedItem openDebugger] ];
+				addItem: [ :item |
+					item 
+						name: 'Stack trace';
+						action: [ snapshotList selectedItem openStackTrace ] ];
+				addItem: [ :item |
+					item 
+						name: 'Remove snapshot';
+						action: [ self removeSnapshot  ] ]  ].
 	menuBar addKeybindingsTo: self.
 ]
 
@@ -136,7 +158,7 @@ SnapDumpUI >> initializeSnapshotList [
 	snapshotList := self newList
 		display: [ :s | s dateAndTimeString ];
 		sortingBlock: [ :a :b | a timestamp < b timestamp ];
-		whenSelectedDo: [ :s | snapshot item: s ]
+		whenSelectedDo: [ :s | snapshot items: s metaProperties associations ]
 ]
 
 { #category : #initialization }
@@ -154,7 +176,10 @@ SnapDumpUI >> initializeVersionList [
 
 { #category : #initialization }
 SnapDumpUI >> initializeWidgets [
-	snapshot := SDSnapshotPresenter new.
+	snapshot := self newTable 
+		beResizable;
+		addColumn: (SpStringTableColumn title: 'Key' evaluated: #key);
+		addColumn: (SpStringTableColumn title: 'Text' evaluated: #value).
 	self initializeSnapshotList.
 	self initializeExceptionButtons.
 	self initializeExceptionList.
@@ -177,15 +202,23 @@ SnapDumpUI >> refreshVersionList [
 { #category : #initialization }
 SnapDumpUI >> removeAllExceptions [
 	exceptionList items do: [:exception | 
-		exception snapshots do: #remove ]
+		exception snapshots do: #remove ].
+	self refreshVersionList
 ]
 
 { #category : #initialization }
 SnapDumpUI >> removeException: anException [ 
 	
-	anException snapshots do: [ :each | 
-		each remove
-		 ]
+	anException snapshots do: [ :each | each remove ].
+	exceptionList items: (exceptionList items copyWithout: anException)
+]
+
+{ #category : #initialization }
+SnapDumpUI >> removeSnapshot [ 
+	| item |
+	item := snapshotList selectedItem.
+	item remove.
+	snapshotList items: (snapshotList items copyWithout: item) 
 ]
 
 { #category : #initialization }

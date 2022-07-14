@@ -202,6 +202,11 @@ SDSnapshot >> metaFields [
 	^ self basicMetaFields asOrderedCollection
 ]
 
+{ #category : #private }
+SDSnapshot >> metaProperties [
+	^ self metaFields collect: [ :field | field -> (self perform: field asSymbol) ] as: Dictionary
+]
+
 { #category : #initialization }
 SDSnapshot >> newVersion [
 

@@ -14,8 +14,7 @@ SDSnapshotPresenter class >> defaultLayout [
 	<spec: #default>
 	
 	^ SpBoxLayout newTopToBottom 
-		add: #menu "] origin: 0@0 corner: 1@0.05;";
-		add: #meta "] origin: 0@0.05 corner: 1@1" ;
+		add: #meta;
 		yourself
 ]
 
