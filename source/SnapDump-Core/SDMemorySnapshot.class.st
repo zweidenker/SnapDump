@@ -52,7 +52,9 @@ SDMemorySnapshot >> setContext: aContext exceptionClassName: exceptionClassName 
 	self
 		exception:
 			(SDException new
-				initializeFromClassName: exceptionClassName method: method;
+				initializeFromClassName: exceptionClassName 
+				receiver: aContext receiver 
+				method: method;
 				yourself)
 ]
 
