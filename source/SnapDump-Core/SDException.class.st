@@ -107,10 +107,7 @@ SDException >> initializeExceptionProperties [
 { #category : #initialization }
 SDException >> initializeFromClassName: aName receiver: aReceiver method: aSmalltalkMethod [
 
-	exceptionSignalerClassName := aReceiver 
-		ifNotNil: [ aReceiver class name asString ]
-		ifNil: [ aSmalltalkMethod classBinding value asString ].
-
+	exceptionSignalerClassName := aReceiver class name asString.
 	exceptionSignalerSelector :=  aSmalltalkMethod selector asString.
 	exceptionClassName := aName
 ]
