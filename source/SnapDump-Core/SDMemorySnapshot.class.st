@@ -35,7 +35,7 @@ SDMemorySnapshot >> initialize [
 SDMemorySnapshot >> serializeContextOn: stream [
 	| serializer |
 	
-	serializer := FLSerializer newDefault.
+	serializer := FLSerializer new.
 	serializer
 		serialize: context
 		on: stream
