@@ -166,7 +166,7 @@ SDCoreTests >> testRemoveSnapshot [
 
 	|  snapshot |
 	snapshot := self roundtripSnapshot.
-	self assert: snapshot className equals: 'Object'.
+	self assert: snapshot className equals: 'ByteString'.
 	self 
 		shouldnt: [ snapshot remove ]
 		raise: Error.
@@ -177,7 +177,7 @@ SDCoreTests >> testRemoveSnapshot [
 SDCoreTests >> testRemoveVersion [
 	| snapshot |
 	snapshot := self roundtripSnapshot.
-	self assert: snapshot className equals: 'Object'.
+	self assert: snapshot className equals: 'ByteString'.
 	snapshot version remove.
 	self assert: client projects isEmpty
 ]
@@ -205,7 +205,7 @@ SDCoreTests >> testSnapshot [
 
 	|  snapshot |
 	snapshot := self roundtripSnapshot.
-	self assert: snapshot className equals: 'Object'
+	self assert: snapshot className equals: 'ByteString'
 ]
 
 { #category : #tests }
