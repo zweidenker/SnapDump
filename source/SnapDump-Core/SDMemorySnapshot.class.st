@@ -33,10 +33,8 @@ SDMemorySnapshot >> initialize [
 
 { #category : #'as yet unclassified' }
 SDMemorySnapshot >> serializeContextOn: stream [
-	| serializer |
 	
-	serializer := FLSerializer new.
-	serializer
+	FLSerializer 
 		serialize: context
 		on: stream
 ]
