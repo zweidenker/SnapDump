@@ -14,7 +14,7 @@ BaselineOfSnapDump >> baseline: spec [
 		spec package: #'SnapDump-Handler' with: [ spec requires: #('SnapDump-Core') ].
 		spec package: #'SnapDump-Client' with: [ spec requires: #('SnapDump-Handler') ].
 		spec package: #'SnapDump-Server' with: [ spec requires: #('SnapDump-Core' 'ZincHTTPComponents' 'OpenAPI') ].
-		spec package: #'SnapDump-Server-Tests' with: [ spec requires: #('SnapDump-Server' 'Mocketry' ) ].
+		spec package: #'SnapDump-Server-Tests' with: [ spec requires: #('SnapDump-Server' ) ].
 		spec package: #'SnapDump-UI' with: [ spec requires: #('SnapDump-Client' ) ].
 
 		spec 
