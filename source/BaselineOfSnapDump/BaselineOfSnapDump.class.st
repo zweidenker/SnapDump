@@ -10,7 +10,7 @@ BaselineOfSnapDump >> baseline: spec [
 
 	spec for: #'common' do: [
 		spec package: #'SnapDump-Core' with: [ spec requires: #('NeoJSON') ].
-		spec package: #'SnapDump-Core-Tests' with: [ spec requires: #('SnapDump-Core' 'Mocketry') ].
+		spec package: #'SnapDump-Core-Tests' with: [ spec requires: #('SnapDump-Core') ].
 		spec package: #'SnapDump-Handler' with: [ spec requires: #('SnapDump-Core') ].
 		spec package: #'SnapDump-Client' with: [ spec requires: #('SnapDump-Handler') ].
 		spec package: #'SnapDump-Server' with: [ spec requires: #('SnapDump-Core' 'ZincHTTPComponents' 'OpenAPI') ].
@@ -26,7 +26,6 @@ BaselineOfSnapDump >> baseline: spec [
 			group: 'core' with: #(#'SnapDump-Core' );
 			group: 'tests' with: #('SnapDump-Core-Tests' 'SnapDump-Server-Tests').
 			
-		self mocketry: spec.
 		self zinc: spec.
 		self cinic: spec.
 		self openApi: spec.
@@ -38,12 +37,6 @@ BaselineOfSnapDump >> baseline: spec [
 BaselineOfSnapDump >> cinic: spec [
 	spec baseline: 'Cinic' with: [ 
 			spec repository: 'github://zweidenker/Cinic:0.3.1'. ]
-]
-
-{ #category : #baselines }
-BaselineOfSnapDump >> mocketry: spec [
-	spec baseline: 'Mocketry' with: [ 
-			spec repository: 'github://dionisiydk/Mocketry:v4.0.x'. ]
 ]
 
 { #category : #'as yet unclassified' }
