@@ -1,21 +1,23 @@
 Class {
-	#name : #SDFilesystemStore,
-	#superclass : #SDStore,
+	#name : 'SDFilesystemStore',
+	#superclass : 'SDStore',
 	#instVars : [
 		'path',
 		'snapshotOccurrencesLimit',
 		'projects',
 		'versions'
 	],
-	#category : #'SnapDump-Core-Base'
+	#category : 'SnapDump-Core-Base',
+	#package : 'SnapDump-Core',
+	#tag : 'Base'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDFilesystemStore class >> storeName [
 	^ #file
 ]
 
-{ #category : #services }
+{ #category : 'services' }
 SDFilesystemStore >> buildExceptionFrom: aFileReference [
 	^ SDException new
 			id: aFileReference basename;
@@ -23,7 +25,7 @@ SDFilesystemStore >> buildExceptionFrom: aFileReference [
 			yourself
 ]
 
-{ #category : #services }
+{ #category : 'services' }
 SDFilesystemStore >> buildProjectFrom: aFileReference [ 
 	^ SDProject new
 			name: aFileReference basename;
@@ -31,7 +33,7 @@ SDFilesystemStore >> buildProjectFrom: aFileReference [
 			yourself
 ]
 
-{ #category : #services }
+{ #category : 'services' }
 SDFilesystemStore >> buildVersionFrom: aFileReference [ 
 	^ SDVersion new
 			string: aFileReference basename;
@@ -39,7 +41,7 @@ SDFilesystemStore >> buildVersionFrom: aFileReference [
 			yourself
 ]
 
-{ #category : #'services - removing' }
+{ #category : 'services - removing' }
 SDFilesystemStore >> cleanSnapshotRemoval: file [
 	
 	| versionDirectory projectDirectory exceptionDirectory |
@@ -52,7 +54,7 @@ SDFilesystemStore >> cleanSnapshotRemoval: file [
 	
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDFilesystemStore >> exceptionAt: anExceptionId project: aProjectName version: aVersionName [
 	| file |
 	file := self
@@ -64,7 +66,7 @@ SDFilesystemStore >> exceptionAt: anExceptionId project: aProjectName version: a
 	^ self buildExceptionFrom: file
 ]
 
-{ #category : #'service - getting' }
+{ #category : 'service - getting' }
 SDFilesystemStore >> exceptionsOfVersion: aVersion [ 
 	| file |
 	file := (self snapshotPathForProject:  aVersion projectName version: aVersion string). 
@@ -74,7 +76,7 @@ SDFilesystemStore >> exceptionsOfVersion: aVersion [
 		 ].
 ]
 
-{ #category : #'service - getting' }
+{ #category : 'service - getting' }
 SDFilesystemStore >> freeSlotsForException: anException [
 
 	| snapshotSize |
@@ -83,7 +85,7 @@ SDFilesystemStore >> freeSlotsForException: anException [
 	^ self snapshotOccurrencesLimit - snapshotSize
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDFilesystemStore >> freeSlotsForExceptionId: anExceptionId project: projectName version: versionString [
 	| directory numberOfFiles |
 	directory := self
@@ -98,13 +100,13 @@ SDFilesystemStore >> freeSlotsForExceptionId: anExceptionId project: projectName
 	^ self snapshotOccurrencesLimit - numberOfFiles
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDFilesystemStore >> freeSlotsForSnapshot: aSnapshot [
 
 	^ self freeSlotsForExceptionId: aSnapshot exceptionId project: aSnapshot projectName version: aSnapshot versionString
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 SDFilesystemStore >> hasSnapshot: aSnapshot [
 
 
@@ -112,25 +114,25 @@ SDFilesystemStore >> hasSnapshot: aSnapshot [
 
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 SDFilesystemStore >> hasSnapshot: snapshotId project: aProjectName version: aVersionName [
 	^ (self snapshotFilesForProject: aProjectName version: aVersionName)
 		anySatisfy:
 			[ :eachFile | eachFile basename = self snapshotFileNameFor: snapshotId ]
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 SDFilesystemStore >> isSetUp [
 	^ path notNil
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDFilesystemStore >> path: anObject [
 	path := anObject asFileReference.
 	path ensureCreateDirectory.
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDFilesystemStore >> projectNamed: aString [ 
 
 	| file project |
@@ -140,19 +142,19 @@ SDFilesystemStore >> projectNamed: aString [
 	^ project
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDFilesystemStore >> projectNamed: aString ifAbsent: aBlock [
 	^ [self projectNamed: aString] on: NotFound do: [ :ex | aBlock value ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDFilesystemStore >> projects [
 	^ path children collect: [ :directory |
 		 (SDProject name: directory basename) store: self.
 		 ]
 ]
 
-{ #category : #'services - removing' }
+{ #category : 'services - removing' }
 SDFilesystemStore >> removeProject: aProject [ 
 	"not yet implemented. 
 	This feature does not seem to be actually used yet.
@@ -162,7 +164,7 @@ SDFilesystemStore >> removeProject: aProject [
 	file deleteAll.
 ]
 
-{ #category : #'services - removing' }
+{ #category : 'services - removing' }
 SDFilesystemStore >> removeSnapshot: snapshot [
 	
 	| file |
@@ -172,7 +174,7 @@ SDFilesystemStore >> removeSnapshot: snapshot [
 	
 ]
 
-{ #category : #'services - removing' }
+{ #category : 'services - removing' }
 SDFilesystemStore >> removeVersion: aVersion [ 
 	"not yet implemented. 
 	This feature does not seem to be actually used yet.
@@ -184,18 +186,18 @@ SDFilesystemStore >> removeVersion: aVersion [
 	projectDirectory hasChildren ifFalse: [ projectDirectory delete ].
 ]
 
-{ #category : #'services - testing' }
+{ #category : 'services - testing' }
 SDFilesystemStore >> shouldReportSnapshot: snapshot [
 	^  (self freeSlotsForSnapshot: snapshot) > 0
 ]
 
-{ #category : #'services - files' }
+{ #category : 'services - files' }
 SDFilesystemStore >> snapshotFileNameFor: snapshotId [
 
 	^ snapshotId , '.snap'
 ]
 
-{ #category : #'services - files' }
+{ #category : 'services - files' }
 SDFilesystemStore >> snapshotFilesForProject: aProjectName version: aVersionName [
 
 	| directory |
@@ -204,7 +206,7 @@ SDFilesystemStore >> snapshotFilesForProject: aProjectName version: aVersionName
 	^ directory allFiles
 ]
 
-{ #category : #'services - files' }
+{ #category : 'services - files' }
 SDFilesystemStore >> snapshotFilesForProject: aProjectName version: aVersionName exception: exceptionId [
 	| directory |
 	directory := self
@@ -216,13 +218,13 @@ SDFilesystemStore >> snapshotFilesForProject: aProjectName version: aVersionName
 	^ directory allFiles
 ]
 
-{ #category : #'services - files' }
+{ #category : 'services - files' }
 SDFilesystemStore >> snapshotIdFrom: aFileBasename [
 
 	^ aFileBasename asFileReference basenameWithoutExtension
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDFilesystemStore >> snapshotOccurrencesLimit [
 	"answers the maximum number of snapshots that should be stored for a same exception id"
 	
@@ -231,7 +233,7 @@ SDFilesystemStore >> snapshotOccurrencesLimit [
 	
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDFilesystemStore >> snapshotOccurrencesLimit: aNumber [
 	
 		snapshotOccurrencesLimit := aNumber
@@ -239,7 +241,7 @@ SDFilesystemStore >> snapshotOccurrencesLimit: aNumber [
 	
 ]
 
-{ #category : #'services - files' }
+{ #category : 'services - files' }
 SDFilesystemStore >> snapshotPathFor: aSnaphot [
 	^ self
 		snapshotPathForProject: aSnaphot projectName
@@ -248,22 +250,22 @@ SDFilesystemStore >> snapshotPathFor: aSnaphot [
 		snapshot: aSnaphot snapshotId
 ]
 
-{ #category : #'services - files' }
+{ #category : 'services - files' }
 SDFilesystemStore >> snapshotPathForProject: projectName [ 
 	^ path / projectName 
 ]
 
-{ #category : #'services - files' }
+{ #category : 'services - files' }
 SDFilesystemStore >> snapshotPathForProject: projectName version: versionName [
 	^ (self snapshotPathForProject: projectName) / versionName 
 ]
 
-{ #category : #'services - files' }
+{ #category : 'services - files' }
 SDFilesystemStore >> snapshotPathForProject: projectName version: versionName exception: exceptionId [
 	^ (self snapshotPathForProject: projectName version: versionName)/ exceptionId
 ]
 
-{ #category : #'services - files' }
+{ #category : 'services - files' }
 SDFilesystemStore >> snapshotPathForProject: aProjectName version: aVersionName exception: exceptionId snapshot: snapshotId [
 	^ (self
 		snapshotPathForProject: aProjectName
@@ -271,7 +273,7 @@ SDFilesystemStore >> snapshotPathForProject: aProjectName version: aVersionName 
 		exception: exceptionId) / (self snapshotFileNameFor: snapshotId)
 ]
 
-{ #category : #services }
+{ #category : 'services' }
 SDFilesystemStore >> snapshotWithId: anIdString project: aProjectName version: aVersionString [
 	| file snapshot |
 	file := (self
@@ -290,7 +292,7 @@ SDFilesystemStore >> snapshotWithId: anIdString project: aProjectName version: a
 	^ snapshot
 ]
 
-{ #category : #'service - getting' }
+{ #category : 'service - getting' }
 SDFilesystemStore >> snapshotsOfException: anException [
 
 	^ (self
@@ -303,7 +305,7 @@ SDFilesystemStore >> snapshotsOfException: anException [
 				snapshot  ]
 ]
 
-{ #category : #'services - adding' }
+{ #category : 'services - adding' }
 SDFilesystemStore >> storeRaw: snapshot contents: aByteArray [
 
 	| file |
@@ -314,7 +316,7 @@ SDFilesystemStore >> storeRaw: snapshot contents: aByteArray [
 
 ]
 
-{ #category : #'service - getting' }
+{ #category : 'service - getting' }
 SDFilesystemStore >> versionsOfProject: aProject [ 
 	| file |
 	file := (self snapshotPathForProject:  aProject name). 
@@ -324,7 +326,7 @@ SDFilesystemStore >> versionsOfProject: aProject [
 		 ].
 ]
 
-{ #category : #'services - adding' }
+{ #category : 'services - adding' }
 SDFilesystemStore >> writeSnapshot: snapshot [
 	| file |
 	file := self snapshotPathFor: snapshot.

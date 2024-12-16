@@ -13,31 +13,33 @@ I'm the base class of the snap file format. The structure of the format is
 --- end of file ---
 "
 Class {
-	#name : #SDFileFormat,
-	#superclass : #Object,
+	#name : 'SDFileFormat',
+	#superclass : 'Object',
 	#instVars : [
 		'stream'
 	],
-	#category : #'SnapDump-Core-Base'
+	#category : 'SnapDump-Core-Base',
+	#package : 'SnapDump-Core',
+	#tag : 'Base'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDFileFormat >> formatSignature [
 	^ 'SNAP'
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDFileFormat >> formatVersion [
 	^ 2
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 SDFileFormat >> initializeStream: aStream [
 
 	stream := aStream 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDFileFormat >> stream [
 	^ stream
 ]

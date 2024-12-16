@@ -1,71 +1,73 @@
 Class {
-	#name : #SDProject,
-	#superclass : #Object,
+	#name : 'SDProject',
+	#superclass : 'Object',
 	#instVars : [
 		'name',
 		'store'
 	],
-	#category : #'SnapDump-Core-Model'
+	#category : 'SnapDump-Core-Model',
+	#package : 'SnapDump-Core',
+	#tag : 'Model'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDProject class >> defaultProjectName [
 
 	^ 'unknown'
 ]
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 SDProject class >> name: aString [ 
 	^ self new name: aString 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDProject class >> neoJsonMapping: mapper [
 	mapper for: self do: [ :mapping |
 		mapping mapInstVars: #(name) ]
 ]
 
-{ #category : #comparing }
+{ #category : 'comparing' }
 SDProject >> = aProject [
 	^ name = aProject name
 ]
 
-{ #category : #comparing }
+{ #category : 'comparing' }
 SDProject >> hash [
 	^ name hash
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDProject >> name [
 	^ name
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDProject >> name: anObject [
 	name := anObject
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 SDProject >> printOn: aStream [
 	aStream << name
 ]
 
-{ #category : #actions }
+{ #category : 'actions' }
 SDProject >> remove [
 	^ self store removeProject: self
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDProject >> store [
 	^ store
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDProject >> store: anObject [
 	store := anObject
 ]
 
-{ #category : #'accessing - versions' }
+{ #category : 'accessing - versions' }
 SDProject >> versionAt: aString [ 
 	^ self 
 		versionAt: aString 
@@ -73,7 +75,7 @@ SDProject >> versionAt: aString [
 		
 ]
 
-{ #category : #'accessing - versions' }
+{ #category : 'accessing - versions' }
 SDProject >> versionAt: aString ifAbsent: aBlock [
 	^ self versions 
 		detect: [ :each | each string = aString ]
@@ -81,14 +83,14 @@ SDProject >> versionAt: aString ifAbsent: aBlock [
 		
 ]
 
-{ #category : #'accessing - versions' }
+{ #category : 'accessing - versions' }
 SDProject >> versionAt: aString ifAbsentPut: aBlock [
 	^ self versions
 		at: aString 
 		ifAbsentPut: aBlock
 ]
 
-{ #category : #'accessing - versions' }
+{ #category : 'accessing - versions' }
 SDProject >> versions [
 	^ store versionsOfProject: self
 ]

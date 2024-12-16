@@ -1,23 +1,25 @@
 Class {
-	#name : #SDSnapshotFileWriter,
-	#superclass : #SDFileFormat,
-	#category : #'SnapDump-Core-Base'
+	#name : 'SDSnapshotFileWriter',
+	#superclass : 'SDFileFormat',
+	#category : 'SnapDump-Core-Base',
+	#package : 'SnapDump-Core',
+	#tag : 'Base'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 SDSnapshotFileWriter class >> file: aFileReference [
 	
 	aFileReference parent ensureCreateDirectory.
 	^ self on: aFileReference binaryWriteStream 
 ]
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 SDSnapshotFileWriter class >> on: aStream [
 
 	^ self new initializeStream: aStream 
 ]
 
-{ #category : #writing }
+{ #category : 'writing' }
 SDSnapshotFileWriter >> close [
 	stream
 		flush;
@@ -25,7 +27,7 @@ SDSnapshotFileWriter >> close [
 	
 ]
 
-{ #category : #writing }
+{ #category : 'writing' }
 SDSnapshotFileWriter >> write: aByteArray [
 
 	stream 
@@ -33,7 +35,7 @@ SDSnapshotFileWriter >> write: aByteArray [
 		nextPutAll: aByteArray
 ]
 
-{ #category : #writing }
+{ #category : 'writing' }
 SDSnapshotFileWriter >> writeFuelDump: aSnapshot [
 
 	| byteStream |
@@ -50,7 +52,7 @@ SDSnapshotFileWriter >> writeFuelDump: aSnapshot [
 	
 ]
 
-{ #category : #writing }
+{ #category : 'writing' }
 SDSnapshotFileWriter >> writeHeader [
 	
 	stream 
@@ -58,7 +60,7 @@ SDSnapshotFileWriter >> writeHeader [
 		nextPut: self formatVersion
 ]
 
-{ #category : #writing }
+{ #category : 'writing' }
 SDSnapshotFileWriter >> writeMeta: aSnapshot [
 
 	| metaBytes |
@@ -66,7 +68,7 @@ SDSnapshotFileWriter >> writeMeta: aSnapshot [
 	self write: metaBytes
 ]
 
-{ #category : #writing }
+{ #category : 'writing' }
 SDSnapshotFileWriter >> writeRaw: aByteArray [
 
 	stream 
@@ -75,7 +77,7 @@ SDSnapshotFileWriter >> writeRaw: aByteArray [
 		close
 ]
 
-{ #category : #writing }
+{ #category : 'writing' }
 SDSnapshotFileWriter >> writeSnapshot: aSnapshot [ 
 	
 	self 
@@ -90,7 +92,7 @@ SDSnapshotFileWriter >> writeSnapshot: aSnapshot [
 	
 ]
 
-{ #category : #writing }
+{ #category : 'writing' }
 SDSnapshotFileWriter >> writeTextualStackTraceFor: aSnapshot [
 
 	self write: (aSnapshot stackTrace) utf8Encoded 

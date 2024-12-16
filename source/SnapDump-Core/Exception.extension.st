@@ -1,6 +1,6 @@
-Extension { #name : #Exception }
+Extension { #name : 'Exception' }
 
-{ #category : #'*snapdump-core' }
+{ #category : '*snapdump-core' }
 Exception >> asSnapshot [
 	^ SDMemorySnapshot fromException: self
 ]

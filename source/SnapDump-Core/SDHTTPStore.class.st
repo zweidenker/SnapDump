@@ -1,20 +1,22 @@
 Class {
-	#name : #SDHTTPStore,
-	#superclass : #SDStore,
+	#name : 'SDHTTPStore',
+	#superclass : 'SDStore',
 	#instVars : [
 		'uri',
 		'username',
 		'password'
 	],
-	#category : #'SnapDump-Core-Base'
+	#category : 'SnapDump-Core-Base',
+	#package : 'SnapDump-Core',
+	#tag : 'Base'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDHTTPStore class >> storeName [
 	^ #http
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 SDHTTPStore >> applyConfiguration: aConfig [
 	self uri: aConfig uri.
    username := aConfig username.
@@ -22,14 +24,14 @@ SDHTTPStore >> applyConfiguration: aConfig [
 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDHTTPStore >> client [
 	^ ZnClient new
 		beOneShot;
 		setBasicAuthenticationUsername: username password: password 
 ]
 
-{ #category : #'services - getting' }
+{ #category : 'services - getting' }
 SDHTTPStore >> exceptionsOfVersion: aVersion [ 
 	| response |
 	response := self client
@@ -43,13 +45,13 @@ SDHTTPStore >> exceptionsOfVersion: aVersion [
 		ifFalse: [ NotFound signal: ('Version' , aVersion printString , ' for project ', aVersion projectName printString, ' not found') ]
 ]
 
-{ #category : #'services - getting' }
+{ #category : 'services - getting' }
 SDHTTPStore >> freeSlotsForException: anException [ 
 	
 		^ self freeSlotsForExceptionId: anException id project: anException projectName version: anException versionString
 ]
 
-{ #category : #'services - getting' }
+{ #category : 'services - getting' }
 SDHTTPStore >> freeSlotsForExceptionId: anExceptionId project: aProjectName version: aVersionString [
 	| response |
 	
@@ -63,12 +65,12 @@ SDHTTPStore >> freeSlotsForExceptionId: anExceptionId project: aProjectName vers
 		ifFalse: [ NotFound signal ]
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 SDHTTPStore >> isSetUp [
 	^ uri notNil
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDHTTPStore >> parametersFor: snapshot [
 
 	^ Dictionary new 
@@ -78,17 +80,17 @@ SDHTTPStore >> parametersFor: snapshot [
 			yourself
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 SDHTTPStore >> printOn: aStream [
 	aStream << uri asString
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDHTTPStore >> projectNamed: aString [
 	^ self projectNamed: aString ifAbsent: [ NotFound signal: 'no project found' ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDHTTPStore >> projectNamed: aString ifAbsent: aBlock [
 	| response |
 	response := self client
@@ -102,7 +104,7 @@ SDHTTPStore >> projectNamed: aString ifAbsent: aBlock [
 		ifFalse: aBlock
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDHTTPStore >> projectNamed: aString ifAbsentPut: aBlock [
 	| response |
 	response := self client
@@ -116,7 +118,7 @@ SDHTTPStore >> projectNamed: aString ifAbsentPut: aBlock [
 		ifFalse: aBlock
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDHTTPStore >> projects [
 	| response |
 	response := self client
@@ -127,7 +129,7 @@ SDHTTPStore >> projects [
 			p store: self ]
 ]
 
-{ #category : #'services - removing' }
+{ #category : 'services - removing' }
 SDHTTPStore >> removeSnapshot: aSnapshot [ 
 	| response |
 	response := self client
@@ -138,12 +140,12 @@ SDHTTPStore >> removeSnapshot: aSnapshot [
 		ifFalse: [ NotFound signal ]
 ]
 
-{ #category : #'services - testing' }
+{ #category : 'services - testing' }
 SDHTTPStore >> shouldReportSnapshot: snapshot [
 	^ (self freeSlotsForException: snapshot exception) > 0
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDHTTPStore >> snapshotDumpFor: aSnapshot [ 
 	^ self client
 		headerAt: 'Accept' put: SDStore mimeTypeFuel;
@@ -151,7 +153,7 @@ SDHTTPStore >> snapshotDumpFor: aSnapshot [
 		get
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDHTTPStore >> snapshotStackFor: aSnapshot [ 
 
 	^ self client
@@ -160,7 +162,7 @@ SDHTTPStore >> snapshotStackFor: aSnapshot [
 		get
 ]
 
-{ #category : #'services - getting' }
+{ #category : 'services - getting' }
 SDHTTPStore >> snapshotsOfException: anException [ 
 	| response |
 	
@@ -175,24 +177,24 @@ SDHTTPStore >> snapshotsOfException: anException [
 		ifFalse: [ NotFound signal ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDHTTPStore >> uri [ 
 
 	^ uri
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDHTTPStore >> uri: anUri [
 	uri := anUri asZnUrl / SDSnapshot apiVersion
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDHTTPStore >> urlForSnapshot: snapshot [
 
 	^ self urlForSnapshot: snapshot snapshotId  project: snapshot projectName version: snapshot versionString exception:  snapshot exceptionId
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDHTTPStore >> urlForSnapshot: snapshotId project: projectName version: versionName exception: anExceptionId [
 	
 	
@@ -200,13 +202,13 @@ SDHTTPStore >> urlForSnapshot: snapshotId project: projectName version: versionN
 	
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDHTTPStore >> username: aUsername password: aPassword [
 	username := aUsername.
 	password := aPassword
 ]
 
-{ #category : #'services - getting' }
+{ #category : 'services - getting' }
 SDHTTPStore >> versionsOfProject: aProject [ 
 	| response |
 	response := self client
@@ -220,7 +222,7 @@ SDHTTPStore >> versionsOfProject: aProject [
 		ifFalse: [ NotFound signal: (aProject name , ' project not found') ]
 ]
 
-{ #category : #services }
+{ #category : 'services' }
 SDHTTPStore >> writeSnapshot: snapshot [
 	| writeStream response |
 	writeStream := ByteArray new writeStream.

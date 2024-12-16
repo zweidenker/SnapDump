@@ -1,6 +1,6 @@
-Extension { #name : #MemoryFileWriteStream }
+Extension { #name : 'MemoryFileWriteStream' }
 
-{ #category : #'*SnapDump-Core' }
+{ #category : '*SnapDump-Core' }
 MemoryFileWriteStream >> nextBytesPutAll: aCollection [
 	^ self stream nextPutAll: aCollection
 ]

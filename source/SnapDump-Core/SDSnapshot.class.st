@@ -1,6 +1,6 @@
 Class {
-	#name : #SDSnapshot,
-	#superclass : #Object,
+	#name : 'SDSnapshot',
+	#superclass : 'Object',
 	#instVars : [
 		'timestamp',
 		'className',
@@ -19,10 +19,12 @@ Class {
 		'exception',
 		'stackTrace'
 	],
-	#category : #'SnapDump-Core-Model'
+	#category : 'SnapDump-Core-Model',
+	#package : 'SnapDump-Core',
+	#tag : 'Model'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot class >> apiVersion [
 
 	"A version description that is used by all parts (handler, server, client) to ensure consistent API calls 
@@ -34,7 +36,7 @@ SDSnapshot class >> apiVersion [
 	^ 'v2'
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot class >> dummyContext [
 	| context |
 	context := (Context newForMethod: Object >> #printStringLimitedTo:).
@@ -57,18 +59,18 @@ SDSnapshot class >> dummyContext [
 	^ context 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot class >> dummyContextSnapshot [
 
 	^ self dummyContext asSnapshot
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 SDSnapshot class >> exception: anException [
 	^ self new exception: anException
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot class >> neoJsonMapping: mapper [
 	mapper for: self do: [ :mapping |
 		mapping mapAccessors: #( projectName versionString ).
@@ -80,39 +82,39 @@ SDSnapshot class >> neoJsonMapping: mapper [
 
 ]
 
-{ #category : #converting }
+{ #category : 'converting' }
 SDSnapshot >> asSnapshot [
 	^ self 
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 SDSnapshot >> basicMetaFields [
 	^ #(projectName versionString  exceptionId timestamp className selector exceptionClass operatingSystem systemArchitecture operatingSystemVersion vmVersion imageVersion imageBuild)
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 SDSnapshot >> buildSnapshotId [
 	^ (SHA256 hashMessage: self snapshotSignature) hex
 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> className [
 	^ className
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> dateAndTimeString [ 
 	^ String streamContents: [ :stream |
 		stream << self dateString << ' ' << self timeString  ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> dateString [ 
 	^ timestamp asDate printFormat: #(1 2 3 $. 1 1)
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 SDSnapshot >> ensureVersionModel [
 
 	"Make sure the version model is built from my local properties "
@@ -121,12 +123,12 @@ SDSnapshot >> ensureVersionModel [
 		 
 ]
 
-{ #category : #signatures }
+{ #category : 'signatures' }
 SDSnapshot >> errorSignature [
 	^ self exception fullSignature
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> exception [ 
 	
 	^ exception ifNil: [ 
@@ -134,29 +136,29 @@ SDSnapshot >> exception [
 		exception ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> exception: aSDException [
 	
 	exception := aSDException. 
 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> exceptionClass [
 	^ exceptionClass
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> exceptionId [ 
 	^ exceptionId 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> exceptionId: aString [
 	exceptionId := aString
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 SDSnapshot >> exportExceptionModel [
 	"absorb the exception model properties so that they can be serialized with the snap file "
 	exceptionClass := self exception exceptionClassName.
@@ -166,48 +168,48 @@ SDSnapshot >> exportExceptionModel [
 
 ]
 
-{ #category : #actions }
+{ #category : 'actions' }
 SDSnapshot >> fuelBytes [
 	^ self store snapshotDumpFor: self
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> imageBuild [
 	^ imageBuild
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> imageBuild: aString [ 
 	imageBuild := aString
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> imageVersion [
 	^ imageVersion
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> imageVersion: aString [ 
 	imageVersion := aString
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 SDSnapshot >> initialize [
 	super initialize.
 	timestamp := DateAndTime now
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 SDSnapshot >> metaFields [
 	^ self basicMetaFields asOrderedCollection
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 SDSnapshot >> metaProperties [
 	^ self metaFields collect: [ :field | field -> (self perform: field asSymbol) ] as: Dictionary
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 SDSnapshot >> newVersion [
 
 	| newProject newVersion |
@@ -217,7 +219,7 @@ SDSnapshot >> newVersion [
 		 
 ]
 
-{ #category : #actions }
+{ #category : 'actions' }
 SDSnapshot >> openDebugger [
 	| context |
 	context := FLMaterializer materializeFromByteArray: self fuelBytes.
@@ -237,55 +239,55 @@ SDSnapshot >> openDebugger [
 				fullView: true ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> operatingSystem [
 	^ operatingSystem
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> operatingSystem: aString [ 
 	operatingSystem := aString
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> operatingSystemVersion [
 	^ operatingSystemVersion
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> operatingSystemVersion: aString [ 
 	operatingSystemVersion := aString
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 SDSnapshot >> prepareExport [
 
 	self ensureVersionModel.
 	self exportExceptionModel.  
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> project [
 	^ self exception project
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> projectName [
 	^ projectName
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> projectName: aString [
 	
 	projectName := aString
 ]
 
-{ #category : #actions }
+{ #category : 'actions' }
 SDSnapshot >> remove [
 	^ self store removeSnapshot: self 
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 SDSnapshot >> restoreModel [
 		
 	"Restore the model from my local 'flat' properties.
@@ -300,28 +302,28 @@ SDSnapshot >> restoreModel [
 		 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> selector [
 	^ selector
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> selector: aString [ 
 	selector := aString
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> snapshotId [ 
 	^ snapshotId ifNil: [ 
 		snapshotId := self buildSnapshotId ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> snapshotId: aString [
 	snapshotId := aString
 ]
 
-{ #category : #signatures }
+{ #category : 'signatures' }
 SDSnapshot >> snapshotSignature [
 	^ String streamContents: [ :stream |
 		self exception fullSignatureOn: stream.
@@ -330,75 +332,75 @@ SDSnapshot >> snapshotSignature [
 			<< timestamp printString ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> stackTrace [
 
 	^ stackTrace
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> stackTrace: aString [
 
 	stackTrace := aString
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> store [
 	^ self version store
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> systemArchitecture [
 	^ systemArchitecture
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> systemArchitecture: aString [ 
 	systemArchitecture := aString
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> timeString [ 
 	^ timestamp asTime print24
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> timestamp [
 	^ timestamp
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> timestamp: aDateAndTime [ 
 	timestamp := aDateAndTime
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> validate [
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> version [
 	
 	^ self exception version
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> versionString [
 	^ versionString
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> versionString: aString [ 
 	
 	versionString := aString
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> vmVersion [
 	^ vmVersion
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshot >> vmVersion: aString [ 
 	vmVersion := aString
 ]

@@ -1,6 +1,6 @@
-Extension { #name : #Context }
+Extension { #name : 'Context' }
 
-{ #category : #'*SnapDump-Core' }
+{ #category : '*SnapDump-Core' }
 Context >> asSnapshot [ 
 	^ SDMemorySnapshot new 
 		setContext: self exceptionClassName: 'ContextWithoutException'

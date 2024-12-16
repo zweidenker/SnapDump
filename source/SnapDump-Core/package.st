@@ -1,1 +1,1 @@
-Package { #name : #'SnapDump-Core' }
+Package { #name : 'SnapDump-Core' }

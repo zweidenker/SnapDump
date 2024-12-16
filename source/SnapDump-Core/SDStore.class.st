@@ -1,27 +1,29 @@
 Class {
-	#name : #SDStore,
-	#superclass : #Object,
-	#category : #'SnapDump-Core-Base'
+	#name : 'SDStore',
+	#superclass : 'Object',
+	#category : 'SnapDump-Core-Base',
+	#package : 'SnapDump-Core',
+	#tag : 'Base'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDStore class >> mimeTypeFuel [
 
 	^ 'application/X-SnapDump-Fuel'
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDStore class >> mimeTypeStack [
 
 	^ 'application/X-SnapDump-Stack'
 ]
 
-{ #category : #lookup }
+{ #category : 'lookup' }
 SDStore class >> withName: aString [
 	^ self subclasses detect: [ :each | each storeName = aString ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDStore >> defaultSnapshotOccurrencesLimit [
 
 	^ 10
@@ -29,28 +31,28 @@ SDStore >> defaultSnapshotOccurrencesLimit [
 	
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 SDStore >> isSetUp [
 	self subclassResponsibility 
 ]
 
-{ #category : #services }
+{ #category : 'services' }
 SDStore >> removeSnapshot: aSnapshot [ 
 	
 	^ self subclassResponsibility 
 
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 SDStore >> reset [
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 SDStore >> shouldReportSnapshot: aSnapshot [
 	self subclassResponsibility 
 ]
 
-{ #category : #services }
+{ #category : 'services' }
 SDStore >> storeSnapshot: snapshot [
 
 	snapshot prepareExport.
@@ -62,7 +64,7 @@ SDStore >> storeSnapshot: snapshot [
 	]
 ]
 
-{ #category : #writing }
+{ #category : 'writing' }
 SDStore >> writeSnapshot: aSnapshot [
 	self subclassResponsibility 
 ]

@@ -1,31 +1,33 @@
 Class {
-	#name : #SDVersion,
-	#superclass : #Object,
+	#name : 'SDVersion',
+	#superclass : 'Object',
 	#instVars : [
 		'string',
 		'project'
 	],
-	#category : #'SnapDump-Core-Model'
+	#category : 'SnapDump-Core-Model',
+	#package : 'SnapDump-Core',
+	#tag : 'Model'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDVersion class >> defaultVersionString [
 
 	^ 'unknown'
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDVersion class >> neoJsonMapping: mapper [
 	mapper for: self do: [ :mapping |
 		mapping mapInstVars: #(string) ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDVersion class >> string: aString [
 	^ self new string: aString
 ]
 
-{ #category : #comparing }
+{ #category : 'comparing' }
 SDVersion >> <  aVersion [
 	| own other versionPart1 versionPart2 |
 	own := $. split: string.
@@ -39,17 +41,17 @@ SDVersion >> <  aVersion [
 	^ false
 ]
 
-{ #category : #comparing }
+{ #category : 'comparing' }
 SDVersion >> = aVersion [
 	^ string = aVersion string
 ]
 
-{ #category : #'accessing - exceptions' }
+{ #category : 'accessing - exceptions' }
 SDVersion >> exceptions [
 	^ self store exceptionsOfVersion: self
 ]
 
-{ #category : #'accessing - exceptions' }
+{ #category : 'accessing - exceptions' }
 SDVersion >> exceptionsAt: aString [ 
 	^ self 
 		exceptionsAt: aString 
@@ -57,7 +59,7 @@ SDVersion >> exceptionsAt: aString [
 		
 ]
 
-{ #category : #'accessing - exceptions' }
+{ #category : 'accessing - exceptions' }
 SDVersion >> exceptionsAt: aString ifAbsent: aBlock [
 	^ self exceptions 
 		detect: [ :each | each string = aString ]
@@ -65,49 +67,49 @@ SDVersion >> exceptionsAt: aString ifAbsent: aBlock [
 		
 ]
 
-{ #category : #comparing }
+{ #category : 'comparing' }
 SDVersion >> hash [
 	^ string hash
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 SDVersion >> printOn: aStream [
 	aStream << string
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDVersion >> project [
 	^ project
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDVersion >> project: anObject [
 	project := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDVersion >> projectName [ 
 
 	^ project name
 ]
 
-{ #category : #removing }
+{ #category : 'removing' }
 SDVersion >> remove [
 
 	self store removeVersion: self
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDVersion >> store [
 	^ project store
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDVersion >> string [
 	^ string 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDVersion >> string: anObject [
 	string := anObject
 ]

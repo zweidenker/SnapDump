@@ -1,28 +1,30 @@
 Class {
-	#name : #SDFileSnapshot,
-	#superclass : #SDSnapshot,
+	#name : 'SDFileSnapshot',
+	#superclass : 'SDSnapshot',
 	#instVars : [
 		'file'
 	],
-	#category : #'SnapDump-Core-Model'
+	#category : 'SnapDump-Core-Model',
+	#package : 'SnapDump-Core',
+	#tag : 'Model'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDFileSnapshot >> file: aFileReference [ 
 	file := aFileReference 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 SDFileSnapshot >> fileSize [
 	^ file size
 ]
 
-{ #category : #options }
+{ #category : 'options' }
 SDFileSnapshot >> newReader [ 
 	^ SDSnapshotFileReader file: file
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 SDFileSnapshot >> storeRaw: aByteArray [
 
 	file binaryWriteStream 

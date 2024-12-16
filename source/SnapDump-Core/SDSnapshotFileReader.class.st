@@ -1,45 +1,47 @@
 Class {
-	#name : #SDSnapshotFileReader,
-	#superclass : #SDFileFormat,
+	#name : 'SDSnapshotFileReader',
+	#superclass : 'SDFileFormat',
 	#instVars : [
 		'snapshot',
 		'position',
 		'version'
 	],
-	#category : #'SnapDump-Core-Base'
+	#category : 'SnapDump-Core-Base',
+	#package : 'SnapDump-Core',
+	#tag : 'Base'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 SDSnapshotFileReader class >> file: aFileReference [
 	
 	^ self on: aFileReference binaryReadStream
 ]
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 SDSnapshotFileReader class >> on: aStream [
 	
 	^ self new initializeStream: aStream
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshotFileReader >> context [
 	^ FLMaterializer materializeFromByteArray: self fuelDump
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshotFileReader >> file: aFileReference [ 
 	
 	snapshot file: aFileReference 
 ]
 
-{ #category : #enumerating }
+{ #category : 'enumerating' }
 SDSnapshotFileReader >> fuelDump [
 
 	^ self fuelDumpStreamDo: [ :str :lenght |
 		str upToEnd ]
 ]
 
-{ #category : #enumerating }
+{ #category : 'enumerating' }
 SDSnapshotFileReader >> fuelDumpStreamDo: aBlock [
 
 	| length |
@@ -53,7 +55,7 @@ SDSnapshotFileReader >> fuelDumpStreamDo: aBlock [
 		value: length.
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshotFileReader >> initializeFromMeta [
 
 	snapshot := NeoJSONReader 
@@ -61,7 +63,7 @@ SDSnapshotFileReader >> initializeFromMeta [
 		as: SDFileSnapshot
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshotFileReader >> initializeStream: aStream [
 	
 	| formatSignature |
@@ -77,13 +79,13 @@ SDSnapshotFileReader >> initializeStream: aStream [
 	
 ]
 
-{ #category : #enumerating }
+{ #category : 'enumerating' }
 SDSnapshotFileReader >> metaDataDictionary [
 
 	^ NeoJSONReader fromString: self metaDataString 
 ]
 
-{ #category : #enumerating }
+{ #category : 'enumerating' }
 SDSnapshotFileReader >> metaDataStreamDo: aBlock [
 
 	| length |
@@ -94,7 +96,7 @@ SDSnapshotFileReader >> metaDataStreamDo: aBlock [
 		value: length
 ]
 
-{ #category : #enumerating }
+{ #category : 'enumerating' }
 SDSnapshotFileReader >> metaDataString [
 
 	| string |
@@ -105,21 +107,21 @@ SDSnapshotFileReader >> metaDataString [
 	^ string
 ]
 
-{ #category : #'stream - reading' }
+{ #category : 'stream - reading' }
 SDSnapshotFileReader >> read: anInteger [
 
 	position := position + anInteger.
 	^ stream next: anInteger 
 ]
 
-{ #category : #'stream - reading' }
+{ #category : 'stream - reading' }
 SDSnapshotFileReader >> readLength [
 
 	"all lengths are fixed to 4 bytes giving 32 bit size of a section"
 	^ (self read: 4) asInteger
 ]
 
-{ #category : #'stream - reading' }
+{ #category : 'stream - reading' }
 SDSnapshotFileReader >> skip: anInteger [ 
 	
 	"skip a number of bytes on a stream. This is a lot faster than reading the bytes to
@@ -128,7 +130,7 @@ SDSnapshotFileReader >> skip: anInteger [
 	position := position + anInteger 
 ]
 
-{ #category : #'stream - reading' }
+{ #category : 'stream - reading' }
 SDSnapshotFileReader >> skipSection [
 	
 	| length |
@@ -136,7 +138,7 @@ SDSnapshotFileReader >> skipSection [
 	self skip: length
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 SDSnapshotFileReader >> snapshot [
 	"if the accessor is used we assume that someone needs a snapshot so initializing
 	with content should be nice"
@@ -145,7 +147,7 @@ SDSnapshotFileReader >> snapshot [
 	^ snapshot
 ]
 
-{ #category : #enumerating }
+{ #category : 'enumerating' }
 SDSnapshotFileReader >> stackTrace [
 
 	^ (self stackTraceStreamDo: [ :str :length |
@@ -153,7 +155,7 @@ SDSnapshotFileReader >> stackTrace [
 
 ]
 
-{ #category : #enumerating }
+{ #category : 'enumerating' }
 SDSnapshotFileReader >> stackTraceStreamDo: aBlock [
 	
 	| length |
